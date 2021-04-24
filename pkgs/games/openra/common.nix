@@ -2,7 +2,7 @@
     and out-of-tree mod packages (mod.nix).
 */
 { lib, makeSetupHook, curl, unzip, dos2unix, pkg-config, makeWrapper
-, lua, mono, dotnetPackages, python
+, lua, mono, msbuild, dotnet-sdk_5, dotnetPackages, python
 , libGL, freetype, openal, SDL2
 , zenity
 }:
@@ -17,12 +17,11 @@ let
 in {
   patchEngine = dir: version: ''
     sed -i \
-      -e 's/^VERSION.*/VERSION = ${version}/g' \
       -e '/fetch-geoip-db/d' \
       -e '/GeoLite2-Country.mmdb.gz/d' \
       ${dir}/Makefile
 
-    sed -i 's|locations=.*|locations=${lua}/lib|' ${dir}/thirdparty/configure-native-deps.sh
+    # sed -i 's|locations=.*|locations=${lua}/lib|' ${dir}/thirdparty/configure-native-deps.sh
   '';
 
   wrapLaunchGame = openraSuffix: ''
@@ -66,7 +65,10 @@ in {
       makeWrapper
       mkdirp
       mono
+      msbuild
       python
+      dotnet-sdk_5
+      dotnetPackages.Nuget
     ];
 
     makeFlags = [ "prefix=$(out)" ];
