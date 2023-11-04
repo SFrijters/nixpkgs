@@ -42068,4 +42068,6 @@ with pkgs;
   insulator2 = callPackage ../applications/misc/insulator2 {};
 
   animdl = python3Packages.callPackage ../applications/video/animdl { };
+
+  brickstore = qt6Packages.callPackage ../applications/misc/brickstore {};
 }

@@ -1,0 +1,14 @@
+diff --git a/cmake/BuildQCoro.cmake b/cmake/BuildQCoro.cmake
+index d3cac79d..7d2b7cf3 100755
+--- a/cmake/BuildQCoro.cmake
++++ b/cmake/BuildQCoro.cmake
+@@ -16,8 +16,7 @@ endif()
+ 
+ FetchContent_Declare(
+     qcoro
+-    GIT_REPOSITORY https://github.com/danvratil/qcoro.git
+-    GIT_TAG        v${QCORO_VERSION}
++    SOURCE_DIR @qcoro_src@
+ )
+ 
+ # we need EXCLUDE_FROM_ALL to suppress the installation of qcoro into the macOS bundle

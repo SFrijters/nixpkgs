@@ -58,6 +58,8 @@ makeScopeWithSplicing' {
     suffix = "qt6";
   };
 
+  qcoro = callPackage ../development/libraries/qcoro { };
+
   } // lib.optionalAttrs pkgs.config.allowAliases {
     # Convert to a throw on 01-01-2023.
     # Warnings show up in various cli tool outputs, throws do not.
