@@ -5,6 +5,7 @@
   fetchpatch,
   substituteAll,
   cmake,
+  pkg-config,
   wrapQtAppsHook,
   qtbase,
   qcoro,
@@ -13,22 +14,26 @@
   qtquick3d,
   qtmultimedia,
   qtimageformats,
+  libsecret,
+  libgcrypt,
+  libgpg-error,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "brickstore";
-  version = "2023.8.1";
+  version = "2023.11.2";
 
   src = fetchFromGitHub {
     owner = "rgriebl";
     repo = "brickstore";
     rev = "refs/tags/v${finalAttrs.version}";
-    sha256 = "sha256-lBK84ERtbokSKja+v2tLoTMFuBYKTxjETlL3d3wJZ+I=";
+    sha256 = "sha256-GmyX5SyZA9qeousAqdwq5xSOV6e1xQzkvnTjgQfbpHQ=";
   };
 
   nativeBuildInputs = [
     wrapQtAppsHook
     cmake
+    pkg-config
   ];
 
   buildInputs = [
@@ -39,16 +44,14 @@ stdenv.mkDerivation (finalAttrs: {
     qtquick3d
     qtmultimedia
     qtimageformats
+    libsecret
+    libgcrypt
+    libgpg-error
   ];
 
   doCheck = false;
 
   patches = [
-    # Fix build error, remove after next release
-    (fetchpatch {
-      url = "https://github.com/rgriebl/brickstore/commit/58fa83aeed99944a3e6c720726fb8e5cf270790c.patch";
-      sha256 = "sha256-o6rf1JMxlCxmykevcW05jUevKXjMeYwSkJfgtpNgGhI=";
-    })
     # Do not fetch dependencies, use the nix store instead
     (substituteAll {
       src = ./dont_fetch_dependencies.patch;
