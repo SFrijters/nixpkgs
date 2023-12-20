@@ -420,7 +420,10 @@ self: super: builtins.intersectAttrs super {
   hasql-interpolate = dontCheck super.hasql-interpolate;
   hasql-notifications = dontCheck super.hasql-notifications;
   hasql-pool = dontCheck super.hasql-pool;
+  hasql-pool_0_10 = dontCheck super.hasql-pool_0_10;
   hasql-transaction = dontCheck super.hasql-transaction;
+
+  postgrest = dontCheck super.postgrest;
 
   # Tries to mess with extended POSIX attributes, but can't in our chroot environment.
   xattr = dontCheck super.xattr;

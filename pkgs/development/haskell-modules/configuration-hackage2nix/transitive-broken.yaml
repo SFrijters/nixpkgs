@@ -662,7 +662,6 @@ dont-distribute-packages:
  - bip32
  - birch-beer
  - bird
- - bisc
  - biscuit-servant
  - bishbosh
  - bit-array
@@ -3115,7 +3114,6 @@ dont-distribute-packages:
  - postgresql-tx-query
  - postgresql-tx-squeal
  - postgresql-tx-squeal-compat-simple
- - postgrest
  - postmark
  - potoki
  - potoki-cereal
@@ -3509,9 +3507,6 @@ dont-distribute-packages:
  - secrm
  - sednaDBXML
  - seitz-symbol
- - selda-json
- - selda-postgresql
- - selda-sqlite
  - selenium-server
  - semantic-source
  - semantic-version

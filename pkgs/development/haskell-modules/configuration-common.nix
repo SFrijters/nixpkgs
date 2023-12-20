@@ -2675,19 +2675,25 @@ self: super: {
   co-log-polysemy = doJailbreak super.co-log-polysemy;
   co-log-polysemy-formatting = doJailbreak super.co-log-polysemy-formatting;
 
-  # 2022-12-02: Needs newer postgrest package
+  # 2023-12-20: Needs newer postgrest package and extra dependencies
   # 2022-12-02: Hackage release lags behind actual releases: https://github.com/PostgREST/postgrest/issues/2275
   # 2022-12-02: Too strict bounds: https://github.com/PostgREST/postgrest/issues/2580
-  # 2022-12-02: Tests require running postresql server
-  postgrest = dontCheck (doJailbreak (overrideSrc rec {
-    version = "10.1.1";
-    src = pkgs.fetchFromGitHub {
-      owner = "PostgREST";
-      repo = "postgrest";
-      rev = "v${version}";
-      sha256 = "sha256-ceSPBH+lzGU1OwjolcaE1BCpkKCJrvMU5G8TPeaJesM=";
-    };
-  } super.postgrest));
+  postgrest = lib.pipe (super.postgrest.overrideScope (lself: lsuper: {
+    fuzzyset = lself.fuzzyset_0_2_4;
+    hasql-pool = lself.hasql-pool_0_10;
+  })) [
+    doJailbreak
+    (overrideSrc rec {
+      version = "11.2.2";
+      src = pkgs.fetchFromGitHub {
+        owner = "PostgREST";
+        repo = "postgrest";
+        rev = "v${version}";
+        hash = "sha256-6Nv0NSAiNUSg2T/cmWs7zGSInLSmF0WDA3E/KxlA7O8=";
+      };
+    })
+    (addBuildDepends [ self.extra self.fuzzyset_0_2_4 ])
+  ];
 
   html-charset = dontCheck super.html-charset;
 
@@ -2780,5 +2786,8 @@ self: super: {
     ipython-kernel = self.ipython-kernel_0_11_0_0;
     ghc-syntax-highlighter = self.ghc-syntax-highlighter_0_0_10_0;
   });
+
+  # Too strict bounds on megaparsec
+  configurator-pg = doJailbreak super.configurator-pg;
 
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
