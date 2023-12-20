@@ -27158,6 +27158,8 @@ with pkgs;
 
   postgresqlTestHook = callPackage ../build-support/setup-hooks/postgresql-test-hook { };
 
+  postgrest = haskell.lib.compose.justStaticExecutables haskellPackages.postgrest;
+
   redshift_jdbc = callPackage ../development/java-modules/redshift_jdbc { };
 
   liquibase_redshift_extension = callPackage ../development/java-modules/liquibase_redshift_extension { };
