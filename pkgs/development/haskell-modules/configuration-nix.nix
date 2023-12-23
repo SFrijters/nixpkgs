@@ -423,6 +423,7 @@ self: super: builtins.intersectAttrs super {
   hasql-pool_0_10 = dontCheck super.hasql-pool_0_10;
   hasql-transaction = dontCheck super.hasql-transaction;
 
+  # Test suite requires a running postgresql server.
   postgrest = dontCheck super.postgrest;
 
   # Tries to mess with extended POSIX attributes, but can't in our chroot environment.
