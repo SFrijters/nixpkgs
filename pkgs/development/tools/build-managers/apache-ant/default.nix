@@ -1,19 +1,19 @@
-{ fetchurl, lib, stdenv, coreutils, makeWrapper }:
+{ fetchurl, lib, stdenv, coreutils, makeWrapper, jdk }:
 
 stdenv.mkDerivation rec {
   pname = "ant";
-  version = "1.10.11";
+  version = "1.10.14";
 
   nativeBuildInputs = [ makeWrapper ];
 
   src = fetchurl {
     url = "mirror://apache/ant/binaries/apache-ant-${version}-bin.tar.bz2";
-    sha256 = "19m8xb7h6xm4jykzb79kakbx1pa4awaglw6z31pbfg8m5pmwkipz";
+    hash = "sha256-TBlFCDEAHm6dXSqUwzUPVC8E9E8HAIV1nCTznTzako0=";
   };
 
   contrib = fetchurl {
     url = "mirror://sourceforge/ant-contrib/ant-contrib-1.0b3-bin.tar.bz2";
-    sha256 = "1l8say86bz9gxp4yy777z7nm4j6m905pg342li1aphc14p5grvwn";
+    hash = "sha256-lu/8yiWBwatCpIKMdwtI1UhS7fnnHO/J7S/9ZZBXGtE=";
   };
 
   installPhase =
@@ -77,6 +77,16 @@ stdenv.mkDerivation rec {
 
       chmod +x $out/bin/ant
     ''; # */
+
+  doCheck = true;
+
+  checkPhase = ''
+    runHook preCheck
+
+    JAVA_HOME=${jdk} ./bin/ant -version | grep -q ${version}
+
+    runHook postCheck
+  '';
 
   meta = {
     homepage = "https://ant.apache.org/";
