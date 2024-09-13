@@ -3,7 +3,8 @@
   lib,
   fetchurl,
   buildPackages,
-  python3
+  python3,
+  versionCheckHook,
 }:
 
 stdenv.mkDerivation rec {
@@ -30,6 +31,9 @@ stdenv.mkDerivation rec {
   postFixup = ''
     wrapPythonPrograms
   '';
+
+  nativeInstallCheckInputs = [ versionCheckHook ];
+  doInstallCheck = true;
 
   meta = {
     homepage = "https://itstool.org/";
