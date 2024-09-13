@@ -2,7 +2,8 @@
   stdenv,
   lib,
   fetchurl,
-  python3,
+  buildPackages,
+  python3
 }:
 
 stdenv.mkDerivation rec {
@@ -17,13 +18,9 @@ stdenv.mkDerivation rec {
   strictDeps = true;
 
   nativeBuildInputs = [
-    python3
+    buildPackages.python3
+    buildPackages.python3.pkgs.libxml2
     python3.pkgs.wrapPython
-  ];
-
-  buildInputs = [
-    python3
-    python3.pkgs.libxml2
   ];
 
   pythonPath = [
