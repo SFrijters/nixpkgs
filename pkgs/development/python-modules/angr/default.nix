@@ -22,6 +22,7 @@
   psutil,
   pycparser,
   pyformlang,
+  python3,
   pythonOlder,
   pyvex,
   rich,
@@ -99,6 +100,20 @@ buildPythonPackage rec {
     "--plat-name"
     "linux"
   ];
+
+  postPatch = lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
+    # setup.py tries to find the cross-compiled libraries by importing the Python module
+    export UNICORN_INCLUDE_PATH=${unicorn}/${python3.sitePackages}/unicorn/include
+    export UNICORN_LIB_PATH=${unicorn}/${python3.sitePackages}/unicorn/lib
+    export PYVEX_INCLUDE_PATH=${pyvex}/${python3.sitePackages}/pyvex/include
+    export PYVEX_LIB_PATH=${pyvex}/${python3.sitePackages}/pyvex/lib
+
+    echo $UNICORN_INCLUDE_PATH
+    substituteInPlace setup.py \
+      --replace-fail "raise LibError(\"You must install pyvex before building angr\") from e" "pass" \
+      --replace-fail "raise LibError(\"You must install unicorn before building angr\") from e" "pass" \
+      --replace-fail "in env_data" "in []" \
+  '';
 
   # Tests have additional requirements, e.g., pypcode and angr binaries
   # cle is executing the tests with the angr binaries
