@@ -32,7 +32,9 @@ let
       hash = "sha256-zRN16lrc5gtDlTVIQJRRx103w/VbRkatCLeEc9AXWPE=";
     };
 
-    nativeBuildInputs = [ pkg-config autoconf unzip ensureNewerSourcesForZipFilesHook ];
+    strictDeps = true;
+
+    nativeBuildInputs = [ pkg-config autoconf zip unzip ensureNewerSourcesForZipFilesHook ];
     buildInputs = [
       cpio file which zip perl zlib cups freetype alsa-lib libjpeg giflib
       libpng zlib lcms2 libX11 libICE libXrender libXext libXtst libXt libXtst
@@ -67,6 +69,10 @@ let
     ] ++ lib.optionals (!headless && enableGtk) [
       ./swing-use-gtk-jdk13.patch
     ];
+
+    preConfigure = ''
+      echo zip = ${zip}
+    '';
 
     postPatch = ''
       chmod +x configure

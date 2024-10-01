@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, fetchpatch, fetchFromGitHub, bash, pkg-config, autoconf, cpio
+{ stdenv, lib, fetchurl, fetchpatch, fetchFromGitHub, bash, pkg-config, autoconf, buildPackages, cpio
 , file, which, unzip, zip, perl, cups, freetype, harfbuzz, alsa-lib, libjpeg, giflib
 , libpng, zlib, lcms2, libX11, libICE, libXrender, libXext, libXt, libXtst
 , libXi, libXinerama, libXcursor, libXrandr, fontconfig, openjdk17-bootstrap
@@ -16,7 +16,7 @@ let
   };
 
   # when building a headless jdk, also bootstrap it with a headless jdk
-  openjdk-bootstrap = openjdk17-bootstrap.override { gtkSupport = !headless; };
+  openjdk-bootstrap = buildPackages.openjdk17-bootstrap.override { gtkSupport = !headless; };
 
   openjdk = stdenv.mkDerivation {
     pname = "openjdk" + lib.optionalString headless "-headless";
@@ -29,7 +29,9 @@ let
       sha256 = "sha256-aO4iSc9MklW/4q9U86WEfiiWnlq6iZSbxzq2fbsqd0A=";
     };
 
-    nativeBuildInputs = [ pkg-config autoconf unzip ];
+    AUTOCONF = "${autoconf}/bin/autoconf";
+
+    nativeBuildInputs = [ pkg-config autoconf which zip unzip ];
     buildInputs = [
       cpio file which zip perl zlib cups freetype harfbuzz alsa-lib libjpeg giflib
       libpng zlib lcms2 libX11 libICE libXrender libXext libXtst libXt libXtst
@@ -114,6 +116,7 @@ let
       "--with-extra-cxxflags=-xc++"
     ]
     ++ lib.optional headless "--enable-headless-only"
+    ++ lib.optional (stdenv.buildPlatform != stdenv.hostPlatform) "--with-build-jdk=${buildPackages.jdk11}"
     ++ lib.optional (!headless && enableJavaFX) "--with-import-modules=${openjfx}";
 
     separateDebugInfo = true;

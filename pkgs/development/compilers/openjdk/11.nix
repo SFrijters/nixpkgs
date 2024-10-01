@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchpatch, fetchFromGitHub, bash, pkg-config, autoconf, cpio, file, which, unzip
+{ stdenv, lib, fetchpatch, fetchFromGitHub, bash, pkg-config, autoconf, buildPackages, cpio, file, which, unzip
 , zip, perl, cups, freetype, harfbuzz, alsa-lib, libjpeg, giflib, libpng, zlib, lcms2
 , libX11, libICE, libXrender, libXext, libXt, libXtst, libXi, libXinerama
 , libXcursor, libXrandr, fontconfig, openjdk11-bootstrap
@@ -15,7 +15,7 @@ let
   build = "9";
 
   # when building a headless jdk, also bootstrap it with a headless jdk
-  openjdk-bootstrap = openjdk11-bootstrap.override { gtkSupport = !headless; };
+  openjdk-bootstrap = buildPackages.openjdk11-bootstrap.override { gtkSupport = !headless; };
 
   openjdk = stdenv.mkDerivation rec {
     pname = "openjdk" + lib.optionalString headless "-headless";
@@ -28,7 +28,11 @@ let
       sha256 = "sha256-6y6wge8ZuSKBpb5QNihvAlD4Pv/0d3AQCPOkxUm/sJk=";
     };
 
-    nativeBuildInputs = [ pkg-config autoconf unzip ];
+    AUTOCONF = "${autoconf}/bin/autoconf";
+
+    strictDeps = true;
+
+    nativeBuildInputs = [ pkg-config autoconf which buildPackages.zip unzip ];
     buildInputs = [
       cpio file which zip perl zlib cups freetype harfbuzz alsa-lib libjpeg giflib
       libpng zlib lcms2 libX11 libICE libXrender libXext libXtst libXt libXtst
@@ -58,6 +62,7 @@ let
     preConfigure = ''
       chmod +x configure
       substituteInPlace configure --replace /bin/bash "${bash}/bin/bash"
+      echo zip = ${zip}
     '';
 
     configureFlags = [
@@ -86,6 +91,7 @@ let
     ]
     ++ lib.optional stdenv.hostPlatform.isx86_64 "--with-jvm-features=zgc"
     ++ lib.optional headless "--enable-headless-only"
+    ++ lib.optional (stdenv.buildPlatform != stdenv.hostPlatform) "--with-build-jdk=${buildPackages.jdk11}"
     ++ lib.optional (!headless && enableJavaFX) "--with-import-modules=${openjfx}";
 
     separateDebugInfo = true;
