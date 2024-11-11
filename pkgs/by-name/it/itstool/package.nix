@@ -17,10 +17,21 @@ stdenv.mkDerivation rec {
 
   strictDeps = true;
 
+  prePatch = ''
+    substituteInPlace configure.ac \
+      --replace-fail libxml2 sys
+  '';
+
   nativeBuildInputs = [
-    python3Packages.python
-    python3Packages.libxml2
     python3Packages.wrapPython
+  ];
+
+  configureFlags = [
+    "PYTHON=${python3Packages.python.pythonOnBuildForHost.interpreter}"
+  ];
+
+  buildInputs = [
+    python3Packages.python
   ];
 
   pythonPath = [
