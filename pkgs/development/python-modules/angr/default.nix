@@ -53,6 +53,17 @@ buildPythonPackage rec {
     # unicorn is also part of build-system
     substituteInPlace pyproject.toml \
       --replace-fail "unicorn==2.0.1.post1" "unicorn"
+  '' + lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
+    # setup.py tries to find the cross-compiled libraries by importing the Python module
+    export UNICORN_INCLUDE_PATH=${unicorn}/${python3.sitePackages}/unicorn/include
+    export UNICORN_LIB_PATH=${unicorn}/${python3.sitePackages}/unicorn/lib
+    export PYVEX_INCLUDE_PATH=${pyvex}/${python3.sitePackages}/pyvex/include
+    export PYVEX_LIB_PATH=${pyvex}/${python3.sitePackages}/pyvex/lib
+
+    substituteInPlace setup.py \
+      --replace-fail "raise LibError(\"You must install pyvex before building angr\") from e" "pass" \
+      --replace-fail "raise LibError(\"You must install unicorn before building angr\") from e" "pass" \
+      --replace-fail "in env_data" "in []" \
   '';
 
   pythonRelaxDeps = [
@@ -101,20 +112,6 @@ buildPythonPackage rec {
     "linux"
   ];
 
-  postPatch = lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
-    # setup.py tries to find the cross-compiled libraries by importing the Python module
-    export UNICORN_INCLUDE_PATH=${unicorn}/${python3.sitePackages}/unicorn/include
-    export UNICORN_LIB_PATH=${unicorn}/${python3.sitePackages}/unicorn/lib
-    export PYVEX_INCLUDE_PATH=${pyvex}/${python3.sitePackages}/pyvex/include
-    export PYVEX_LIB_PATH=${pyvex}/${python3.sitePackages}/pyvex/lib
-
-    echo $UNICORN_INCLUDE_PATH
-    substituteInPlace setup.py \
-      --replace-fail "raise LibError(\"You must install pyvex before building angr\") from e" "pass" \
-      --replace-fail "raise LibError(\"You must install unicorn before building angr\") from e" "pass" \
-      --replace-fail "in env_data" "in []" \
-  '';
-
   # Tests have additional requirements, e.g., pypcode and angr binaries
   # cle is executing the tests with the angr binaries
   doCheck = false;
@@ -132,7 +129,5 @@ buildPythonPackage rec {
     homepage = "https://angr.io/";
     license = with licenses; [ bsd2 ];
     maintainers = with maintainers; [ fab ];
-    # angr is pining unicorn
-    broken = versionAtLeast unicorn.version "2.0.1.post1";
   };
 }
