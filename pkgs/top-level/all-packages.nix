@@ -18694,4 +18694,6 @@ with pkgs;
   wings = callPackage ../by-name/wi/wings/package.nix {
     erlang = erlang_25;
   };
+
+  brotlicffi-env = python3.withPackages (ps: [ ps.brotlicffi ]);
 }
