@@ -95,6 +95,7 @@ installManPage() {
 #
 # If any argument is `--` the remaining arguments will be treated as paths.
 installShellCompletion() {
+    echo halllo
     local shell='' name='' cmdname='' retval=0 parseArgs=1 arg
     while { arg=$1; shift; }; do
         # Parse arguments
@@ -124,6 +125,20 @@ installShellCompletion() {
             --cmd=*)
                 # treat `--cmd=foo` the same as `--cmd foo`
                 cmdname=${arg#--cmd=}
+                continue;;
+            --exe)
+                cmdexe=$1
+                shift || {
+                    nixErrorLog "${FUNCNAME[0]}: --exe flag expected an argument"
+                    return 1
+                }
+                continue;;
+            --args)
+                cmdargs=$1
+                shift || {
+                    nixErrorLog "${FUNCNAME[0]}: --args flag expected an argument"
+                    return 1
+                }
                 continue;;
             --?*)
                 nixWarnLog "${FUNCNAME[0]}: unknown flag ${arg%%=*}"
@@ -207,9 +222,23 @@ installShellCompletion() {
             return 1;;
         esac
         # Install file
+        echo install file
         local outDir="${!outputBin:?}/share/$sharePath"
         local outPath="$outDir/$outName"
-        if [[ -p "$arg" ]]; then
+        if [[ -n "$cmdexe" ]]; then
+            echo foo
+            mkdir -p "$outDir"
+            if [[ @canExecute@ = 1 ]]; then
+                nixInfoLog "${FUNCNAME[0]}: executing directly"
+                "$cmdexe" $cmdargs > "$outPath"
+            elif [[ @emulatorAvailable@ = 1 ]]; then
+                nixInfoLog "${FUNCNAME[0]}: using emulator"
+                @emulator@ "$cmdexe" $cmdargs > "$outPath"
+            else
+                nixErrorLog "${FUNCNAME[0]}: cannot run or emulate executable '$exe'"
+                return 1
+            fi
+        elif [[ -p "$arg" ]]; then
             # install handles named pipes on NixOS but not on macOS
             mkdir -p "$outDir" \
             && cat "$arg" > "$outPath"
@@ -217,6 +246,8 @@ installShellCompletion() {
             install -D --mode=644 --no-target-directory "$arg" "$outPath"
         fi
 
+        echo bar
+        
         if [ ! -s "$outPath" ]; then
             nixErrorLog "${FUNCNAME[0]}: installed shell completion file \`$outPath' does not exist or has zero size"
             return 1
@@ -228,6 +259,7 @@ installShellCompletion() {
         nixErrorLog "${FUNCNAME[0]}: --name flag given with no path" >&2
         return 1
     fi
+    echo $retval
     return $retval
 }
 

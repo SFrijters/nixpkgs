@@ -2,6 +2,7 @@
   lib,
   stdenv,
   buildGoModule,
+  buildPackages,
   fetchFromGitHub,
   installShellFiles,
   testers,
@@ -24,7 +25,7 @@ buildGoModule rec {
 
   doCheck = false;
 
-  nativeBuildInputs = [ installShellFiles ];
+  nativeBuildInputs = [ (installShellFiles.override { hostPlatform_ = stdenv.hostPlatform; }) ];
 
   subPackages = [ "cmd/task" ];
 
@@ -40,8 +41,11 @@ buildGoModule rec {
     ''
       ln -s $out/bin/task $out/bin/go-task
     ''
-    + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    + ''
+      echo starting shell completion
       installShellCompletion --cmd task \
+        --exe $out/bin/task \
+        --args "--completion bash" \
         --bash <($out/bin/task --completion bash) \
         --fish <($out/bin/task --completion fish) \
         --zsh <($out/bin/task --completion zsh)
