@@ -45,10 +45,8 @@ buildGoModule rec {
       echo starting shell completion
       installShellCompletion --cmd task \
         --exe $out/bin/task \
-        --args "--completion bash" \
-        --bash <($out/bin/task --completion bash) \
-        --fish <($out/bin/task --completion fish) \
-        --zsh <($out/bin/task --completion zsh)
+        --args "--completion %shell%" \
+        --bash --fish --zsh
     '';
 
   passthru = {

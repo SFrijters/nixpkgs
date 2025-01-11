@@ -96,14 +96,18 @@ installManPage() {
 # If any argument is `--` the remaining arguments will be treated as paths.
 installShellCompletion() {
     echo halllo
-    local shell='' name='' cmdname='' retval=0 parseArgs=1 arg
+    local shell='' name='' cmdname='' cmdexe='' cmdargs='' retval=0 parseArgs=1 arg
     while { arg=$1; shift; }; do
+        echo $arg
         # Parse arguments
         if (( parseArgs )); then
             case "$arg" in
             --bash|--fish|--zsh)
                 shell=${arg#--}
-                continue;;
+                if [ -z "$cmdexe" ]; then
+                    continue
+                fi
+                ;;
             --name)
                 name=$1
                 shift || {
@@ -153,6 +157,7 @@ installShellCompletion() {
         nixInfoLog "${FUNCNAME[0]}: installing $arg${name:+ as $name}"
         # if we get here, this is a path or named pipe
         # Identify shell and output name
+        echo $shell
         local curShell=$shell
         local outName=''
         if [[ -z "$arg" ]]; then
@@ -228,12 +233,13 @@ installShellCompletion() {
         if [[ -n "$cmdexe" ]]; then
             echo foo
             mkdir -p "$outDir"
+            local substArgs="${cmdargs/\%shell\%/${shell}}"
             if [[ @canExecute@ = 1 ]]; then
                 nixInfoLog "${FUNCNAME[0]}: executing directly"
-                "$cmdexe" $cmdargs > "$outPath"
+                "$cmdexe" $substArgs > "$outPath"
             elif [[ @emulatorAvailable@ = 1 ]]; then
                 nixInfoLog "${FUNCNAME[0]}: using emulator"
-                @emulator@ "$cmdexe" $cmdargs > "$outPath"
+                @emulator@ "$cmdexe" $substArgs > "$outPath"
             else
                 nixErrorLog "${FUNCNAME[0]}: cannot run or emulate executable '$exe'"
                 return 1
