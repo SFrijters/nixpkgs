@@ -6404,6 +6404,8 @@ self: super: with self; {
 
   intensity-normalization = callPackage ../development/python-modules/intensity-normalization { };
 
+  interactive-html-bom = callPackage ../development/python-modules/interactive-html-bom {};
+
   interegular = callPackage ../development/python-modules/interegular { };
 
   interface-meta = callPackage ../development/python-modules/interface-meta { };
@@ -7016,9 +7018,21 @@ self: super: with self; {
 
   khanaa = callPackage ../development/python-modules/khanaa {};
 
+  kiauto = callPackage ../development/python-modules/kiauto {};
+
+  kibot = callPackage ../development/python-modules/kibot {};
+
+  kibom = callPackage ../development/python-modules/kibom {};
+
   kicad = toPythonModule (pkgs.kicad.override {
     python3 = python;
   }).src;
+
+  kicost = callPackage ../development/python-modules/kicost {};
+
+  kicost-digikey-api-v3 = callPackage ../development/python-modules/kicost-digikey-api-v3 {};
+
+  kidiff = callPackage ../development/python-modules/kidiff {};
 
   kinparse = callPackage ../development/python-modules/kinparse { };
 
@@ -13808,6 +13822,8 @@ self: super: with self; {
   qpsolvers = callPackage ../development/python-modules/qpsolvers { };
 
   qrcode = callPackage ../development/python-modules/qrcode { };
+
+  qrcodegen = callPackage ../development/python-modules/qrcodegen {};
 
   qrcode-terminal = callPackage ../development/python-modules/qrcode-terminal { };
 
