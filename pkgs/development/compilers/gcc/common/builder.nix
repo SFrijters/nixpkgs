@@ -7,7 +7,9 @@
 
 let
   forceLibgccToBuildCrtStuff = import ./libgcc-buildstuff.nix { inherit lib stdenv; };
-  isCross = with stdenv; targetPlatform.config != hostPlatform.config;
+  isCross = with stdenv; targetPlatform != hostPlatform;
+  isCrossStr = if isCross then "true" else "false";
+  targetConfigString = if targetConfig == null then "<null>" else targetConfig;
 in
 
 # We don't support multilib and cross at the same time
@@ -178,6 +180,11 @@ originalAttrs:
     preConfigure =
       (originalAttrs.preConfigure or "")
       + ''
+        echo "hostPlatform.config: ${stdenv.hostPlatform.config}"
+        echo "targetPlatform.config: ${stdenv.targetPlatform.config}"
+        echo "isCross: ${isCrossStr}"
+        echo "targetConfigString: ${targetConfigString}"
+
         if test -n "$newlibSrc"; then
             tar xvf "$newlibSrc" -C ..
             ln -s ../newlib-*/newlib newlib

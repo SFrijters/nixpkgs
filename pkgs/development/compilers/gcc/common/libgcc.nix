@@ -105,13 +105,51 @@ lib.pipe drv
                     + lib.optionalString enableLibGccOutput (
                       ''
                         # move libgcc from lib to its own output (libgcc)
+                        echo "Fixing up libgcc"
+                        echo "targetPlatformSlash: ${targetPlatformSlash}"
+                        echo "ls $lib"
+                        ls -l $lib
+                        echo "ls $lib/${targetPlatformSlash}lib"
+                        ls -l $lib/${targetPlatformSlash}lib
+                        # if [ -n "${targetPlatformSlash}" && [ ! e "${targetPlatformSlash}" ]; then
+                        #   targetPlatformSlash=
+                        # else
+                        #  targetPlatformSlash=${targetPlatformSlash}
+                        # fi
+                        # echo "targetPlatformSlash: ''${targetPlatformSlash}"
+                        # echo "Creating $libgcc/''${targetPlatformSlash}lib"
+                        # mkdir -p $libgcc/''${targetPlatformSlash}lib
+                        # echo "Moving $lib/''${targetPlatformSlash}lib/libgcc_s.so -> $libgcc/''${targetPlatformSlash}lib/"
+                        # mv    $lib/''${targetPlatformSlash}lib/libgcc_s.so      $libgcc/''${targetPlatformSlash}lib/
+                        # echo "Moving $lib/''${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major} -> $libgcc/''${targetPlatformSlash}lib/"
+                        # mv    $lib/''${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major}    $libgcc/''${targetPlatformSlash}lib/
+                        # echo "Creating reverse link $libgcc/''${targetPlatformSlash}lib/libgcc_s.so -> $lib/''${targetPlatformSlash}lib/"
+                        # ln -s $libgcc/''${targetPlatformSlash}lib/libgcc_s.so   $lib/''${targetPlatformSlash}lib/
+                        # echo "Creating reverse link $libgcc/''${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major} -> $lib/''${targetPlatformSlash}lib/"
+                        # ln -s $libgcc/''${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major} $lib/''${targetPlatformSlash}lib/
+                        # echo "ls $lib/''${targetPlatformSlash}lib"
+                        # ls -l $lib/''${targetPlatformSlash}lib
+                        # echo "ls $libgcc/''${targetPlatformSlash}lib/"
+                        # ls -l $libgcc/''${targetPlatformSlash}lib/
+
+                        echo "targetPlatformSlash: ${targetPlatformSlash}"
+                        echo "Creating $libgcc/${targetPlatformSlash}lib"
                         mkdir -p $libgcc/${targetPlatformSlash}lib
+                        echo "Moving $lib/${targetPlatformSlash}lib/libgcc_s.so -> $libgcc/${targetPlatformSlash}lib/"
                         mv    $lib/${targetPlatformSlash}lib/libgcc_s.so      $libgcc/${targetPlatformSlash}lib/
+                        echo "Moving $lib/${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major} -> $libgcc/${targetPlatformSlash}lib/"
                         mv    $lib/${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major}    $libgcc/${targetPlatformSlash}lib/
+                        echo "Creating reverse link $libgcc/${targetPlatformSlash}lib/libgcc_s.so -> $lib/${targetPlatformSlash}lib/"
                         ln -s $libgcc/${targetPlatformSlash}lib/libgcc_s.so   $lib/${targetPlatformSlash}lib/
+                        echo "Creating reverse link $libgcc/${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major} -> $lib/${targetPlatformSlash}lib/"
                         ln -s $libgcc/${targetPlatformSlash}lib/libgcc_s.so.${libgcc_s-version-major} $lib/${targetPlatformSlash}lib/
+                        echo "ls $lib/${targetPlatformSlash}lib"
+                        ls -l $lib/${targetPlatformSlash}lib
+                        echo "ls $libgcc/${targetPlatformSlash}lib/"
+                        ls -l $libgcc/${targetPlatformSlash}lib/
                       ''
                       + lib.optionalString (targetPlatformSlash != "") ''
+                        echo "Linking ''${targetPlatformSlash} -> $libgcc/lib"
                         ln -s ${targetPlatformSlash}lib $libgcc/lib
                       ''
                       #
