@@ -346,12 +346,11 @@ originalAttrs:
               ln -sf "$man_prefix"gcc.1 "$i"
           fi
       done
-    ''
-    # if cross-compiling, link from $lib/lib to $lib/${targetConfig}.
-    # since native-compiles have $lib/lib as a directory (not a
-    # symlink), this ensures that in every case we can assume that
-    # $lib/lib contains the .so files
-    + lib.optionalString isCross ''
+
+      # if cross-compiling, link from $lib/lib to $lib/''${targetConfig}.
+      # since native-compiles have $lib/lib as a directory (not a
+      # symlink), this ensures that in every case we can assume that
+      # $lib/lib contains the .so files
       if [ -e "$lib/$targetConfig/lib" ]; then
         ln -s "$lib/$targetConfig/lib" "$lib/lib"
       fi
