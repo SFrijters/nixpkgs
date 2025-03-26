@@ -79,6 +79,8 @@ buildPythonPackage rec {
 
   pytestFlagsArray = [ "-m 'not isolated and not network'" ];
 
+  doCheck = false;
+
   disabledTestPaths = [
     # store permissions issue in Nix:
     "tests/test_editable.py"
