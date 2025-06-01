@@ -13,7 +13,6 @@
   xz,
   freetype,
   fontconfig,
-  nlohmann_json,
   curl,
   icu,
   harfbuzz,
@@ -91,7 +90,6 @@ stdenv.mkDerivation (finalAttrs: {
       zlib
       freetype
       fontconfig
-      nlohmann_json
       curl
       icu
       harfbuzz
