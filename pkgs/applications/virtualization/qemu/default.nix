@@ -170,7 +170,14 @@ stdenv.mkDerivation (finalAttrs: {
     perl
 
     # Don't change this to python3 and python3.pkgs.*, breaks cross-compilation
-    (python3Packages.python.withPackages (ps: with ps; [ distlib ]))
+    # Required packages taken from pythondeps.toml
+    (python3Packages.python.withPackages (
+      (ps: with ps; [
+        meson-python
+        packaging
+        pycotap
+      ])
+    ))
   ]
   ++ lib.optionals gtkSupport [ wrapGAppsHook3 ]
   ++ lib.optionals enableDocs [
@@ -286,6 +293,9 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   preConfigure = ''
+    echo ${meson}
+    echo ${python3Packages.meson}
+
     unset CPP # intereferes with dependency calculation
     # this script isn't marked as executable b/c it's indirectly used by meson. Needed to patch its shebang
     chmod +x ./scripts/shaderinclude.py
