@@ -3,7 +3,11 @@
   stdenv,
   fetchFromGitHub,
   cmake,
+  bashNonInteractive,
   dtc,
+  gnutls,
+  python3,
+  perl,
 }:
 
 stdenv.mkDerivation {
@@ -17,17 +21,37 @@ stdenv.mkDerivation {
     hash = "sha256-LAEAjxb6+lQKo2VUknkuZa5sK37k6SjF+imj/7qyOe4=";
   };
 
+  strictDeps = true;
+
   nativeBuildInputs = [
     cmake
-    dtc
   ];
+
+  buildInputs = [
+    bashNonInteractive
+    dtc
+    gnutls
+    python3
+    perl
+  ];
+
+  postPatch = ''
+    substituteInPlace kdtc/kdtc \
+      --replace-fail "'cpp'" "'${stdenv.cc}/bin/cpp'" \
+      --replace-fail "'dtc'" "'${lib.getExe dtc}'" \
+      --replace-fail "| dtc" "| ${lib.getExe dtc}"
+
+    substituteInPlace overlaycheck/overlaycheck \
+      --replace-fail "'cpp'" "'${stdenv.cc}/bin/cpp'" \
+      --replace-fail '$kerndir/scripts/dtc/dtc' '${lib.getExe dtc}'
+  '';
 
   cmakeFlags = [
     # -DARM64=ON disables all targets that only build on 32-bit ARM; this allows
     # the package to build on aarch64 and other architectures.
     # May be unnecessary
-    (lib.cmakeBool "ARM64" stdenv.hostPlatform.isAarch64)
-    (lib.cmakeFeature "CMAKE_INSTALL_PREFIX" "${placeholder "out"}")
+    #(lib.cmakeBool "ARM64" stdenv.hostPlatform.isAarch64)
+    #(lib.cmakeFeature "CMAKE_INSTALL_PREFIX" "${placeholder "out"}")
   ];
 
   meta = {
