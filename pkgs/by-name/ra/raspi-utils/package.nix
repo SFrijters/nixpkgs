@@ -8,9 +8,12 @@
   gnutls,
   python3,
   perl,
+  replaceVars,
+  which,
+  git,
 }:
 
-stdenv.mkDerivation {
+stdenv.mkDerivation (finalAttrs: {
   pname = "raspi-utils";
   version = "0-unstable-2025-10-02";
 
@@ -35,23 +38,16 @@ stdenv.mkDerivation {
     perl
   ];
 
-  postPatch = ''
-    substituteInPlace kdtc/kdtc \
-      --replace-fail "'cpp'" "'${stdenv.cc}/bin/cpp'" \
-      --replace-fail "'dtc'" "'${lib.getExe dtc}'" \
-      --replace-fail "| dtc" "| ${lib.getExe dtc}"
-
-    substituteInPlace overlaycheck/overlaycheck \
-      --replace-fail "'cpp'" "'${stdenv.cc}/bin/cpp'" \
-      --replace-fail '$kerndir/scripts/dtc/dtc' '${lib.getExe dtc}'
-  '';
-
-  cmakeFlags = [
-    # -DARM64=ON disables all targets that only build on 32-bit ARM; this allows
-    # the package to build on aarch64 and other architectures.
-    # May be unnecessary
-    #(lib.cmakeBool "ARM64" stdenv.hostPlatform.isAarch64)
-    #(lib.cmakeFeature "CMAKE_INSTALL_PREFIX" "${placeholder "out"}")
+  patches = [
+    (replaceVars ./embed-runtime-commands.patch.in {
+      which = lib.getExe which;
+      git = lib.getExe git;
+      cpp = "${stdenv.cc}/bin/cpp";
+      dtc = lib.getExe dtc;
+      vcgencmd = "${finalAttrs.finalPackage.outPath}/bin/vcgencmd";
+      vcmailbox = "${finalAttrs.finalPackage.outPath}/bin/vcmailbox";
+      dtmerge = "${finalAttrs.finalPackage.outPath}/bin/dtmerge";
+    })
   ];
 
   meta = {
@@ -68,4 +64,4 @@ stdenv.mkDerivation {
       gigglesquid
     ];
   };
-}
+})
