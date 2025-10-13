@@ -13,7 +13,7 @@
   git,
 }:
 
-stdenv.mkDerivation (finalAttrs: {
+stdenv.mkDerivation {
   pname = "raspi-utils";
   version = "0-unstable-2025-10-02";
 
@@ -44,11 +44,24 @@ stdenv.mkDerivation (finalAttrs: {
       git = lib.getExe git;
       cpp = "${stdenv.cc}/bin/cpp";
       dtc = lib.getExe dtc;
-      vcgencmd = "${finalAttrs.finalPackage.outPath}/bin/vcgencmd";
-      vcmailbox = "${finalAttrs.finalPackage.outPath}/bin/vcmailbox";
-      dtmerge = "${finalAttrs.finalPackage.outPath}/bin/dtmerge";
+      pinctrl = "${placeholder "out'"}/bin/pinctrl";
+      vcgencmd = "${placeholder "out'"}/bin/vcgencmd";
+      vcmailbox = "${placeholder "out'"}/bin/vcmailbox";
+      dtmerge = "${placeholder "out'"}/bin/dtmerge";
     })
   ];
+
+  # This is dirty: if we use `${placeholder "out"}` directly in the replaceVars invocation above,
+  # it will be replaced with the output path of the derivation that contains the patch with substitutions,
+  # instead of the top-level derivation which contains the actual executables.
+  postPatch = ''
+    substituteInPlace otpset/otpset \
+      --replace-fail '${placeholder "out'"}' '${placeholder "out"}'
+    substituteInPlace overlaycheck/overlaycheck \
+      --replace-fail '${placeholder "out'"}' '${placeholder "out"}'
+    substituteInPlace raspinfo/raspinfo \
+      --replace-fail '${placeholder "out'"}' '${placeholder "out"}'
+  '';
 
   meta = {
     description = "Collection of scripts and simple applications for interfacing with Raspberry Pi hardware";
@@ -64,4 +77,4 @@ stdenv.mkDerivation (finalAttrs: {
       gigglesquid
     ];
   };
-})
+}

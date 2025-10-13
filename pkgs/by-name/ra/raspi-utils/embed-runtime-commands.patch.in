@@ -108,7 +108,7 @@ index ad60402..3ad7c17 100755
      if args.verbose :
          print('Sending VC mailbox call to lock OTP: ',' '.join(cmd))
 diff --git a/overlaycheck/overlaycheck b/overlaycheck/overlaycheck
-index 701e6a3..425c883 100755
+index 701e6a3..a5c34a5 100755
 --- a/overlaycheck/overlaycheck
 +++ b/overlaycheck/overlaycheck
 @@ -4,7 +4,7 @@ use strict;
@@ -159,6 +159,15 @@ index 701e6a3..425c883 100755
  my $exclusions_file = $0 . "_exclusions.txt";
  my @warnings_to_suppress =
      (
+@@ -471,7 +461,7 @@ sub parse_source_files
+             system("cp $file overlaycheck.dts");
+             system("ovmerge -r overlaycheck.dts > $overlay-overlay.dts");
+             system("rm overlaycheck.dts");
+-            if (system("git diff --quiet $file") >> 8)
++            if (system("@git@ diff --quiet $file") >> 8)
+             {
+                 print("* '$overlay' overlay changed after redo\n");
+             }
 diff --git a/ovmerge/ovmerge b/ovmerge/ovmerge
 index 6c3730a..4108c7c 100755
 --- a/ovmerge/ovmerge
@@ -181,3 +190,52 @@ index 6c3730a..4108c7c 100755
  	return $fname if (-r $fname);
  	return undef;
  }
+diff --git a/raspinfo/raspinfo b/raspinfo/raspinfo
+index 9d489a6..e54a2d2 100755
+--- a/raspinfo/raspinfo
++++ b/raspinfo/raspinfo
+@@ -3,8 +3,8 @@
+ # Some of the regex's used in sed
+ # Catch basic IP6 address   "s/\([0-9a-fA-F]\{1,4\}:\)\{7,7\}[0-9a-fA-F]\{1,4\}/y.y.y.y.y.y.y.y/g"
+ # Catch y::y.y.y.y          "s/[0-9a-fA-F]\{1,4\}:\(:[0-9a-fA-F]\{1,4\}\)\{1,4\}/y::y.y.y.y/g"
+-# IP4 d.d.d.d decimal	    "s/\([0-9]\{1,3\}\.\)\{3,3\}[0-9]\{1,3\}/x.x.x.x/g"
+-# mac address	            "s/\([0-9a-fA-F]\{2,2\}\:\)\{5,5\}[0-9a-fA-F]\{2,2\}/m.m.m.m/g"
++# IP4 d.d.d.d decimal       "s/\([0-9]\{1,3\}\.\)\{3,3\}[0-9]\{1,3\}/x.x.x.x/g"
++# mac address               "s/\([0-9a-fA-F]\{2,2\}\:\)\{5,5\}[0-9a-fA-F]\{2,2\}/m.m.m.m/g"
+ 
+ 
+ display_info_drm() {
+@@ -177,9 +177,9 @@ echo "Videocore information"
+ echo "---------------------"
+ echo
+ 
+-vcgencmd version
++@vcgencmd@ version
+ echo
+-vcgencmd mem_reloc_stats
++@vcgencmd@ mem_reloc_stats
+ 
+ echo
+ echo "Filesystem information"
+@@ -234,8 +234,8 @@ echo "----------"
+ echo
+ 
+ #cat /boot/config.txt | egrep -v "^\s*(#|^$)"
+-vcgencmd get_config int
+-vcgencmd get_config str
++@vcgencmd@ get_config int
++@vcgencmd@ get_config str
+ 
+ 
+ echo
+@@ -249,8 +249,8 @@ echo "pin configuration"
+ echo "-----------------"
+ echo
+ 
+-if command -v pinctrl > /dev/null; then
+-   sudo pinctrl 2>&1
++if command -v @pinctrl@ > /dev/null; then
++   sudo @pinctrl@ 2>&1
+ elif command -v raspi-gpio > /dev/null; then
+    raspi-gpio get 2>&1
+ else
