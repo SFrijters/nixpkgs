@@ -79,8 +79,9 @@ rec {
           # unit.text can be null. But variables that are null listed in
           # passAsFile are ignored by nix, resulting in no file being created,
           # making the mv operation fail.
-          text = optionalString (unit.text != null) unit.text;
+          env.text = optionalString (unit.text != null) unit.text;
           passAsFile = [ "text" ];
+          __structuredAttrs = true;
         }
         ''
           name=${shellEscape name}
