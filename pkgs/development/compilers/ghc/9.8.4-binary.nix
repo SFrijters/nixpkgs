@@ -232,7 +232,7 @@ stdenv.mkDerivation {
   # of the bindist installer can find the libraries they expect.
   # Cannot patchelf beforehand due to relative RPATHs that anticipate
   # the final install location.
-  ${libEnvVar} = libPath;
+  env.${libEnvVar} = libPath;
 
   postUnpack =
     # Verify our assumptions of which `libtinfo.so` (ncurses) version is used,
@@ -457,6 +457,8 @@ stdenv.mkDerivation {
     # as it is used for checking if a GHC derivation has been built with hadrian.
     hadrian = null;
   };
+
+  __structuredAttrs = true;
 
   meta = {
     homepage = "http://haskell.org/ghc";
