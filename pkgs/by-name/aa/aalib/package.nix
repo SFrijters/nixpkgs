@@ -33,11 +33,9 @@ stdenv.mkDerivation rec {
 
   # The fuloong2f is not supported by aalib still
   preConfigure = ''
-    configureFlagsArray+=(
-      "--bindir=$bin/bin"
-      "--includedir=$dev/include"
-      "--libdir=$out/lib"
-    )
+    prependToVar configureFlags "--libdir=$out/lib"
+    prependToVar configureFlags "--includedir=$dev/include"
+    prependToVar configureFlags "--bindir=$bin/bin"
   '';
 
   buildInputs = [ ncurses ];
@@ -48,14 +46,19 @@ stdenv.mkDerivation rec {
   ];
 
   env = lib.optionalAttrs stdenv.cc.isGNU {
-    NIX_CFLAGS_COMPILE = "-Wno-error=implicit-function-declaration";
+    NIX_CFLAGS_COMPILE = toString [
+      "-Wno-error=implicit-function-declaration"
+      "-Wno-error=return-mismatch"
+    ];
   };
 
   postInstall = ''
     mkdir -p $dev/bin
     mv $bin/bin/aalib-config $dev/bin/aalib-config
-    substituteInPlace $out/lib/libaa.la --replace "${ncurses.dev}/lib" "${ncurses.out}/lib"
+    substituteInPlace $out/lib/libaa.la --replace-fail "${ncurses.dev}/lib" "${ncurses.out}/lib"
   '';
+
+  __structuredAttrs = true;
 
   meta = {
     description = "ASCII art graphics library";
