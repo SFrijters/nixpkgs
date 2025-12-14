@@ -42,7 +42,7 @@ python27.pkgs.buildPythonApplication {
   ];
 
   makeWrapperArgs = [
-    "--prefix PATH : ${lib.makeBinPath [ gawk ]}"
+    "--prefix" "PATH" ":" "${lib.makeBinPath [ gawk ]}"
   ];
 
   postPatch = ''
@@ -77,6 +77,8 @@ python27.pkgs.buildPythonApplication {
         ;
     };
   };
+
+  __structuredAttrs = true;
 
   meta = {
     description = "Resolve external shell-script dependencies";
