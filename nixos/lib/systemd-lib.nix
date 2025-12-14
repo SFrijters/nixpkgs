@@ -81,6 +81,7 @@ rec {
           # making the mv operation fail.
           text = optionalString (unit.text != null) unit.text;
           passAsFile = [ "text" ];
+          __structuredAttrs = false;
         }
         ''
           name=${shellEscape name}
