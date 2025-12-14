@@ -119,6 +119,7 @@ rec {
                 {
                   inherit content interpreter;
                   passAsFile = [ "content" ];
+                  __structuredAttrs = false;
                 }
               else
                 {
@@ -266,6 +267,7 @@ rec {
                 {
                   inherit content;
                   passAsFile = [ "content" ];
+                  __structuredAttrs = false;
                 }
               else
                 { contentPath = content; }
