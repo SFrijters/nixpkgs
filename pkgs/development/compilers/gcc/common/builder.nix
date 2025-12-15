@@ -72,7 +72,7 @@ originalAttrs:
               prefixExtraLDFlags=("-L$libc_libdir")
               nixDontSetRpathVar=NIX_DONT_SET_RPATH''${post}
               if test "''${!nixDontSetRpathVar-}" != "1"; then
-                  prefixExtraLDFlags+=("-rpath" "$libc_libdir")
+                  appendToVar prefixExtraLDFlags "-rpath" "$libc_libdir"
               fi
               extraLDFlags=("''${prefixExtraLDFlags[@]}" "''${extraLDFlags[@]}")
               for i in "''${extraLDFlags[@]}"; do
@@ -144,45 +144,33 @@ originalAttrs:
           # the startfiles.
           # FLAGS_FOR_TARGET are needed for the target libraries to receive the -Bxxx
           # for the startfiles.
-          makeFlagsArray+=(
-              "BUILD_SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY_FOR_BUILD"
-              "SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY_FOR_BUILD"
-              "NATIVE_SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY"
-
-              "LDFLAGS_FOR_BUILD=$EXTRA_LDFLAGS_FOR_BUILD"
-              #"LDFLAGS=$EXTRA_LDFLAGS"
-              "LDFLAGS_FOR_TARGET=$EXTRA_LDFLAGS_FOR_TARGET"
-
-              "CFLAGS_FOR_BUILD=$EXTRA_FLAGS_FOR_BUILD $EXTRA_LDFLAGS_FOR_BUILD"
-              "CXXFLAGS_FOR_BUILD=$EXTRA_FLAGS_FOR_BUILD $EXTRA_LDFLAGS_FOR_BUILD"
-              "FLAGS_FOR_BUILD=$EXTRA_FLAGS_FOR_BUILD $EXTRA_LDFLAGS_FOR_BUILD"
-
-              # It seems there is a bug in GCC 5
-              #"CFLAGS=$EXTRA_FLAGS $EXTRA_LDFLAGS"
-              #"CXXFLAGS=$EXTRA_FLAGS $EXTRA_LDFLAGS"
-
-              "CFLAGS_FOR_TARGET=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET"
-              "CXXFLAGS_FOR_TARGET=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET"
+          appendToVar makeFlagsArray \
+              "BUILD_SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY_FOR_BUILD" \
+              "SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY_FOR_BUILD" \
+              "NATIVE_SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY" \
+              "LDFLAGS_FOR_BUILD=$EXTRA_LDFLAGS_FOR_BUILD" \
+              "LDFLAGS_FOR_TARGET=$EXTRA_LDFLAGS_FOR_TARGET" \
+              "CFLAGS_FOR_BUILD=$EXTRA_FLAGS_FOR_BUILD $EXTRA_LDFLAGS_FOR_BUILD" \
+              "CXXFLAGS_FOR_BUILD=$EXTRA_FLAGS_FOR_BUILD $EXTRA_LDFLAGS_FOR_BUILD" \
+              "FLAGS_FOR_BUILD=$EXTRA_FLAGS_FOR_BUILD $EXTRA_LDFLAGS_FOR_BUILD" \
+              "CFLAGS_FOR_TARGET=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET" \
+              "CXXFLAGS_FOR_TARGET=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET" \
               "FLAGS_FOR_TARGET=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET"
-          )
 
           if test -z "''${targetConfig-}"; then
-              makeFlagsArray+=(
-                  "BOOT_CFLAGS=$EXTRA_FLAGS $EXTRA_LDFLAGS"
+              appendToVar makeFlagsArray \
+                  "BOOT_CFLAGS=$EXTRA_FLAGS $EXTRA_LDFLAGS" \
                   "BOOT_LDFLAGS=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET"
-              )
           fi
 
           if test "$withoutTargetLibc" == 1; then
               # We don't want the gcc build to assume there will be a libc providing
               # limits.h in this stage
-              makeFlagsArray+=(
+              appendToVar makeFlagsArray \
                   'LIMITS_H_TEST=false'
-              )
           else
-              makeFlagsArray+=(
+              appendToVar makeFlagsArray \
                   'LIMITS_H_TEST=true'
-              )
           fi
       fi
 
@@ -248,7 +236,7 @@ originalAttrs:
           declare -a outputsToLink=("$out")
 
           if [ -n "$lib" ]; then
-            outputsToLink+=("$lib")
+              appendToVar outputsToLink "$lib"
           fi
 
           for output in "''${outputsToLink[@]}"; do
@@ -259,7 +247,7 @@ originalAttrs:
 
             mkdir -p "$(dirname "$linkName")"
             ln -s "$linkTarget" "$linkName"
-            compatibilitySymlinks+=("$linkName")
+            appendToVar compatibilitySymlinks "$linkName"
           done
         }
       ''
@@ -372,5 +360,7 @@ originalAttrs:
         ln -s "$lib/$targetConfig/lib" "$lib/lib"
       fi
     '';
+
+    __structuredAttrs = true;
   }
 ))
