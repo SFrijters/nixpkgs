@@ -46,10 +46,12 @@ stdenvNoCC.mkDerivation rec {
     "install"
     "dedup"
   ];
-  makeFlags = [ "DESTDIR=$(out)" ];
+  makeFlags = [ "DESTDIR=${placeholder "out"}" ];
 
   # Firmware blobs do not need fixing and should not be modified
   dontFixup = true;
+
+  __structuredAttrs = true;
 
   meta = {
     description = "Binary firmware collection packaged by kernel.org";
