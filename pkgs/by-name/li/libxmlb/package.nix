@@ -46,6 +46,12 @@ stdenv.mkDerivation rec {
     ./installed-tests-path.patch
   ];
 
+  postPatch = lib.optionalString withIntrospection ''
+    # If we don't export this, $lib/lib/girepository-1.0/Xmlb-2.0.typelib
+    # will be generated with a reference to $out
+    export outputLib
+  '';
+
   nativeBuildInputs = [
     docbook_xml_dtd_43
     docbook-xsl-nons
@@ -84,6 +90,8 @@ stdenv.mkDerivation rec {
       installed-tests = nixosTests.installed-tests.libxmlb;
     };
   };
+
+  __structuredAttrs = true;
 
   meta = {
     description = "Library to help create and query binary XML blobs";
