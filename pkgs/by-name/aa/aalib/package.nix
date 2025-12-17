@@ -33,9 +33,10 @@ stdenv.mkDerivation rec {
 
   # The fuloong2f is not supported by aalib still
   preConfigure = ''
-    prependToVar configureFlags "--libdir=$out/lib"
-    prependToVar configureFlags "--includedir=$dev/include"
-    prependToVar configureFlags "--bindir=$bin/bin"
+    appendToVar configureFlags \
+      "--bindir=$bin/bin" \
+      "--includedir=$dev/include" \
+      "--libdir=$out/lib"
   '';
 
   buildInputs = [ ncurses ];
