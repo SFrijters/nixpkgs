@@ -230,6 +230,8 @@ pipe
 
       setOutputFlags = false;
 
+      libc_dev = stdenv.cc.libc_dev;
+
       hardeningDisable = [
         "format"
         "stackclashprotection"
@@ -379,10 +381,6 @@ pipe
           EXTRA_FLAGS_FOR_TARGET
           EXTRA_LDFLAGS_FOR_TARGET
           ;
-
-        libc_dev = stdenv.cc.libc_dev;
-      } // optionalAttrs enableMultilib {
-        dontMoveLib64 = true;
       };
 
       passthru = {
@@ -423,6 +421,9 @@ pipe
           identifiers
           ;
       };
+    }
+    // optionalAttrs enableMultilib {
+      dontMoveLib64 = true;
     }
   ))
   [
