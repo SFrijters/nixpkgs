@@ -144,7 +144,7 @@ originalAttrs:
           # the startfiles.
           # FLAGS_FOR_TARGET are needed for the target libraries to receive the -Bxxx
           # for the startfiles.
-          appendToVar makeFlagsArray \
+          appendToVar makeFlags \
               "BUILD_SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY_FOR_BUILD" \
               "SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY_FOR_BUILD" \
               "NATIVE_SYSTEM_HEADER_DIR=$NIX_FIXINC_DUMMY" \
@@ -158,7 +158,7 @@ originalAttrs:
               "FLAGS_FOR_TARGET=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET"
 
           if test -z "''${targetConfig-}"; then
-              appendToVar makeFlagsArray \
+              appendToVar makeFlags \
                   "BOOT_CFLAGS=$EXTRA_FLAGS $EXTRA_LDFLAGS" \
                   "BOOT_LDFLAGS=$EXTRA_FLAGS_FOR_TARGET $EXTRA_LDFLAGS_FOR_TARGET"
           fi
@@ -166,10 +166,10 @@ originalAttrs:
           if test "$withoutTargetLibc" == 1; then
               # We don't want the gcc build to assume there will be a libc providing
               # limits.h in this stage
-              appendToVar makeFlagsArray \
+              appendToVar makeFlags \
                   'LIMITS_H_TEST=false'
           else
-              appendToVar makeFlagsArray \
+              appendToVar makeFlags \
                   'LIMITS_H_TEST=true'
           fi
       fi
