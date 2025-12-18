@@ -5,7 +5,6 @@
   ninja,
   python3,
   gnome,
-  versionCheckHook,
 }:
 
 python3.pkgs.buildPythonApplication rec {
@@ -28,7 +27,7 @@ python3.pkgs.buildPythonApplication rec {
     ninja
   ];
 
-  propagatedBuildInputs = with python3.pkgs; [
+  pythonPath = with python3.pkgs; [
     jinja2
     markdown
     markupsafe
@@ -38,12 +37,7 @@ python3.pkgs.buildPythonApplication rec {
     typogrify
   ];
 
-  # For Python this must be placed in nativeCheckInputs instead of nativeInstallCheckInputs
-  # https://github.com/nixos/nixpkgs/issues/420531
-  nativeCheckInputs = [ versionCheckHook ];
-  # doCheck = false; # no tests - restore this after versionCheckHook can be moved
-
-  __structuredAttrs = true;
+  doCheck = false; # no tests
 
   postFixup = ''
     # Do not propagate Python
