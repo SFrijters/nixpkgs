@@ -46,11 +46,11 @@ stdenv.mkDerivation rec {
     ./installed-tests-path.patch
   ];
 
-  # postPatch = lib.optionalString withIntrospection ''
-  #   # If we don't export this, $lib/lib/girepository-1.0/Xmlb-2.0.typelib
-  #   # will be generated with a reference to $out
-  #   export outputLib
-  # '';
+  postPatch = lib.optionalString withIntrospection ''
+    # If we don't export this, $lib/lib/girepository-1.0/Xmlb-2.0.typelib
+    # will be generated with a reference to $out
+    export outputLib
+  '';
 
   nativeBuildInputs = [
     docbook_xml_dtd_43
