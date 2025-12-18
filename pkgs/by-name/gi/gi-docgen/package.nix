@@ -34,7 +34,7 @@ python3.pkgs.buildPythonApplication rec {
     markupsafe
     packaging
     pygments
-    # toml # remove once python311 is the default
+    toml # remove once python311 is the default
     typogrify
   ];
 
@@ -48,7 +48,7 @@ python3.pkgs.buildPythonApplication rec {
   postFixup = ''
     # Do not propagate Python
     substituteInPlace $out/nix-support/propagated-build-inputs \
-      --replace-fail "${python3}" ""
+      --replace "${python3}" ""
   '';
 
   passthru = {
