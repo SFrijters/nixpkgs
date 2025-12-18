@@ -292,7 +292,7 @@ pipe
       )
       + optionalString targetPlatform.isAvr ''
         # workaround for hitting hydra log limit
-        appendVarTo makeFlagsArray '-s' 'LIMITS_H_TEST=false'
+        appendToVar makeFlags '-s' 'LIMITS_H_TEST=false'
       '';
 
       inherit
