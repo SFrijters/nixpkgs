@@ -337,15 +337,15 @@ stdenv.mkDerivation (
           "-Wno-free-nonheap-object"
           "-w"
         ];
+      }
+      // lib.optionalAttrs (libpq != null) {
+        # PostgreSQL autodetection fails sporadically because Qt omits the "-lpq" flag
+        # if dependency paths contain the string "pq", which can occur in the hash.
+        # To prevent these failures, we need to override PostgreSQL detection.
+        PSQL_LIBS = "-L${libpq}/lib -lpq";
       };
 
       prefixKey = "-prefix ";
-
-      # PostgreSQL autodetection fails sporadically because Qt omits the "-lpq" flag
-      # if dependency paths contain the string "pq", which can occur in the hash.
-      # To prevent these failures, we need to override PostgreSQL detection.
-      PSQL_LIBS = lib.optionalString (libpq != null) "-L${libpq}/lib -lpq";
-
     }
     // lib.optionalAttrs (stdenv.buildPlatform != stdenv.hostPlatform) {
       configurePlatforms = [ ];
@@ -353,9 +353,12 @@ stdenv.mkDerivation (
     // {
       # TODO Remove obsolete and useless flags once the build will be totally mastered
       configureFlags = [
-        "-plugindir $(out)/$(qtPluginPrefix)"
-        "-qmldir $(out)/$(qtQmlPrefix)"
-        "-docdir $(out)/$(qtDocPrefix)"
+        "-plugindir"
+        "$(out)/$(qtPluginPrefix)"
+        "-qmldir"
+        "$(out)/$(qtQmlPrefix)"
+        "-docdir"
+        "$(out)/$(qtDocPrefix)"
 
         "-verbose"
         "-confirm-license"
@@ -372,7 +375,8 @@ stdenv.mkDerivation (
 
         "-gui"
         "-widgets"
-        "-opengl desktop"
+        "-opengl"
+        "desktop"
         "-icu"
         "-L"
         "${icu.out}/lib"
@@ -381,8 +385,10 @@ stdenv.mkDerivation (
         "-pch"
       ]
       ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-        "-device ${qtPlatformCross stdenv.hostPlatform}"
-        "-device-option CROSS_COMPILE=${stdenv.cc.targetPrefix}"
+        "-device"
+        "${qtPlatformCross stdenv.hostPlatform}"
+        "-device-option"
+        "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
       ]
       ++ lib.optional debugSymbols "-debug"
       ++ lib.optionals developerBuild [
@@ -435,14 +441,18 @@ stdenv.mkDerivation (
         "-I"
         "${openssl.dev}/include"
         "-system-sqlite"
-        ''-${if mysqlSupport then "plugin" else "no"}-sql-mysql''
-        ''-${if libpq != null then "plugin" else "no"}-sql-psql''
+        "-${if mysqlSupport then "plugin" else "no"}-sql-mysql"
+        "-${if libpq != null then "plugin" else "no"}-sql-psql"
         "-system-libpng"
 
-        "-make libs"
-        "-make tools"
-        ''-${lib.optionalString (!buildExamples) "no"}make examples''
-        ''-${lib.optionalString (!buildTests) "no"}make tests''
+        "-make"
+        "libs"
+        "-make"
+        "tools"
+        "-${lib.optionalString (!buildExamples) "no"}make"
+        "examples"
+        "-${lib.optionalString (!buildTests) "no"}make"
+        "tests"
       ]
       ++ (
         if stdenv.hostPlatform.isDarwin then
@@ -457,7 +467,8 @@ stdenv.mkDerivation (
           ]
           ++ [
             "-xcb"
-            "-qpa xcb"
+            "-qpa"
+            "xcb"
             "-L"
             "${libX11.out}/lib"
             "-I"
@@ -471,7 +482,7 @@ stdenv.mkDerivation (
             "-I"
             "${libXrender.out}/include"
 
-            ''-${lib.optionalString (cups == null) "no-"}cups''
+            "-${lib.optionalString (cups == null) "no-"}cups"
             "-dbus-linked"
             "-glib"
           ]
