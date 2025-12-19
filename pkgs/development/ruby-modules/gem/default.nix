@@ -217,6 +217,10 @@ lib.makeOverridable (
           export GEM_HOME=$out/${ruby.gemPath}
           mkdir -p $GEM_HOME
 
+          # When __structuredAttrs is enabled, this is not added to the environment by default,
+          # but nix-bundle-install.rb needs it.
+          export ruby
+
           echo "buildFlags: $buildFlags"
 
           ${lib.optionalString (type == "url") ''
