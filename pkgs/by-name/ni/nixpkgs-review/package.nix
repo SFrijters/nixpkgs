@@ -64,10 +64,10 @@ python3Packages.buildPythonApplication rec {
       ++ lib.optional withGlow glow;
     in
     [
-      "--prefix PATH : ${lib.makeBinPath binPath}"
-      "--set-default NIX_SSL_CERT_FILE ${cacert}/etc/ssl/certs/ca-bundle.crt"
+      (lib.splitString " " "--prefix PATH : ${lib.makeBinPath binPath}")
+      (lib.splitString " ""--set-default NIX_SSL_CERT_FILE ${cacert}/etc/ssl/certs/ca-bundle.crt")
       # we don't have any runtime deps but nixpkgs-review shells might inject unwanted dependencies
-      "--unset PYTHONPATH"
+      (lib.splitString " ""--unset PYTHONPATH")
     ];
 
   postInstall = lib.optionalString withAutocomplete ''
