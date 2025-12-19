@@ -5,6 +5,8 @@
   stdenvNoCC,
   lib,
   buildPackages,
+  replaceVars,
+  expand-response-params,
   pkg-config,
   baseBinName ? "pkg-config",
   propagateDoc ? pkg-config != null && pkg-config ? man,
@@ -35,7 +37,18 @@ let
   # See description in cc-wrapper.
   suffixSalt = replaceStrings [ "-" "." ] [ "_" "_" ] targetPlatform.config;
 
+  wrapperName = "PKG_CONFIG_WRAPPER";
   wrapperBinName = "${targetPrefix}${baseBinName}";
+
+  addFlags = replaceVars ./add-flags.sh { inherit suffixSalt; };
+  utils = replaceVars ../wrapper-common/utils.bash {
+    inherit
+      suffixSalt
+      wrapperName
+      ;
+    inherit (targetPlatform) darwinMinVersion;
+    expandResponseParams = "${expand-response-params}/bin/expand-response-params";
+  };
 in
 
 stdenv.mkDerivation {
@@ -115,8 +128,8 @@ stdenv.mkDerivation {
     )
 
     + ''
-      substituteAll ${./add-flags.sh} $out/nix-support/add-flags.sh
-      substituteAll ${../wrapper-common/utils.bash} $out/nix-support/utils.bash
+      install -m444 -T ${addFlags} $out/nix-support/add-flags.sh
+      install -m444 -T ${utils} $out/nix-support/utils.bash
     ''
 
     ##
@@ -126,8 +139,12 @@ stdenv.mkDerivation {
 
   env = {
     shell = getBin stdenvNoCC.shell + stdenvNoCC.shell.shellPath or "";
-    wrapperName = "PKG_CONFIG_WRAPPER";
-    inherit targetPrefix suffixSalt baseBinName;
+    inherit
+      targetPrefix
+      suffixSalt
+      baseBinName
+      wrapperName
+      ;
   };
 
   meta =
