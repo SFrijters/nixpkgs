@@ -9,6 +9,7 @@
   lndir,
   perl,
   pkg-config,
+  replaceVars,
   which,
   cmake,
   ninja,
@@ -88,8 +89,12 @@
 
 let
   isCrossBuild = !stdenv.buildPlatform.canExecute stdenv.hostPlatform;
+  fix_qt_builtin_paths = ../../hooks/fix-qt-builtin-paths.sh;
+  fix_qt_module_paths = ../../hooks/fix-qt-module-paths.sh;
+  qtPluginPrefix = "lib/qt-6/plugins";
+  qtQmlPrefix = "lib/qt-6/qml";
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "qtbase";
 
   inherit src version;
@@ -256,15 +261,10 @@ stdenv.mkDerivation rec {
       --replace-fail 'CONFIG += ' 'CONFIG += no_default_rpath '
   '';
 
-  fix_qt_builtin_paths = ../../hooks/fix-qt-builtin-paths.sh;
-  fix_qt_module_paths = ../../hooks/fix-qt-module-paths.sh;
   preHook = ''
-    . "$fix_qt_builtin_paths"
-    . "$fix_qt_module_paths"
+    . ${fix_qt_builtin_paths}
+    . ${fix_qt_module_paths}
   '';
-
-  qtPluginPrefix = "lib/qt-6/plugins";
-  qtQmlPrefix = "lib/qt-6/qml";
 
   cmakeFlags = [
     # makes Qt print the configure summary
@@ -324,7 +324,19 @@ stdenv.mkDerivation rec {
 
   dontWrapQtApps = true;
 
-  setupHook = ../../hooks/qtbase-setup-hook.sh;
+  setupHook = replaceVars ../../hooks/qtbase-setup-hook.sh {
+    inherit
+      fix_qt_builtin_paths
+      fix_qt_module_paths
+      qtPluginPrefix
+      qtQmlPrefix
+      ;
+    out = placeholder "out";
+  };
+
+  passthru = {
+    inherit qtPluginPrefix qtQmlPrefix;
+  };
 
   meta = {
     homepage = "https://www.qt.io/";
