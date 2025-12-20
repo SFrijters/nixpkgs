@@ -108,52 +108,38 @@ rec {
       # at least two files: the executable and the wrapper.
       inner =
         pkgs.runCommandLocal name
-          (
-            {
-              inherit makeWrapperArgs;
-              nativeBuildInputs = [ makeBinaryWrapper ];
-              meta.mainProgram = name;
-            }
-            // (
-              if (types.str.check content) then
-                {
-                  inherit content interpreter;
-                  passAsFile = [ "content" ];
-                  __structuredAttrs = false;
-                }
-              else
-                {
-                  inherit interpreter;
-                  contentPath = content;
-                }
-            )
-          )
+          {
+            nativeBuildInputs = [ makeBinaryWrapper ];
+            __structuredAttrs = true;
+            meta.mainProgram = name;
+          }
           ''
+            ${lib.optionalString (types.path.check content) "contentPath=${content}"}
             # On darwin a script cannot be used as an interpreter in a shebang but
             # there doesn't seem to be a limit to the size of shebang and multiple
             # arguments to the interpreter are allowed.
-            if [[ -n "${toString pkgs.stdenvNoCC.hostPlatform.isDarwin}" ]] && isScript $interpreter
+            if [[ -n "${toString pkgs.stdenvNoCC.hostPlatform.isDarwin}" ]] && isScript ${interpreter}
             then
-              wrapperInterpreterLine=$(head -1 "$interpreter" | tail -c+3)
+              wrapperInterpreterLine=$(head -1 "${interpreter}" | tail -c+3)
               # Get first word from the line (note: xargs echo remove leading spaces)
               wrapperInterpreter=$(echo "$wrapperInterpreterLine" | xargs echo | cut -d " " -f1)
 
               if isScript $wrapperInterpreter
               then
-                echo "error: passed interpreter ($interpreter) is a script which has another script ($wrapperInterpreter) as an interpreter, which is not supported."
+                echo "error: passed interpreter (${interpreter}) is a script which has another script ($wrapperInterpreter) as an interpreter, which is not supported."
                 exit 1
               fi
 
               # This should work as long as wrapperInterpreter is a shell, which is
               # the case for programs wrapped with makeWrapper, like
               # python3.withPackages etc.
-              interpreterLine="$wrapperInterpreterLine $interpreter"
+              interpreterLine="$wrapperInterpreterLine ${interpreter}"
             else
-              interpreterLine=$interpreter
+              interpreterLine=${interpreter}
             fi
 
             echo "#! $interpreterLine" > $out
-            cat "$contentPath" >> $out
+            ${if types.str.check content then "echo ${content} >> $out" else "cat ${content} >> $out"}
             ${optionalString (check != "") ''
               ${check} $out
             ''}
@@ -162,11 +148,11 @@ rec {
             # Relocate executable
             # Wrap it if makeWrapperArgs are specified
             mv $out tmp
-              mkdir -p $out/$(dirname "${path}")
-              mv tmp $out/${path}
-            if [ -n "''${makeWrapperArgs+''${makeWrapperArgs[@]}}" ]; then
-                wrapProgram $out/${path} ''${makeWrapperArgs[@]}
-            fi
+            mkdir -p $out/$(dirname "${path}")
+            mv tmp $out/${path}
+            ${optionalString (makeWrapperArgs != [ ]) ''
+              wrapProgram $out/${path} ${lib.concatStringsSep " " makeWrapperArgs}
+            ''}
           '';
     in
     if nameIsPath then
@@ -256,24 +242,13 @@ rec {
       # This is required in order to support wrapping, as wrapped programs consist of at least two files: the executable and the wrapper.
       inner =
         pkgs.runCommandLocal name
-          (
-            {
-              inherit makeWrapperArgs;
-              nativeBuildInputs = [ makeBinaryWrapper ];
-              meta.mainProgram = name;
-            }
-            // (
-              if (types.str.check content) then
-                {
-                  inherit content;
-                  passAsFile = [ "content" ];
-                  __structuredAttrs = false;
-                }
-              else
-                { contentPath = content; }
-            )
-          )
+          {
+            nativeBuildInputs = [ makeBinaryWrapper ];
+            __structuredAttrs = true;
+            meta.mainProgram = name;
+          }
           ''
+            ${lib.optionalString (types.path.check content) "contentPath=${content}"}
             ${compileScript}
             ${lib.optionalString strip "${lib.getBin buildPackages.bintools-unwrapped}/bin/${buildPackages.bintools-unwrapped.targetPrefix}strip -S $out"}
             # Sometimes binaries produced for darwin (e. g. by GHC) won't be valid
@@ -283,9 +258,9 @@ rec {
             mv $out tmp
             mkdir -p $out/$(dirname "${path}")
             mv tmp $out/${path}
-            if [ -n "''${makeWrapperArgs+''${makeWrapperArgs[@]}}" ]; then
-              wrapProgram $out/${path} ''${makeWrapperArgs[@]}
-            fi
+            ${optionalString (makeWrapperArgs != [ ]) ''
+              wrapProgram $out/${path} ${lib.concatStringsSep " " makeWrapperArgs}
+            ''}
           '';
     in
     if nameIsPath then
