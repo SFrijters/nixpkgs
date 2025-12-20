@@ -756,7 +756,7 @@ stdenv.mkDerivation (
       echo "hadrianFlags: ''${hadrianFlags[@]} ''${hadrianFlagsArray[@]}"
 
       # We need to go via the bindist for installing
-      hadrian "''${hadrianFlags[@]}" "''${hadrianFlagsArray[@]}" binary-dist-dir
+      hadrian ''${hadrianFlags[@]} "''${hadrianFlagsArray[@]}" binary-dist-dir
 
       runHook postBuild
     '';
