@@ -4,6 +4,7 @@
   lib,
   libiconv,
   makeBinaryWrapper,
+  writeText,
   mkNugetDeps,
   mkNugetSource,
   pkgs,
@@ -106,7 +107,10 @@ rec {
       # The inner derivation which creates the executable under $out/bin (never at $out directly)
       # This is required in order to support wrapping, as wrapped programs consist of
       # at least two files: the executable and the wrapper.
-      inner =
+      inner = let
+        # This is a bit weird if the caller first uses readFile to get a string and then we dump it back into a file
+        contentPath = if types.path.check content then content else (writeText "${name}-content" content);
+      in
         pkgs.runCommandLocal name
           {
             nativeBuildInputs = [ makeBinaryWrapper ];
@@ -114,7 +118,8 @@ rec {
             meta.mainProgram = name;
           }
           ''
-            ${lib.optionalString (types.path.check content) "contentPath=${content}"}
+            # Backwards compatibility, some consumers need this variable to be available, e.g. for check
+            contentPath=${contentPath}
             # On darwin a script cannot be used as an interpreter in a shebang but
             # there doesn't seem to be a limit to the size of shebang and multiple
             # arguments to the interpreter are allowed.
@@ -139,10 +144,8 @@ rec {
             fi
 
             echo "#! $interpreterLine" > $out
-            ${if types.str.check content then ''printf "%s" "${content}" >> $out'' else ''cat "${content}" >> $out''}
-            ${optionalString (check != "") ''
-              ${check} $out
-            ''}
+            cat "${contentPath}" >> $out
+            ${optionalString (check != "") "${check} $out"}
             chmod +x $out
 
             # Relocate executable
