@@ -15,6 +15,7 @@
   perl,
   pkg-config,
   python3,
+  replaceVars,
   which,
   # darwin support
   xcbuild,
@@ -85,6 +86,11 @@ let
       "linux-generic-g++"
     else
       throw "Please add a qtPlatformCross entry for ${plat.config}";
+  qtPluginPrefix = "lib/qt-${qtCompatVersion}/plugins";
+  qtQmlPrefix = "lib/qt-${qtCompatVersion}/qml";
+  qtDocPrefix = "share/doc/qt-${qtCompatVersion}";
+  fix_qt_builtin_paths = ../hooks/fix-qt-builtin-paths.sh;
+  fix_qt_module_paths = ../hooks/fix-qt-module-paths.sh;
 in
 
 stdenv.mkDerivation (
@@ -93,7 +99,6 @@ stdenv.mkDerivation (
     {
       pname = "qtbase";
       inherit qtCompatVersion src version;
-      debug = debugSymbols;
 
       propagatedBuildInputs = [
         libxml2
@@ -193,11 +198,9 @@ stdenv.mkDerivation (
 
       inherit patches;
 
-      fix_qt_builtin_paths = ../hooks/fix-qt-builtin-paths.sh;
-      fix_qt_module_paths = ../hooks/fix-qt-module-paths.sh;
       preHook = ''
-        . "$fix_qt_builtin_paths"
-        . "$fix_qt_module_paths"
+        . ${fix_qt_builtin_paths}
+        . ${fix_qt_module_paths}
         . ${../hooks/move-qt-dev-tools.sh}
         . ${../hooks/fix-qmake-libtool.sh}
       '';
@@ -210,8 +213,8 @@ stdenv.mkDerivation (
                 --subst-var qtDocPrefix
         done
 
-        substituteInPlace configure --replace /bin/pwd pwd
-        substituteInPlace src/corelib/global/global.pri --replace /bin/ls ${coreutils}/bin/ls
+        substituteInPlace configure --replace-fail /bin/pwd pwd
+        substituteInPlace src/corelib/global/global.pri --replace-fail /bin/ls ${coreutils}/bin/ls
         sed -e 's@/\(usr\|opt\)/@/var/empty/@g' -i mkspecs/*/*.conf
 
         sed -i '/PATHS.*NO_DEFAULT_PATH/ d' src/corelib/Qt5Config.cmake.in
@@ -260,10 +263,6 @@ stdenv.mkDerivation (
                 -e "/^QMAKE_LFLAGS_SHLIB/ s/-shared/-shared -static-libgcc/"
           ''
       );
-
-      qtPluginPrefix = "lib/qt-${qtCompatVersion}/plugins";
-      qtQmlPrefix = "lib/qt-${qtCompatVersion}/qml";
-      qtDocPrefix = "share/doc/qt-${qtCompatVersion}";
 
       setOutputFlags = false;
       preConfigure = ''
@@ -544,9 +543,26 @@ stdenv.mkDerivation (
 
       dontStrip = debugSymbols;
 
-      setupHook = ../hooks/qtbase-setup-hook.sh;
+      setupHook = replaceVars ../hooks/qtbase-setup-hook.sh {
+        inherit
+          qtPluginPrefix
+          qtQmlPrefix
+          qtDocPrefix
+          fix_qt_builtin_paths
+          fix_qt_module_paths
+          ;
+        debug = debugSymbols;
+        dev = placeholder "dev";
+      };
 
-      passthru.tests.pkg-config = testers.testMetaPkgConfig finalAttrs.finalPackage;
+      passthru = {
+        inherit
+          qtPluginPrefix
+          qtQmlPrefix
+          qtDocPrefix
+          ;
+        tests.pkg-config = testers.testMetaPkgConfig finalAttrs.finalPackage;
+      };
 
       meta = {
         homepage = "https://www.qt.io/";
