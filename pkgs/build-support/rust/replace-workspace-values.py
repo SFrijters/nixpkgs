@@ -1,7 +1,7 @@
 # This script implements the workspace inheritance mechanism described
 # here: https://doc.rust-lang.org/cargo/reference/workspaces.html#the-package-table
 #
-# Please run `mypy --strict`, `black`, and `isort --profile black` on this after editing, thanks!
+# Please run "mypy --strict", "black", and "isort --profile black" on this after editing, thanks!
 
 import sys
 from typing import Any
@@ -16,7 +16,7 @@ def load_file(path: str) -> dict[str, Any]:
 
 
 # This replicates the dependency merging logic from Cargo.
-# See `inner_dependency_inherit_with`:
+# See "inner_dependency_inherit_with":
 # https://github.com/rust-lang/cargo/blob/4de0094ac78743d2c8ff682489e35c8a7cafe8e4/src/cargo/util/toml/mod.rs#L982
 def replace_key(
     workspace_manifest: dict[str, Any], table: dict[str, Any], section: str, key: str

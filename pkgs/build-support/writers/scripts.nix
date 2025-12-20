@@ -139,7 +139,7 @@ rec {
             fi
 
             echo "#! $interpreterLine" > $out
-            ${if types.str.check content then "echo ${content} >> $out" else "cat ${content} >> $out"}
+            ${if types.str.check content then ''printf "%s" "${content}" >> $out'' else ''cat "${content}" >> $out''}
             ${optionalString (check != "") ''
               ${check} $out
             ''}
