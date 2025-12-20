@@ -197,8 +197,6 @@ stdenv.mkDerivation (finalAttrs: {
     ln -s $out/bin/*.dll $out/lib
   '';
 
-  __structuredAttrs = true;
-
   meta = {
     description = "Library for encoding H.265/HEVC video streams";
     mainProgram = "x265";
