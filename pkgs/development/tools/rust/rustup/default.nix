@@ -15,12 +15,41 @@
   libiconv,
   xz,
   buildPackages,
+  replaceVars,
 }:
 
 let
   libPath = lib.makeLibraryPath [
     zlib # libz.so.1
   ];
+
+  utils-wrapper = replaceVars ../../../../../pkgs/build-support/wrapper-common/utils.bash {
+      inherit (stdenv.cc.bintools)
+      suffixSalt
+      wrapperName
+      expandResponseParams
+      ;
+    inherit (stdenv.targetPlatform) darwinMinVersion;
+  };
+  darwin-sdk-setup-wrapper = replaceVars ../../../../../pkgs/build-support/wrapper-common/utils.bash {
+    inherit (stdenv.targetPlatform) darwinMinVersion;
+  };
+  add-flags-wrapper = replaceVars ../../../../../pkgs/build-support/bintools-wrapper/add-flags.sh {
+    inherit (stdenv.cc.bintools) suffixSalt;
+  };
+  add-hardening-wrapper = replaceVars ../../../../../pkgs/build-support/bintools-wrapper/add-hardening.sh {
+    inherit (stdenv.cc.bintools) suffixSalt;
+    hardening_unsupported_flags = "";
+  };
+  ld-wrapper = replaceVars ../../../../../pkgs/build-support/bintools-wrapper/ld-wrapper.sh {
+    inherit (stdenv.cc.bintools)
+      suffixSalt
+      wrapperName
+      expandResponseParams
+      coreutils_bin
+      ;
+    use_response_file_by_default = 0;
+  };
 in
 
 rustPlatform.buildRustPackage (finalAttrs: {
@@ -130,25 +159,22 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
     # add a wrapper script for ld.lld
     mkdir -p $out/nix-support
-    substituteAll ${../../../../../pkgs/build-support/wrapper-common/utils.bash} $out/nix-support/utils.bash
-    substituteAll ${../../../../../pkgs/build-support/wrapper-common/darwin-sdk-setup.bash} $out/nix-support/darwin-sdk-setup.bash
-    substituteAll ${../../../../../pkgs/build-support/bintools-wrapper/add-flags.sh} $out/nix-support/add-flags.sh
-    substituteAll ${../../../../../pkgs/build-support/bintools-wrapper/add-hardening.sh} $out/nix-support/add-hardening.sh
+    install -m444 -T ${utils-wrapper} $out/nix-support/utils.bash
+    install -m444 -T ${darwin-sdk-setup-wrapper} $out/nix-support/darwin-sdk-setup.bash
+    install -m444 -T ${add-flags-wrapper} $out/nix-support/add-flags.bash
+    install -m444 -T ${add-hardening-wrapper} $out/nix-support/add-hardening.bash
     export prog='$PROG'
-    export use_response_file_by_default=0
-    substituteAll ${../../../../../pkgs/build-support/bintools-wrapper/ld-wrapper.sh} $out/nix-support/ld-wrapper.sh
+
+
+    install -m444 -T ${ld-wrapper} $out/nix-support/ld-wrapper.sh
+    #substituteAll ${../../../../../pkgs/build-support/bintools-wrapper/ld-wrapper.sh} $out/nix-support/ld-wrapper.sh
     chmod +x $out/nix-support/ld-wrapper.sh
   '';
 
   env = {
     inherit (stdenv.cc.bintools)
-      expandResponseParams
       shell
-      suffixSalt
-      wrapperName
-      coreutils_bin
       ;
-    hardening_unsupported_flags = "";
   };
 
   meta = {
