@@ -40,16 +40,6 @@ let
 
   wrapperName = "PKG_CONFIG_WRAPPER";
   wrapperBinName = "${targetPrefix}${baseBinName}";
-
-  addFlags = replaceVars ./add-flags.sh { inherit suffixSalt; };
-  utils = replaceVars ../wrapper-common/utils.bash {
-    inherit
-      suffixSalt
-      wrapperName
-      ;
-    inherit (targetPlatform) darwinMinVersion;
-    expandResponseParams = "${expand-response-params}/bin/expand-response-params";
-  };
 in
 
 stdenv.mkDerivation {
@@ -89,7 +79,7 @@ stdenv.mkDerivation {
     in
   ''
     mkdir -p $out/bin $out/nix-support
-    install -m555 -T ${addFlags} $out/bin/${wrapperBinName}
+    install -m555 -T ${wrapper} $out/bin/${wrapperBinName}
     echo $pkg-config > $out/nix-support/orig-pkg-config
   ''
   # symlink in share for autoconf to find macros
@@ -128,7 +118,18 @@ stdenv.mkDerivation {
       "${setupHook}/nix-support/setup-hook"
     ];
 
-  postFixup =
+  postFixup = let
+    addFlags = replaceVars ./add-flags.sh { inherit suffixSalt; };
+    utils = replaceVars ../wrapper-common/utils.bash {
+      inherit
+        suffixSalt
+        wrapperName
+      ;
+      inherit (targetPlatform) darwinMinVersion;
+      expandResponseParams = "${expand-response-params}/bin/expand-response-params";
+    };
+
+  in
     ##
     ## User env support
     ##
