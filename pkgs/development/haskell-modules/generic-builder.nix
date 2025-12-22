@@ -637,7 +637,7 @@ lib.fix (
         mkdir -p $packageConfDir
 
         setupCompileFlags="${concatStringsSep " " setupCompileFlags}"
-        configureFlags="${concatStringsSep " " defaultConfigureFlags} $configureFlags"
+        #configureFlags="${concatStringsSep " " defaultConfigureFlags} ''${configureFlags[@]}"
       ''
       # We build the Setup.hs on the *build* machine, and as such should only add
       # dependencies for the build machine.
@@ -746,8 +746,8 @@ lib.fix (
       configurePhase = ''
         runHook preConfigure
 
-        echo configureFlags: $configureFlags
-        ${setupCommand} configure $configureFlags 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
+        echo configureFlags: ${concatStringsSep " " defaultConfigureFlags} "''${configureFlags[@]}"
+        ${setupCommand} configure ${concatStringsSep " " defaultConfigureFlags} "''${configureFlags[@]}" 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
         ${lib.optionalString (!allowInconsistentDependencies) ''
           if grep -E -q -z 'Warning:.*depends on multiple versions' "$NIX_BUILD_TOP/cabal-configure.log"; then
             echo >&2 "*** abort because of serious configure-time warning from Cabal"
@@ -1034,6 +1034,8 @@ lib.fix (
         env = envFunc { };
 
       };
+
+      __structuredAttrs = true;
 
       meta = {
         inherit homepage platforms;
