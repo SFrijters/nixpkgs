@@ -10,7 +10,7 @@
   perl,
   pkg-config,
   copyPathToStore,
-  replaceVars,
+  makeSetupHook,
   which,
   cmake,
   ninja,
@@ -325,15 +325,20 @@ stdenv.mkDerivation {
 
   dontWrapQtApps = true;
 
-  setupHook = replaceVars ../../hooks/qtbase-setup-hook.sh {
-    inherit
-      fix_qt_builtin_paths
-      fix_qt_module_paths
-      qtPluginPrefix
-      qtQmlPrefix
-      ;
-    out = placeholder "out";
-  };
+  setupHook = let
+    hook = makeSetupHook {
+      name = "qtbase6-setup-hook";
+      substitutions = {
+        inherit
+          fix_qt_builtin_paths
+          fix_qt_module_paths
+          qtPluginPrefix
+          qtQmlPrefix
+          ;
+      };
+    } ../../hooks/qtbase-setup-hook.sh;
+  in
+    "${hook}/nix-support/setup-hook";
 
   passthru = {
     inherit qtPluginPrefix qtQmlPrefix;

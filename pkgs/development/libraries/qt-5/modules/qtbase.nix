@@ -16,7 +16,7 @@
   pkg-config,
   python3,
   copyPathToStore,
-  replaceVars,
+  makeSetupHook,
   which,
   # darwin support
   xcbuild,
@@ -209,9 +209,9 @@ stdenv.mkDerivation (
       postPatch = ''
         for prf in qml_plugin.prf qt_plugin.prf qt_docs.prf qml_module.prf create_cmake.prf; do
             substituteInPlace "mkspecs/features/$prf" \
-                --subst-var qtPluginPrefix \
-                --subst-var qtQmlPrefix \
-                --subst-var qtDocPrefix
+              --subst-var-by qtPluginPrefix ${qtPluginPrefix} \
+              --subst-var-by qtQmlPrefix ${qtQmlPrefix} \
+              --subst-var-by qtDocPrefix ${qtDocPrefix}
         done
 
         substituteInPlace configure --replace-fail /bin/pwd pwd
@@ -545,17 +545,22 @@ stdenv.mkDerivation (
 
       dontStrip = debugSymbols;
 
-      setupHook = replaceVars ../hooks/qtbase-setup-hook.sh {
-        inherit
-          qtPluginPrefix
-          qtQmlPrefix
-          qtDocPrefix
-        ;
-        fix_qt_builtin_paths = lib.traceVal fix_qt_builtin_paths;
-        fix_qt_module_paths = lib.traceVal fix_qt_module_paths;
-        debug = debugSymbols;
-        dev = placeholder "dev";
-      };
+      setupHook = let
+        hook = makeSetupHook {
+          name = "qtbase5-setup-hook";
+          substitutions = {
+            inherit
+              qtPluginPrefix
+              qtQmlPrefix
+              qtDocPrefix
+              fix_qt_builtin_paths
+              fix_qt_module_paths
+              ;
+              debug = debugSymbols;
+          };
+        } ../hooks/qtbase-setup-hook.sh;
+      in
+        "${hook}/nix-support/setup-hook";
 
       passthru = {
         inherit
