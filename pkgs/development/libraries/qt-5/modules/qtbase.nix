@@ -15,6 +15,7 @@
   perl,
   pkg-config,
   python3,
+  copyPathToStore,
   replaceVars,
   which,
   # darwin support
@@ -89,8 +90,8 @@ let
   qtPluginPrefix = "lib/qt-${qtCompatVersion}/plugins";
   qtQmlPrefix = "lib/qt-${qtCompatVersion}/qml";
   qtDocPrefix = "share/doc/qt-${qtCompatVersion}";
-  fix_qt_builtin_paths = ../hooks/fix-qt-builtin-paths.sh;
-  fix_qt_module_paths = ../hooks/fix-qt-module-paths.sh;
+  fix_qt_builtin_paths = copyPathToStore ../hooks/fix-qt-builtin-paths.sh;
+  fix_qt_module_paths = copyPathToStore ../hooks/fix-qt-module-paths.sh;
 in
 
 stdenv.mkDerivation (

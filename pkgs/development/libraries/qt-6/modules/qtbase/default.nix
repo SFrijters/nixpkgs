@@ -9,6 +9,7 @@
   lndir,
   perl,
   pkg-config,
+  copyPathToStore,
   replaceVars,
   which,
   cmake,
@@ -89,8 +90,8 @@
 
 let
   isCrossBuild = !stdenv.buildPlatform.canExecute stdenv.hostPlatform;
-  fix_qt_builtin_paths = "../../hooks/fix-qt-builtin-paths.sh";
-  fix_qt_module_paths = "../../hooks/fix-qt-module-paths.sh";
+  fix_qt_builtin_paths = copyPathToStore ../../hooks/fix-qt-builtin-paths.sh;
+  fix_qt_module_paths = copyPathToStore ../../hooks/fix-qt-module-paths.sh;
   qtPluginPrefix = "lib/qt-6/plugins";
   qtQmlPrefix = "lib/qt-6/qml";
 in
