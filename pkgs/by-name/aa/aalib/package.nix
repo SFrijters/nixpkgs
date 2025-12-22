@@ -33,6 +33,9 @@ stdenv.mkDerivation rec {
 
   # The fuloong2f is not supported by aalib still
   preConfigure = ''
+    # The configure script does the correct thing when 'system' is already set
+    # Export it explicitly in case __structuredAttrs is true.
+    export system
     appendToVar configureFlags \
       "--bindir=$bin/bin" \
       "--includedir=$dev/include" \
@@ -47,10 +50,7 @@ stdenv.mkDerivation rec {
   ];
 
   env = lib.optionalAttrs stdenv.cc.isGNU {
-    NIX_CFLAGS_COMPILE = toString [
-      "-Wno-error=implicit-function-declaration"
-      "-Wno-error=return-mismatch"
-    ];
+    NIX_CFLAGS_COMPILE = "-Wno-error=implicit-function-declaration";
   };
 
   postInstall = ''
@@ -58,8 +58,6 @@ stdenv.mkDerivation rec {
     mv $bin/bin/aalib-config $dev/bin/aalib-config
     substituteInPlace $out/lib/libaa.la --replace-fail "${ncurses.dev}/lib" "${ncurses.out}/lib"
   '';
-
-  __structuredAttrs = true;
 
   meta = {
     description = "ASCII art graphics library";
