@@ -6,6 +6,7 @@
   lib,
   buildPackages,
   replaceVars,
+  makeSetupHook,
   expand-response-params,
   pkg-config,
   baseBinName ? "pkg-config",
@@ -62,8 +63,13 @@ stdenv.mkDerivation {
   outputs = [ "out" ] ++ optionals propagateDoc ([ "man" ] ++ optional (pkg-config ? doc) "doc");
 
   passthru = {
-    inherit targetPrefix suffixSalt;
-    inherit pkg-config;
+    inherit
+      targetPrefix
+      suffixSalt
+      pkg-config
+      baseBinName
+      wrapperName
+      ;
   };
 
   strictDeps = true;
@@ -71,23 +77,20 @@ stdenv.mkDerivation {
   dontConfigure = true;
   dontUnpack = true;
 
-  # Additional flags passed to pkg-config.
-  env.addFlags = optionalString stdenv.targetPlatform.isStatic "--static";
-
-  installPhase = ''
+  installPhase =
+    let
+      wrapper = replaceVars ./pkg-config-wrapper.sh {
+        inherit suffixSalt;
+        out = placeholder "out";
+        shell = getBin stdenvNoCC.shell + stdenvNoCC.shell.shellPath or "";
+        prog = "${getBin pkg-config}/bin/${baseBinName}";
+        addFlags = optionalString stdenv.targetPlatform.isStatic "--static";
+      };
+    in
+  ''
     mkdir -p $out/bin $out/nix-support
-
-    wrap() {
-      local dst="$1"
-      local wrapper="$2"
-      export prog="$3"
-      substituteAll "$wrapper" "$out/bin/$dst"
-      chmod +x "$out/bin/$dst"
-    }
-
+    install -m555 -T ${addFlags} $out/bin/${wrapperBinName}
     echo $pkg-config > $out/nix-support/orig-pkg-config
-
-    wrap ${wrapperBinName} ${./pkg-config-wrapper.sh} "${getBin pkg-config}/bin/${baseBinName}"
   ''
   # symlink in share for autoconf to find macros
 
@@ -99,10 +102,31 @@ stdenv.mkDerivation {
     ln -s ${pkg-config}/share $out/share
   '';
 
-  setupHooks = [
-    ../setup-hooks/role.bash
-    ./setup-hook.sh
-  ];
+  setupHooks = let
+    roleHook = makeSetupHook rec {
+      name = "pkg-config-role-hook";
+      substitutions = {
+        inherit
+          name
+          suffixSalt
+          wrapperName
+          ;
+      };
+    } ../setup-hooks/role.bash;
+    setupHook = makeSetupHook {
+      name = "pkgs-config-setup-hook";
+      substitutions = {
+        inherit
+          targetPrefix
+          baseBinName
+        ;
+      };
+    } ./setup-hook.sh;
+  in
+    [
+      "${roleHook}/nix-support/setup-hook"
+      "${setupHook}/nix-support/setup-hook"
+    ];
 
   postFixup =
     ##
@@ -136,16 +160,6 @@ stdenv.mkDerivation {
     ## Extra custom steps
     ##
     + extraBuildCommands;
-
-  env = {
-    shell = getBin stdenvNoCC.shell + stdenvNoCC.shell.shellPath or "";
-    inherit
-      targetPrefix
-      suffixSalt
-      baseBinName
-      wrapperName
-      ;
-  };
 
   meta =
     let
