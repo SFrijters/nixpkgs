@@ -52,16 +52,6 @@ stdenv.mkDerivation {
 
   outputs = [ "out" ] ++ optionals propagateDoc ([ "man" ] ++ optional (pkg-config ? doc) "doc");
 
-  passthru = {
-    inherit
-      targetPrefix
-      suffixSalt
-      pkg-config
-      baseBinName
-      wrapperName
-      ;
-  };
-
   strictDeps = true;
   dontBuild = true;
   dontConfigure = true;
@@ -77,59 +67,61 @@ stdenv.mkDerivation {
         addFlags = optionalString stdenv.targetPlatform.isStatic "--static";
       };
     in
-  ''
-    mkdir -p $out/bin $out/nix-support
-    install -m555 -T ${wrapper} $out/bin/${wrapperBinName}
-    echo $pkg-config > $out/nix-support/orig-pkg-config
-  ''
-  # symlink in share for autoconf to find macros
+    ''
+      mkdir -p $out/bin $out/nix-support
+      install -m555 -T ${wrapper} $out/bin/${wrapperBinName}
+      echo $pkg-config > $out/nix-support/orig-pkg-config
+    ''
+    # symlink in share for autoconf to find macros
 
-  # TODO(@Ericson2314): in the future just make the unwrapped pkg-config a
-  # propagated dep once we can rely on downstream deps coming first in
-  # search paths. (https://github.com/NixOS/nixpkgs/pull/31414 took a crack
-  # at this.)
-  + ''
-    ln -s ${pkg-config}/share $out/share
-  '';
+    # TODO(@Ericson2314): in the future just make the unwrapped pkg-config a
+    # propagated dep once we can rely on downstream deps coming first in
+    # search paths. (https://github.com/NixOS/nixpkgs/pull/31414 took a crack
+    # at this.)
+    + ''
+      ln -s ${pkg-config}/share $out/share
+    '';
 
-  setupHooks = let
-    roleHook = makeSetupHook rec {
-      name = "pkg-config-role-hook";
-      substitutions = {
-        inherit
-          name
-          suffixSalt
-          wrapperName
-          ;
-      };
-    } ../setup-hooks/role.bash;
-    setupHook = makeSetupHook {
-      name = "pkgs-config-setup-hook";
-      substitutions = {
-        inherit
-          targetPrefix
-          baseBinName
-        ;
-      };
-    } ./setup-hook.sh;
-  in
+  setupHooks =
+    let
+      roleHook = makeSetupHook rec {
+        name = "pkg-config-role-hook";
+        substitutions = {
+          inherit
+            name
+            suffixSalt
+            wrapperName
+            ;
+        };
+      } ../setup-hooks/role.bash;
+      setupHook = makeSetupHook {
+        name = "pkgs-config-setup-hook";
+        substitutions = {
+          inherit
+            targetPrefix
+            baseBinName
+            ;
+        };
+      } ./setup-hook.sh;
+    in
     [
       "${roleHook}/nix-support/setup-hook"
       "${setupHook}/nix-support/setup-hook"
     ];
 
-  postFixup = let
-    addFlags = replaceVars ./add-flags.sh { inherit suffixSalt; };
-    utils = replaceVars ../wrapper-common/utils.bash {
-      inherit
-        suffixSalt
-        wrapperName
-      ;
-      inherit (targetPlatform) darwinMinVersion;
-      expandResponseParams = "${expand-response-params}/bin/expand-response-params";
-    };
+  postFixup =
+    let
+      addFlags = replaceVars ./add-flags.sh { inherit suffixSalt; };
+      utils = replaceVars ../wrapper-common/utils.bash {
+        inherit
+          suffixSalt
+          wrapperName
+          ;
+        inherit (targetPlatform) darwinMinVersion;
+        expandResponseParams = "${expand-response-params}/bin/expand-response-params";
+      };
 
-  in
+    in
     ##
     ## User env support
     ##
@@ -161,6 +153,16 @@ stdenv.mkDerivation {
     ## Extra custom steps
     ##
     + extraBuildCommands;
+
+  passthru = {
+    inherit
+      targetPrefix
+      suffixSalt
+      pkg-config
+      baseBinName
+      wrapperName
+      ;
+  };
 
   meta =
     let
