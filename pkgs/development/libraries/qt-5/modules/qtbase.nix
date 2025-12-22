@@ -89,8 +89,8 @@ let
   qtPluginPrefix = "lib/qt-${qtCompatVersion}/plugins";
   qtQmlPrefix = "lib/qt-${qtCompatVersion}/qml";
   qtDocPrefix = "share/doc/qt-${qtCompatVersion}";
-  fix_qt_builtin_paths = "../hooks/fix-qt-builtin-paths.sh";
-  fix_qt_module_paths = "../hooks/fix-qt-module-paths.sh";
+  fix_qt_builtin_paths = ../hooks/fix-qt-builtin-paths.sh;
+  fix_qt_module_paths = ../hooks/fix-qt-module-paths.sh;
 in
 
 stdenv.mkDerivation (
@@ -549,9 +549,9 @@ stdenv.mkDerivation (
           qtPluginPrefix
           qtQmlPrefix
           qtDocPrefix
-          fix_qt_builtin_paths
-          fix_qt_module_paths
-          ;
+        ;
+        fix_qt_builtin_paths = lib.traceVal fix_qt_builtin_paths;
+        fix_qt_module_paths = lib.traceVal fix_qt_module_paths;
         debug = debugSymbols;
         dev = placeholder "dev";
       };
