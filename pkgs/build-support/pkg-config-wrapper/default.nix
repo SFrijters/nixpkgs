@@ -59,18 +59,32 @@ stdenv.mkDerivation {
 
   installPhase =
     let
-      wrapper = replaceVars ./pkg-config-wrapper.sh {
-        inherit suffixSalt;
-        out = placeholder "out";
-        shell = getBin stdenvNoCC.shell + stdenvNoCC.shell.shellPath or "";
-        prog = "${getBin pkg-config}/bin/${baseBinName}";
-        addFlags = optionalString stdenv.targetPlatform.isStatic "--static";
-      };
+      addFlags = optionalString stdenv.targetPlatform.isStatic "--static";
+      shell = getBin stdenvNoCC.shell + stdenvNoCC.shell.shellPath or "";
+      prog = "${getBin pkg-config}/bin/${baseBinName}";
     in
     ''
       mkdir -p $out/bin $out/nix-support
-      install -m555 -T ${wrapper} $out/bin/${wrapperBinName}
+      wrap() {
+        local dst="$1"
+        local wrapper="$2"
+        export prog="$3"
+        # Do not take variables from env but substitute them explicitly
+        # to prepare for structuredAttrs
+        # Avoid using a nested derivation since we need to substitute $out
+        substitute "$wrapper" "$out/bin/$dst" \
+          --subst-var-by suffixSalt "${suffixSalt}" \
+          --subst-var-by shell "${shell}" \
+          --subst-var-by prog "$prog" \
+          --subst-var-by out "$out" \
+          --subst-var-by addFlags "${addFlags}"
+
+        chmod +x "$out/bin/$dst"
+      }
+
       echo $pkg-config > $out/nix-support/orig-pkg-config
+
+      wrap ${wrapperBinName} ${./pkg-config-wrapper.sh} "${getBin pkg-config}/bin/${baseBinName}"
     ''
     # symlink in share for autoconf to find macros
 
