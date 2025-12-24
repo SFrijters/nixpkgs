@@ -200,6 +200,7 @@ stdenv.mkDerivation (
       inherit patches;
 
       preHook = ''
+        export outputBin outputDev outputDoc outputLib
         . ${fix_qt_builtin_paths}
         . ${fix_qt_module_paths}
         . ${../hooks/move-qt-dev-tools.sh}
