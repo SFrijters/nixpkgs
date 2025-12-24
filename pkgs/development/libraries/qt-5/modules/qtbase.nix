@@ -267,14 +267,15 @@ stdenv.mkDerivation (
 
       setOutputFlags = false;
       preConfigure = ''
+        env
         export LD_LIBRARY_PATH="$PWD/lib:$PWD/plugins/platforms''${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
 
-        NIX_CFLAGS_COMPILE+=" -DNIXPKGS_QT_PLUGIN_PREFIX=\"$qtPluginPrefix\""
+        NIX_CFLAGS_COMPILE+=" -DNIXPKGS_QT_PLUGIN_PREFIX=\"${qtPluginPrefix}\""
 
         # paralellize compilation of qtmake, which happens within ./configure
         export MAKEFLAGS+=" -j$NIX_BUILD_CORES"
 
-        ./bin/syncqt.pl -version $version
+        ./bin/syncqt.pl -version ${version}
       ''
       + lib.optionalString (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
         # QT's configure script will refuse to use pkg-config unless these two environment variables are set
@@ -296,9 +297,9 @@ stdenv.mkDerivation (
         NIX_OUTPUT_BIN = $bin
         NIX_OUTPUT_DEV = $dev
         NIX_OUTPUT_OUT = $out
-        NIX_OUTPUT_DOC = $dev/$qtDocPrefix
-        NIX_OUTPUT_QML = $bin/$qtQmlPrefix
-        NIX_OUTPUT_PLUGIN = $bin/$qtPluginPrefix
+        NIX_OUTPUT_DOC = $dev/${qtDocPrefix}
+        NIX_OUTPUT_QML = $bin/${qtQmlPrefix}
+        NIX_OUTPUT_PLUGIN = $bin/${qtPluginPrefix}
         EOF
         }
 
@@ -355,11 +356,11 @@ stdenv.mkDerivation (
       # TODO Remove obsolete and useless flags once the build will be totally mastered
       configureFlags = [
         "-plugindir"
-        "$(out)/$(qtPluginPrefix)"
+        "${placeholder "out"}/${qtPluginPrefix}"
         "-qmldir"
-        "$(out)/$(qtQmlPrefix)"
+        "${placeholder "out"}/${qtQmlPrefix}"
         "-docdir"
-        "$(out)/$(qtDocPrefix)"
+        "${placeholder "out"}/${qtDocPrefix}"
 
         "-verbose"
         "-confirm-license"
@@ -530,6 +531,7 @@ stdenv.mkDerivation (
 
       postFixup = ''
         # Don't retain build-time dependencies like gdb.
+        export outputDev
         sed '/QMAKE_DEFAULT_.*DIRS/ d' -i $dev/mkspecs/qconfig.pri
         fixQtModulePaths "''${!outputDev}/mkspecs/modules"
         fixQtBuiltinPaths "''${!outputDev}" '*.pr?'
