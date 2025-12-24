@@ -309,6 +309,7 @@ stdenv.mkDerivation (
       '';
 
       env = {
+        inherit qtPluginPrefix qtQmlPrefix;
         NIX_CFLAGS_COMPILE = toString (
           [
             "-Wno-error=sign-compare" # freetype-2.5.4 changed signedness of some struct fields
@@ -531,6 +532,8 @@ stdenv.mkDerivation (
       postFixup = ''
         # Don't retain build-time dependencies like gdb.
         sed '/QMAKE_DEFAULT_.*DIRS/ d' -i $dev/mkspecs/qconfig.pri
+
+        export outputBin outputDev outputDoc outputLib
         fixQtModulePaths "''${!outputDev}/mkspecs/modules"
         fixQtBuiltinPaths "''${!outputDev}" '*.pr?'
 
