@@ -2,6 +2,8 @@
   buildPackages,
   pkgsBuildBuild,
   callPackage,
+  writeText,
+  copyPathToStore,
   perl,
   bison ? null,
   flex ? null,
@@ -166,11 +168,6 @@ let
         pname = "linux-config";
         inherit version;
 
-        generateConfig = ./generate-config.pl;
-
-        kernelConfig = kernelConfigFun intermediateNixConfig;
-        passAsFile = [ "kernelConfig" ];
-
         depsBuildBuild = [ buildPackages.stdenv.cc ];
         nativeBuildInputs = [
           perl
@@ -186,11 +183,7 @@ let
           rustc-unwrapped
         ];
 
-        RUST_LIB_SRC = lib.optionalString withRust rustPlatform.rustLibSrc;
-
-        # e.g. "defconfig"
-        kernelBaseConfig =
-          if defconfig != null then defconfig else stdenv.hostPlatform.linux-kernel.baseConfig or "defconfig";
+        env.RUST_LIB_SRC = lib.optionalString withRust rustPlatform.rustLibSrc;
 
         makeFlags = import ./common-flags.nix {
           inherit
@@ -211,22 +204,30 @@ let
 
         inherit (kernel) src patches;
 
-        buildPhase = ''
+        buildPhase =
+          let
+            kernelConfigPath = writeText "intermediate-nix-config" (kernelConfigFun intermediateNixConfig);
+            # e.g. "defconfig"
+            kernelBaseConfig =
+              if defconfig != null then defconfig else stdenv.hostPlatform.linux-kernel.baseConfig or "defconfig";
+            generateConfig = copyPathToStore ./generate-config.pl;
+
+          in ''
           export buildRoot="''${buildRoot:-build}"
 
-          # Get a basic config file for later refinement with $generateConfig.
+          # Get a basic config file for later refinement with ${generateConfig}.
           make $makeFlags \
-              -C . O="$buildRoot" $kernelBaseConfig \
+              -C . O="$buildRoot" ${kernelBaseConfig} \
               ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
               $makeFlags
 
           # Create the config file.
           echo "generating kernel configuration..."
-          ln -s "$kernelConfigPath" "$buildRoot/kernel-config"
-          DEBUG=1 ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
-            KERNEL_CONFIG="$buildRoot/kernel-config" AUTO_MODULES=$autoModules \
-            PREFER_BUILTIN=$preferBuiltin BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
-            perl -w $generateConfig
+          ln -s "${kernelConfigPath}" "$buildRoot/kernel-config"
+          DEBUG=1 ARCH=${kernelArch} CROSS_COMPILE=${stdenv.cc.targetPrefix} \
+            KERNEL_CONFIG="$buildRoot/kernel-config" AUTO_MODULES=${toString autoModules} \
+            PREFER_BUILTIN=${toString preferBuiltin} BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
+            perl -w ${generateConfig}
         ''
         + lib.optionalString stdenv.cc.isClang ''
           if ! grep -Fq CONFIG_CC_IS_CLANG=y $buildRoot/.config; then
@@ -250,6 +251,8 @@ let
         installPhase = "mv $buildRoot/.config $out";
 
         enableParallelBuilding = true;
+
+        __structuredAttrs = true;
 
         passthru = rec {
           module = import ../../../../nixos/modules/system/boot/kernel_config.nix;
