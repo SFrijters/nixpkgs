@@ -268,7 +268,6 @@ stdenv.mkDerivation (
 
       setOutputFlags = false;
       preConfigure = ''
-        env
         export LD_LIBRARY_PATH="$PWD/lib:$PWD/plugins/platforms''${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
 
         NIX_CFLAGS_COMPILE+=" -DNIXPKGS_QT_PLUGIN_PREFIX=\"${qtPluginPrefix}\""
@@ -310,7 +309,6 @@ stdenv.mkDerivation (
       '';
 
       env = {
-        inherit qtPluginPrefix qtQmlPrefix;
         NIX_CFLAGS_COMPILE = toString (
           [
             "-Wno-error=sign-compare" # freetype-2.5.4 changed signedness of some struct fields
@@ -532,7 +530,6 @@ stdenv.mkDerivation (
 
       postFixup = ''
         # Don't retain build-time dependencies like gdb.
-        export outputDev
         sed '/QMAKE_DEFAULT_.*DIRS/ d' -i $dev/mkspecs/qconfig.pri
         fixQtModulePaths "''${!outputDev}/mkspecs/modules"
         fixQtBuiltinPaths "''${!outputDev}" '*.pr?'
