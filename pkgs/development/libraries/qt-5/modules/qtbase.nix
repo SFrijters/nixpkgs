@@ -547,21 +547,22 @@ stdenv.mkDerivation (
 
       dontStrip = debugSymbols;
 
-      setupHook = let
-        hook = makeSetupHook {
-          name = "qtbase5-setup-hook";
-          substitutions = {
-            inherit
-              qtPluginPrefix
-              qtQmlPrefix
-              qtDocPrefix
-              fix_qt_builtin_paths
-              fix_qt_module_paths
-              ;
+      setupHook =
+        let
+          hook = makeSetupHook {
+            name = "qtbase5-setup-hook";
+            substitutions = {
+              inherit
+                qtPluginPrefix
+                qtQmlPrefix
+                qtDocPrefix
+                fix_qt_builtin_paths
+                fix_qt_module_paths
+                ;
               debug = debugSymbols;
-          };
-        } ../hooks/qtbase-setup-hook.sh;
-      in
+            };
+          } ../hooks/qtbase-setup-hook.sh;
+        in
         "${hook}/nix-support/setup-hook";
 
       passthru = {

@@ -107,10 +107,11 @@ rec {
       # The inner derivation which creates the executable under $out/bin (never at $out directly)
       # This is required in order to support wrapping, as wrapped programs consist of
       # at least two files: the executable and the wrapper.
-      inner = let
-        # This is a bit weird if the caller first uses readFile to get a string and then we dump it back into a file
-        contentPath = if types.path.check content then content else (writeText "${name}-content" content);
-      in
+      inner =
+        let
+          # This is a bit weird if the caller first uses readFile to get a string and then we dump it back into a file
+          contentPath = if types.path.check content then content else (writeText "${name}-content" content);
+        in
         pkgs.runCommandLocal name
           {
             nativeBuildInputs = [ makeBinaryWrapper ];

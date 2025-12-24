@@ -325,19 +325,20 @@ stdenv.mkDerivation {
 
   dontWrapQtApps = true;
 
-  setupHook = let
-    hook = makeSetupHook {
-      name = "qtbase6-setup-hook";
-      substitutions = {
-        inherit
-          fix_qt_builtin_paths
-          fix_qt_module_paths
-          qtPluginPrefix
-          qtQmlPrefix
-          ;
-      };
-    } ../../hooks/qtbase-setup-hook.sh;
-  in
+  setupHook =
+    let
+      hook = makeSetupHook {
+        name = "qtbase6-setup-hook";
+        substitutions = {
+          inherit
+            fix_qt_builtin_paths
+            fix_qt_module_paths
+            qtPluginPrefix
+            qtQmlPrefix
+            ;
+        };
+      } ../../hooks/qtbase-setup-hook.sh;
+    in
     "${hook}/nix-support/setup-hook";
 
   passthru = {

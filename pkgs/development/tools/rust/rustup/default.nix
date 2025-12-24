@@ -24,7 +24,7 @@ let
   ];
 
   utils-wrapper = replaceVars ../../../../../pkgs/build-support/wrapper-common/utils.bash {
-      inherit (stdenv.cc.bintools)
+    inherit (stdenv.cc.bintools)
       suffixSalt
       wrapperName
       expandResponseParams
@@ -37,10 +37,12 @@ let
   add-flags-wrapper = replaceVars ../../../../../pkgs/build-support/bintools-wrapper/add-flags.sh {
     inherit (stdenv.cc.bintools) suffixSalt;
   };
-  add-hardening-wrapper = replaceVars ../../../../../pkgs/build-support/bintools-wrapper/add-hardening.sh {
-    inherit (stdenv.cc.bintools) suffixSalt;
-    hardening_unsupported_flags = "";
-  };
+  add-hardening-wrapper =
+    replaceVars ../../../../../pkgs/build-support/bintools-wrapper/add-hardening.sh
+      {
+        inherit (stdenv.cc.bintools) suffixSalt;
+        hardening_unsupported_flags = "";
+      };
   ld-wrapper = replaceVars ../../../../../pkgs/build-support/bintools-wrapper/ld-wrapper.sh {
     inherit (stdenv.cc.bintools)
       suffixSalt

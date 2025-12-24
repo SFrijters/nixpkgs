@@ -212,47 +212,48 @@ let
               if defconfig != null then defconfig else stdenv.hostPlatform.linux-kernel.baseConfig or "defconfig";
             generateConfig = copyPathToStore ./generate-config.pl;
 
-          in ''
-          export buildRoot="''${buildRoot:-build}"
+          in
+          ''
+            export buildRoot="''${buildRoot:-build}"
 
-          # Get a basic config file for later refinement with ${generateConfig}.
-          make $makeFlags \
-              -C . O="$buildRoot" ${kernelBaseConfig} \
-              ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
-              $makeFlags
+            # Get a basic config file for later refinement with ${generateConfig}.
+            make $makeFlags \
+                -C . O="$buildRoot" ${kernelBaseConfig} \
+                ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
+                $makeFlags
 
-          # Create the config file.
-          echo "generating kernel configuration..."
-          ln -s "${kernelConfigPath}" "$buildRoot/kernel-config"
-          echo ======================= DEBUG ========================
-          cat "$buildRoot/kernel-config"
-          echo "$buildRoot/kernel-config"
-          echo $kernelArch ${toString kernelArch}
-          echo $autoModules ${toString autoModules}
-          echo $preferBuiltin ${toString preferBuiltin}
-          DEBUG=1 ARCH=${kernelArch} CROSS_COMPILE=${stdenv.cc.targetPrefix} \
-            KERNEL_CONFIG="$buildRoot/kernel-config" AUTO_MODULES=${toString autoModules} \
-            PREFER_BUILTIN=${toString preferBuiltin} BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
-            perl -w ${generateConfig}
-        ''
-        + lib.optionalString stdenv.cc.isClang ''
-          if ! grep -Fq CONFIG_CC_IS_CLANG=y $buildRoot/.config; then
-            echo "Kernel config didn't recognize the clang compiler?"
-            exit 1
-          fi
-        ''
-        + lib.optionalString stdenv.cc.bintools.isLLVM ''
-          if ! grep -Fq CONFIG_LD_IS_LLD=y $buildRoot/.config; then
-            echo "Kernel config didn't recognize the LLVM linker?"
-            exit 1
-          fi
-        ''
-        + lib.optionalString withRust ''
-          if ! grep -Fq CONFIG_RUST_IS_AVAILABLE=y $buildRoot/.config; then
-            echo "Kernel config didn't find Rust toolchain?"
-            exit 1
-          fi
-        '';
+            # Create the config file.
+            echo "generating kernel configuration..."
+            ln -s "${kernelConfigPath}" "$buildRoot/kernel-config"
+            echo ======================= DEBUG ========================
+            cat "$buildRoot/kernel-config"
+            echo "$buildRoot/kernel-config"
+            echo $kernelArch ${toString kernelArch}
+            echo $autoModules ${toString autoModules}
+            echo $preferBuiltin ${toString preferBuiltin}
+            DEBUG=1 ARCH=${kernelArch} CROSS_COMPILE=${stdenv.cc.targetPrefix} \
+              KERNEL_CONFIG="$buildRoot/kernel-config" AUTO_MODULES=${toString autoModules} \
+              PREFER_BUILTIN=${toString preferBuiltin} BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
+              perl -w ${generateConfig}
+          ''
+          + lib.optionalString stdenv.cc.isClang ''
+            if ! grep -Fq CONFIG_CC_IS_CLANG=y $buildRoot/.config; then
+              echo "Kernel config didn't recognize the clang compiler?"
+              exit 1
+            fi
+          ''
+          + lib.optionalString stdenv.cc.bintools.isLLVM ''
+            if ! grep -Fq CONFIG_LD_IS_LLD=y $buildRoot/.config; then
+              echo "Kernel config didn't recognize the LLVM linker?"
+              exit 1
+            fi
+          ''
+          + lib.optionalString withRust ''
+            if ! grep -Fq CONFIG_RUST_IS_AVAILABLE=y $buildRoot/.config; then
+              echo "Kernel config didn't find Rust toolchain?"
+              exit 1
+            fi
+          '';
 
         installPhase = "mv $buildRoot/.config $out";
 

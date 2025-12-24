@@ -126,10 +126,12 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.cmakeBool "CPU_POWER8" (stdenv.hostPlatform.isPower64 && stdenv.hostPlatform.isLittleEndian))
   ]
   # Clang does not support the endfunc directive so use GCC.
-  ++ lib.optionals (
-    stdenv.cc.isClang && !stdenv.targetPlatform.isDarwin && !stdenv.targetPlatform.isFreeBSD
-  ) [ (lib.cmakeFeature "CMAKE_ASM_COMPILER" "${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}gcc")
-                   ]
+  ++
+    lib.optionals
+      (stdenv.cc.isClang && !stdenv.targetPlatform.isDarwin && !stdenv.targetPlatform.isFreeBSD)
+      [
+        (lib.cmakeFeature "CMAKE_ASM_COMPILER" "${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}gcc")
+      ]
   # Neon support
   ++ lib.optionals (neonSupport && stdenv.hostPlatform.isAarch32) [
     (lib.cmakeBool "ENABLE_NEON" true)

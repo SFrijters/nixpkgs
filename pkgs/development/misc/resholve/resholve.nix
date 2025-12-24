@@ -42,7 +42,10 @@ python27.pkgs.buildPythonApplication {
   ];
 
   makeWrapperArgs = [
-    "--prefix" "PATH" ":" "${lib.makeBinPath [ gawk ]}"
+    "--prefix"
+    "PATH"
+    ":"
+    "${lib.makeBinPath [ gawk ]}"
   ];
 
   postPatch = ''

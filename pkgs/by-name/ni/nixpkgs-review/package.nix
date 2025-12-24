@@ -65,9 +65,9 @@ python3Packages.buildPythonApplication rec {
     in
     [
       (lib.splitString " " "--prefix PATH : ${lib.makeBinPath binPath}")
-      (lib.splitString " ""--set-default NIX_SSL_CERT_FILE ${cacert}/etc/ssl/certs/ca-bundle.crt")
+      (lib.splitString " " "--set-default NIX_SSL_CERT_FILE ${cacert}/etc/ssl/certs/ca-bundle.crt")
       # we don't have any runtime deps but nixpkgs-review shells might inject unwanted dependencies
-      (lib.splitString " ""--unset PYTHONPATH")
+      (lib.splitString " " "--unset PYTHONPATH")
     ];
 
   postInstall = lib.optionalString withAutocomplete ''
