@@ -71,7 +71,7 @@ buildPythonPackage rec {
     "--prefix"
     "PYTHONPATH"
     ":"
-    "${makePythonPath dependencies}"
+    (makePythonPath dependencies)
     "--prefix"
     "PYTHONPATH"
     ":"
