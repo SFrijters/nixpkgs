@@ -575,6 +575,8 @@ stdenv.mkDerivation (
           --replace-fail $bin/bin/qmake $dev/bin/qmake \
           --replace-fail $bin/bin/moc $dev/bin/moc \
           --replace-fail $bin/bin/rcc $dev/bin/rcc
+        substituteInPlace $dev/lib/cmake/Qt5Widgets/Qt5WidgetsConfigExtras.cmake \
+          --replace-fail $bin/bin/uic $dev/bin/uic
         echo ====================== DEBUG ===================
         cat $dev/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake
 
