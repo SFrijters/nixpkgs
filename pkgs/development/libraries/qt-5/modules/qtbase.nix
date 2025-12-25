@@ -568,8 +568,15 @@ stdenv.mkDerivation (
         moveToOutput bin "$dev"
 
         # HACK!
-        substituteInPlace $dev/lib/cmake/Qt5Core/Qt5CoreConfig.cmake \
-          --replace-fail $bin/bin/qmake $dev/bin/qmake
+        echo ====================== DEBUG ===================
+        # grep -R "bin/qmake"
+        cat $dev/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake
+        substituteInPlace $dev/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake \
+          --replace-fail $bin/bin/qmake $dev/bin/qmake \
+          --replace-fail $bin/bin/moc $dev/bin/moc \
+          --replace-fail $bin/bin/rcc $dev/bin/rcc
+        echo ====================== DEBUG ===================
+        cat $dev/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake
 
         # fixup .pc file (where to find 'moc' etc.)
         sed -i "$dev/lib/pkgconfig/Qt5Core.pc" \
