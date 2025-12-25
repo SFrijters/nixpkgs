@@ -567,6 +567,10 @@ stdenv.mkDerivation (
         moveQtDevTools
         moveToOutput bin "$dev"
 
+        # HACK!
+        substituteInPlace $dev/lib/cmake/Qt5Core/Qt5CoreConfig.cmake \
+          --replace-fail $bin/bin/qmake $dev/bin/qmake
+
         # fixup .pc file (where to find 'moc' etc.)
         sed -i "$dev/lib/pkgconfig/Qt5Core.pc" \
           -e "/^host_bins=/ c host_bins=$dev/bin"
