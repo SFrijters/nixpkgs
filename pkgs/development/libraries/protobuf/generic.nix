@@ -61,11 +61,6 @@ stdenv.mkDerivation (finalAttrs: {
     ];
 
   # hook to provide the path to protoc executable, used at build time
-  build_protobuf =
-    if (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) then
-      buildPackages."protobuf_${lib.versions.major version}"
-    else
-      (placeholder "out");
   setupHook = ./setup-hook.sh;
 
   nativeBuildInputs = [
@@ -111,6 +106,12 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = lib.optionalAttrs (lib.versions.major version == "29") {
     GTEST_DEATH_TEST_STYLE = "threadsafe";
+    # needed for setupHook
+    build_protobuf =
+      if (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) then
+        buildPackages."protobuf_${lib.versions.major version}"
+      else
+        (placeholder "out");
   };
 
   passthru = {

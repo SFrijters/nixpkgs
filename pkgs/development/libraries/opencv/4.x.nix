@@ -463,8 +463,10 @@ effectiveStdenv.mkDerivation {
   ];
 
   # Configure can't find the library without this.
-  OpenBLAS_HOME = optionalString withOpenblas openblas_.dev;
-  OpenBLAS = optionalString withOpenblas openblas_;
+  env = {
+    OpenBLAS_HOME = optionalString withOpenblas openblas_.dev;
+    OpenBLAS = optionalString withOpenblas openblas_;
+  };
 
   cmakeFlags = [
     (cmakeBool "OPENCV_GENERATE_PKGCONFIG" true)
