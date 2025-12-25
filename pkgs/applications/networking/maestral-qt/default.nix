@@ -41,26 +41,13 @@ python3.pkgs.buildPythonApplication rec {
 
   nativeBuildInputs = [ wrapQtAppsHook ];
 
-  dontWrapQtApps = true;
-
-  preFixup = ''
-    export qtWrapperArgs
-  '';
-
-  makeWrapperArgs = with python3.pkgs; [
-    # Firstly, add all necessary QT variables
-    "\${qtWrapperArgs[@]}"
-
+  preFixup = with python3.pkgs; ''
     # Add the installed directories to the python path so the daemon can find them
-    "--prefix"
-    "PYTHONPATH"
-    ":"
-    (makePythonPath (requiredPythonModules maestral.propagatedBuildInputs))
-    "--prefix"
-    "PYTHONPATH"
-    ":"
-    (makePythonPath [ maestral ])
-  ];
+    qtWrapperArgs+=(
+      --prefix PYTHONPATH : ${makePythonPath (requiredPythonModules maestral.propagatedBuildInputs)}
+      --prefix PYTHONPATH : ${makePythonPath [ maestral ]}
+    )
+  '';
 
   postInstall = ''
     install -Dm444 -t $out/share/icons/hicolor/512x512/apps src/maestral_qt/resources/maestral.png
