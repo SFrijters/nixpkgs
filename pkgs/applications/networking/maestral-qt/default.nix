@@ -43,6 +43,10 @@ python3.pkgs.buildPythonApplication rec {
 
   dontWrapQtApps = true;
 
+  preFixup = ''
+    export qtWrapperArgs
+  '';
+
   makeWrapperArgs = with python3.pkgs; [
     # Firstly, add all necessary QT variables
     "\${qtWrapperArgs[@]}"
