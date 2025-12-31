@@ -52,13 +52,16 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   # Make sure libkrunfw can be found by dlopen()
-  env.RUSTFLAGS = toString (
-    map (flag: "-C link-arg=" + flag) [
-      "-Wl,--push-state,--no-as-needed"
-      ("-lkrunfw" + lib.optionalString (variant != null) "-${variant}")
-      "-Wl,--pop-state"
-    ]
-  );
+  env = {
+    RUSTFLAGS = toString (
+      map (flag: "-C link-arg=" + flag) [
+        "-Wl,--push-state,--no-as-needed"
+        ("-lkrunfw" + lib.optionalString (variant != null) "-${variant}")
+        "-Wl,--pop-state"
+      ]
+    );
+    OPENSSL_NO_VENDOR = true;
+  };
 
   nativeBuildInputs = [
     rustPlatform.cargoSetupHook
@@ -97,8 +100,6 @@ stdenv.mkDerivation (finalAttrs: {
     mv $out/lib64/pkgconfig $dev/lib/
     mv $out/include $dev/
   '';
-
-  env.OPENSSL_NO_VENDOR = true;
 
   meta = {
     description = "Dynamic library providing Virtualization-based process isolation capabilities";
