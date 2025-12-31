@@ -797,8 +797,9 @@ stdenv.mkDerivation (
       export InstallNameToolCmd=$INSTALL_NAME_TOOL
       export OtoolCmd=$OTOOL
     ''
+    # Replicate configurePhase
     + ''
-      $configureScript "''${configureFlags[@]}"
+      $configureScript "''${configureFlags[@]}" "''${configureFlagsArray[@]}"
     '';
 
     postInstall = ''
