@@ -205,8 +205,10 @@
         (
           if lib.versionOlder version "9.10" then
             ./Cabal-at-least-3.6-paths-fix-cycle-aarch64-darwin.patch
-          else
+          else if lib.versionOlder version "9.14" then
             ./Cabal-3.12-paths-fix-cycle-aarch64-darwin.patch
+          else
+            ./Cabal-3.16-paths-fix-cycle-aarch64-darwin.patch
         )
       ]
       ++ lib.optionals stdenv.targetPlatform.isWindows [
@@ -340,6 +342,10 @@ let
     ]
     ++ lib.optionals targetPlatform.useAndroidPrebuilt [
       "*.*.ghc.c.opts += -optc-std=gnu99"
+    ]
+    # Inform GHC that we can't load dynamic libraries which forces iserv-proxy to load static libraries.
+    ++ lib.optionals targetPlatform.isStatic [
+      "*.ghc.cabal.configure.opts += --flags=-dynamic-system-linker"
     ];
 
   # Splicer will pull out correct variations
@@ -477,6 +483,9 @@ stdenv.mkDerivation (
     pname = "${targetPrefix}ghc${variantSuffix}";
     inherit version;
 
+    # Useful as hadrianSettings often have spaces in them
+    __structuredAttrs = true;
+
     src = ghcSrc;
 
     enableParallelBuilding = true;
@@ -597,15 +606,8 @@ stdenv.mkDerivation (
       }/share/emscripten/cache/* "$EM_CACHE/"
       chmod u+rwX -R "$EM_CACHE"
     ''
-    # Create bash array hadrianFlagsArray for use in buildPhase. Do it in
-    # preConfigure, so overrideAttrs can be used to modify it effectively.
-    # hadrianSettings are passed via the command line so they are more visible
-    # in the build log.
     + ''
-      hadrianFlagsArray=(
-        "-j$NIX_BUILD_CORES"
-        ${lib.escapeShellArgs hadrianSettings}
-      )
+      hadrianFlags+=("-j$NIX_BUILD_CORES")
     '';
 
     ${if targetPlatform.isGhcjs then "configureScript" else null} = "emconfigure ./configure";
@@ -747,16 +749,16 @@ stdenv.mkDerivation (
       # In 9.14 this will be default with release flavour.
       # See https://gitlab.haskell.org/ghc/ghc/-/merge_requests/13444
       "--hash-unit-ids"
-    ];
+    ]
+    ++ hadrianSettings;
 
     buildPhase = ''
       runHook preBuild
 
-      # hadrianFlagsArray is created in preConfigure
-      echo "hadrianFlags: ''${hadrianFlags[@]} ''${hadrianFlagsArray[@]}"
+      echo "hadrianFlags: ''${hadrianFlags[@]}"
 
       # We need to go via the bindist for installing
-      hadrian ''${hadrianFlags[@]} "''${hadrianFlagsArray[@]}" binary-dist-dir
+      hadrian "''${hadrianFlags[@]}" binary-dist-dir
 
       runHook postBuild
     '';
@@ -796,7 +798,7 @@ stdenv.mkDerivation (
       export OtoolCmd=$OTOOL
     ''
     + ''
-      $configureScript ''${configureFlags[@]} "''${configureFlagsArray[@]}"
+      $configureScript "''${configureFlags[@]}"
     '';
 
     postInstall = ''
