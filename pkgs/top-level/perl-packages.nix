@@ -16555,6 +16555,29 @@ with self;
     };
   };
 
+  HTTPDaemonSSL = buildPerlPackage {
+    pname = "HTTP-Daemon-SSL";
+    version = "1.04";
+    src = fetchurl {
+      url = "https://cpan.metacpan.org/authors/id/A/AU/AUFFLICK/HTTP-Daemon-SSL-1.04.tar.gz";
+      hash = "sha256-fq4FQi2TTISS39NQW3dP1lkMmYCM6L62xX79Jh5dwi4=";
+    };
+    buildInputs = [
+      HTTPDaemon
+      IOSocketSSL
+    ];
+    doCheck = false;
+    meta = {
+      description = "Simple http server class with SSL support";
+      homepage = "https://github.com/libwww-perl/HTTP-Daemon";
+      license = with lib.licenses; [
+        artistic1
+        gpl1Plus
+      ];
+    };
+  };
+
+
   HTTPDate = buildPerlPackage {
     pname = "HTTP-Date";
     version = "6.06";
