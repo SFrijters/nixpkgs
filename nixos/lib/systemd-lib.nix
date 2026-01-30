@@ -57,7 +57,7 @@ let
   inherit (lib.strings) toJSON;
 
   cfg = config.systemd;
-  lndir = "${pkgs.buildPackages.xorg.lndir}/bin/lndir";
+  lndir = "${pkgs.buildPackages.lndir}/bin/lndir";
   systemd = cfg.package;
 in
 rec {
@@ -81,7 +81,8 @@ rec {
         ''
           name=${shellEscape name}
           mkdir -p "$out/$(dirname -- "$name")"
-          echo "${unit.text}" > "$out/$name"
+          # unit.text can be null.
+          echo -n "${unit.text or ""}" > "$out/$name"
         ''
     else
       pkgs.runCommand "unit-${mkPathSafeName name}-disabled"
@@ -134,7 +135,7 @@ rec {
   toIntBaseDetected =
     value:
     assert (match "[0-9]+|0x[0-9a-fA-F]+" value) != null;
-    (builtins.fromTOML "v=${value}").v;
+    (fromTOML "v=${value}").v;
 
   hexChars = stringToCharacters "0123456789abcdefABCDEF";
 
