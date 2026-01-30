@@ -67,7 +67,9 @@ stdenv.mkDerivation rec {
     xcbutil
   ];
 
-  NIX_LDFLAGS = lib.optionalString (!headless) "-lX11";
+  env = lib.optionalAttrs (!headless) {
+    NIX_LDFLAGS = "-lX11";
+  };
 
   preConfigure = ''
     ./_autosetup
