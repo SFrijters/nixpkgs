@@ -141,11 +141,11 @@ optionalAttrs allowAliases aliases
             {
               nativeBuildInputs = [ jq ];
               value = builtins.toJSON value;
-              passAsFile = [ "value" ];
               preferLocalBuild = true;
+              __structuredAttrs = true;
             }
             ''
-              jq . "$valuePath" > $out
+              echo -n "$value" | jq . > $out
             ''
         ) { };
 
@@ -164,11 +164,11 @@ optionalAttrs allowAliases aliases
             {
               nativeBuildInputs = [ remarshal_0_17 ];
               value = builtins.toJSON value;
-              passAsFile = [ "value" ];
               preferLocalBuild = true;
+              __structuredAttrs = true;
             }
             ''
-              json2yaml "$valuePath" "$out"
+              echo -n "$value" | json2yaml -o "$out"
             ''
         ) { };
 
@@ -187,11 +187,11 @@ optionalAttrs allowAliases aliases
             {
               nativeBuildInputs = [ remarshal ];
               value = builtins.toJSON value;
-              passAsFile = [ "value" ];
               preferLocalBuild = true;
+              __structuredAttrs = true;
             }
             ''
-              json2yaml "$valuePath" "$out"
+              echo -n "$value" | json2yaml -o "$out"
             ''
         ) { };
 
@@ -466,11 +466,11 @@ optionalAttrs allowAliases aliases
             {
               nativeBuildInputs = [ remarshal ];
               value = builtins.toJSON value;
-              passAsFile = [ "value" ];
               preferLocalBuild = true;
+              __structuredAttrs = true;
             }
             ''
-              json2toml "$valuePath" "$out"
+              echo -n "$value" | json2toml -o "$out"
             ''
         ) { };
 
@@ -499,11 +499,12 @@ optionalAttrs allowAliases aliases
             {
               nativeBuildInputs = [ json2cdn ];
               value = builtins.toJSON value;
-              passAsFile = [ "value" ];
               preferLocalBuild = true;
+              __structuredAttrs = true;
             }
             ''
-              json2cdn "$valuePath" > $out
+              echo -n "$value" > valueFile
+              json2cdn valueFile > $out
             ''
         ) { };
     };
@@ -734,12 +735,12 @@ optionalAttrs allowAliases aliases
         pkgs.runCommand name
           {
             value = toConf value;
-            passAsFile = [ "value" ];
             nativeBuildInputs = [ elixir ];
             preferLocalBuild = true;
+            __structuredAttrs = true;
           }
           ''
-            cp "$valuePath" "$out"
+            echo -n "$value" > "$out"
             mix format "$out"
           '';
     };
@@ -783,14 +784,14 @@ optionalAttrs allowAliases aliases
               inherit indentWidth;
               indentType = if indentUsingTabs then "Tabs" else "Spaces";
               value = toLua { inherit asBindings multiline; } value;
-              passAsFile = [ "value" ];
               preferLocalBuild = true;
+              __structuredAttrs = true;
             }
             ''
               ${optionalString (!asBindings) ''
                 echo -n 'return ' >> $out
               ''}
-              cat $valuePath >> $out
+              echo -n "$value" >> $out
               stylua \
                 --no-editorconfig \
                 --line-endings Unix \
