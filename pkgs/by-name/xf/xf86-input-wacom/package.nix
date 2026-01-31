@@ -26,8 +26,8 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "linuxwacom";
     repo = "xf86-input-wacom";
-    rev = "xf86-input-wacom-${finalAttrs.version}";
-    sha256 = "sha256-12m9PL28NnqIwNpGHOFqjJaNrzBaagdG3Sp/jSLpgkE=";
+    tag = "xf86-input-wacom-${finalAttrs.version}";
+    hash = "sha256-12m9PL28NnqIwNpGHOFqjJaNrzBaagdG3Sp/jSLpgkE=";
   };
 
   preConfigure = ''
