@@ -30,6 +30,11 @@ stdenv.mkDerivation (finalAttrs: {
     sha256 = "sha256-12m9PL28NnqIwNpGHOFqjJaNrzBaagdG3Sp/jSLpgkE=";
   };
 
+  preConfigure = ''
+    # See VERFILE in git-version-gen
+    echo ${finalAttrs.version} > version
+  '';
+
   nativeBuildInputs = [
     autoreconfHook
     pkg-config
