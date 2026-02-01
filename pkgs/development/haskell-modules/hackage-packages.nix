@@ -686279,6 +686279,7 @@ self: {
       base,
       deepseq,
       hspec,
+      hspec-discover,
       QuickCheck,
       text,
       vector,
