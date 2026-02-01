@@ -91,12 +91,15 @@ stdenv.mkDerivation (finalAttrs: {
     ./darwin-target-match.patch
   ];
 
+  strictDeps = true;
+
   nativeBuildInputs = [
     pkg-config
     texinfo
     perl
     setupDebugInfoDirs
-  ];
+  ]
+  ++ optional pythonSupport python3;
 
   buildInputs = [
     ncurses
