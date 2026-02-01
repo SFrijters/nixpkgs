@@ -8,6 +8,7 @@
   corosync,
   dbus,
   fetchFromGitHub,
+  gettext,
   glib,
   gnutls,
   libqb,
@@ -18,6 +19,7 @@
   pam,
   pkg-config,
   python3,
+  util-linux,
   nixosTests,
 
   # Pacemaker is compiled twice, once with forOCF = true to extract its
@@ -35,15 +37,20 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "ClusterLabs";
     repo = "pacemaker";
-    rev = "Pacemaker-${finalAttrs.version}";
-    sha256 = "sha256-23YkNzqiimLy/KjO+hxVQQ4rUhSEhn5Oc2jUJO/VRo0=";
+    tag = "Pacemaker-${finalAttrs.version}";
+    hash = "sha256-23YkNzqiimLy/KjO+hxVQQ4rUhSEhn5Oc2jUJO/VRo0=";
   };
+
+  strictDeps = true;
 
   nativeBuildInputs = [
     autoconf
     automake
+    gettext # autopoint
     libtool
     pkg-config
+    python3
+    util-linux # getopt
   ];
 
   buildInputs = [
