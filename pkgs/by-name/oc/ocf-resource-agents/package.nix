@@ -44,14 +44,16 @@ let
       })
     ];
 
+    strictDeps = true;
+
     nativeBuildInputs = [
       autoreconfHook
       pkg-config
+      python3
     ];
 
     buildInputs = [
       glib
-      python3
     ];
 
     env.NIX_CFLAGS_COMPILE = toString (
