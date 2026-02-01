@@ -34,6 +34,8 @@ stdenv.mkDerivation rec {
     hash = "sha256-Ij/gfQtkbpkbM7qepBRo+aZvkDVi59p2bdD8a06jPbk=";
   };
 
+  strictDeps = true;
+
   nativeBuildInputs = [
     flex
     libxslt
@@ -42,11 +44,11 @@ stdenv.mkDerivation rec {
     keyutils
     udevCheckHook
     gettext
+    perl
+    perlPackages.Po4a
   ];
 
   buildInputs = [
-    perl
-    perlPackages.Po4a
     gettext
   ];
 
