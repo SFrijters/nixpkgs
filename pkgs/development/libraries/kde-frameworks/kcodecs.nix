@@ -8,10 +8,12 @@
 
 mkDerivation {
   pname = "kcodecs";
-  nativeBuildInputs = [ extra-cmake-modules ];
+  nativeBuildInputs = [
+    extra-cmake-modules
+    gperf
+  ];
   buildInputs = [
     qttools
-    gperf
   ];
   propagatedBuildInputs = [ qtbase ];
   outputs = [
