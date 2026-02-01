@@ -51,12 +51,15 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-DeHJ3SLBYNXkvfw4jSkvA0R8ymJYVBuaEv7Xg9DPfGA=";
   };
 
+  strictDeps = true;
+
   nativeBuildInputs = [
     pkg-config
     gettext
     meson
     ninja
     vala
+    babl
     gobject-introspection
     gi-docgen
   ];
@@ -79,6 +82,7 @@ stdenv.mkDerivation (finalAttrs: {
     gexiv2
     openexr_2
     suitesparse
+    vala
   ]
   ++ lib.optionals stdenv.cc.isClang [
     llvmPackages.openmp
