@@ -35,17 +35,19 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitLab {
     owner = "accounts-sso";
     repo = "libaccounts-glib";
-    rev = "VERSION_${finalAttrs.version}";
+    tag = "VERSION_${finalAttrs.version}";
     hash = "sha256-mLhcwp8rhCGSB1K6rTWT0tuiINzgwULwXINfCbgPKEg=";
   };
 
+  strictDeps = true;
+
   nativeBuildInputs = [
-    check
     docbook_xml_dtd_43
     docbook_xsl
     glibcLocales
     gobject-introspection
     gtk-doc
+    libxml2
     meson
     ninja
     pkg-config
@@ -56,6 +58,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   buildInputs = [
+    check
     glib
     libxml2
     libxslt
@@ -69,7 +72,7 @@ stdenv.mkDerivation (finalAttrs: {
       --replace "subdir('tests')" ""
   '';
 
-  LC_ALL = "en_US.UTF-8";
+  env.LC_ALL = "en_US.UTF-8";
 
   mesonFlags = [
     "-Dinstall-py-overrides=true"
