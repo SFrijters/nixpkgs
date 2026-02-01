@@ -686297,6 +686297,7 @@ self: {
       testHaskellDepends = [
         base
         hspec
+        hspec-discover
         QuickCheck
         text
       ];
