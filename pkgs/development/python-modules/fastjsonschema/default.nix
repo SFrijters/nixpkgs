@@ -27,7 +27,8 @@ buildPythonPackage rec {
   disabledTests = [
     "benchmark"
     # these tests require network access
-    "remote ref"
+    "remote"
+    "ref"
     "definitions"
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
