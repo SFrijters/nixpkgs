@@ -12,7 +12,7 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "libxmu";
-  version = "1.3.0";
+  version = "1.3.1";
 
   outputs = [
     "out"
@@ -22,7 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchurl {
     url = "mirror://xorg/individual/lib/libXmu-${finalAttrs.version}.tar.xz";
-    hash = "sha256-mDsJCiRaM/LqVhiVv4rtW3Ce8lrAavDhzP/s8VrMCdU=";
+    hash = "sha256-gamelMRQHoHEJ8uqShF0i1hJM+lLehVoMMNiElaFe8Q=";
   };
 
   strictDeps = true;
