@@ -65,6 +65,7 @@
   libkrb5,
   libgbm,
   libva,
+  expat,
   enableProprietaryCodecs ? true,
   # darwin
   bootstrap_cmds,
@@ -243,6 +244,7 @@ qtModule {
     nss
     protobuf
     jsoncpp
+    expat
 
     icu
     libxml2
