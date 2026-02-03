@@ -140,7 +140,7 @@ python3.pkgs.buildPythonApplication rec {
     pytest-xdist
   ]);
 
-  env.LC_ALL = "en_US.UTF-8";
+  # env.LC_ALL = "en_US.UTF-8";
 
   doCheck = false;
 
