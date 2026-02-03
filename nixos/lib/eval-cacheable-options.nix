@@ -9,9 +9,7 @@
 
 let
   lib = import libPath;
-  modulesPath_ = lib.traceVal "${nixosPath}/modules";
-  modules_ = lib.traceVal modules;
-  modulePaths = lib.traceVal (map (m: "${modulesPath_}/${m}") modules_);
+  modulesPath = "${nixosPath}/modules";
   # dummy pkgs set that contains no packages, only `pkgs.lib` from the full set.
   # not having `pkgs.lib` causes all users of `pkgs.formats` to fail.
   pkgs = import pkgsLibPath {
@@ -31,7 +29,7 @@ let
     system.stateVersion = stateVersion;
   };
   eval = lib.evalModules {
-    modules = modulePaths ++ [
+    modules = (map (m: "${modulesPath}/${m}") modules) ++ [
       config
     ];
     specialArgs = {
@@ -50,7 +48,7 @@ let
     options = eval.options;
     version = release;
     revision = "release-${release}";
-    prefix = modulesPath_;
+    prefix = modulesPath;
     extraSources = [ (dirOf nixosPath) ];
   };
 in

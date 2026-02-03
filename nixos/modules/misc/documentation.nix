@@ -148,13 +148,9 @@ let
         ''
           export NIX_STORE_DIR=$TMPDIR/store
           export NIX_STATE_DIR=$TMPDIR/state
+
           modulesPath=./modules.nix
           echo -n '${modules}' > $modulesPath
-          echo libPath ${libPath}
-          echo pkgsLibPath ${pkgsLibPath}
-          echo nixosPath ${nixosPath}
-          echo modulesPath $modulesPath
-          cat $modulesPath
 
           ${pkgs.buildPackages.nix}/bin/nix-instantiate \
             --show-trace \
