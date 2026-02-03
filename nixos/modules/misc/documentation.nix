@@ -127,37 +127,41 @@ let
             && (t == "directory" -> baseNameOf n != "tests")
             && (t == "file" -> hasSuffix ".nix" n);
         };
+        libPath = filter (pkgs.path + "/lib");
+        pkgsLibPath = filter (pkgs.path + "/pkgs/pkgs-lib");
+        nixosPath = filteredModules + "/nixos";
+        modules =
+          "[ "
+          + concatMapStringsSep " " (p: ''"${removePrefix "${modulesPath}/" (toString p)}"'') docModules.lazy
+          + " ]";
       in
       pkgs.runCommand "lazy-options.json"
-        rec {
-          libPath = filter (pkgs.path + "/lib");
-          pkgsLibPath = filter (pkgs.path + "/pkgs/pkgs-lib");
-          nixosPath = filteredModules + "/nixos";
-          NIX_ABORT_ON_WARN = warningsAreErrors;
-          modules =
-            "[ "
-            + concatMapStringsSep " " (p: ''"${removePrefix "${modulesPath}/" (toString p)}"'') docModules.lazy
-            + " ]";
-          passAsFile = [ "modules" ];
+        {
+          env.NIX_ABORT_ON_WARN = warningsAreErrors;
           disallowedReferences = [
             filteredModules
             libPath
             pkgsLibPath
           ];
+          __structuredAttrs = true;
         }
         ''
           export NIX_STORE_DIR=$TMPDIR/store
           export NIX_STATE_DIR=$TMPDIR/state
+
+          modulesPath=./modules.nix
+          echo -n '${modules}' > $modulesPath
+
           ${pkgs.buildPackages.nix}/bin/nix-instantiate \
             --show-trace \
             --eval --json --strict \
-            --argstr libPath "$libPath" \
-            --argstr pkgsLibPath "$pkgsLibPath" \
-            --argstr nixosPath "$nixosPath" \
+            --argstr libPath "${libPath}" \
+            --argstr pkgsLibPath "${pkgsLibPath}" \
+            --argstr nixosPath "${nixosPath}" \
             --arg modules "import $modulesPath" \
             --argstr stateVersion "${options.system.stateVersion.default}" \
             --argstr release "${config.system.nixos.release}" \
-            $nixosPath/lib/eval-cacheable-options.nix > $out \
+            ${nixosPath}/lib/eval-cacheable-options.nix > $out \
             || {
               echo -en "\e[1;31m"
               echo 'Cacheable portion of option doc build failed.'
