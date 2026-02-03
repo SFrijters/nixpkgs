@@ -28,7 +28,7 @@
   nixosTests,
 }:
 
-buildPythonPackage rec {
+buildPythonPackage (finalAttrs: {
   pname = "maestral";
   version = "1.9.6";
   pyproject = true;
@@ -36,7 +36,7 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "SamSchott";
     repo = "maestral";
-    tag = "v${version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-mYFiQL4FumJWP2y1u5tIo1CZL027J8/EIYqJQde7G/c=";
   };
 
@@ -68,7 +68,7 @@ buildPythonPackage rec {
     "--prefix"
     "PYTHONPATH"
     ":"
-    (makePythonPath dependencies)
+    (makePythonPath finalAttrs.finalPackage.dependencies)
     "--prefix"
     "PYTHONPATH"
     ":"
@@ -123,7 +123,7 @@ buildPythonPackage rec {
     description = "Open-source Dropbox client for macOS and Linux";
     mainProgram = "maestral";
     homepage = "https://maestral.app";
-    changelog = "https://github.com/samschott/maestral/releases/tag/v${version}";
+    changelog = "https://github.com/samschott/maestral/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [
       natsukium
@@ -131,4 +131,4 @@ buildPythonPackage rec {
       sfrijters
     ];
   };
-}
+})
