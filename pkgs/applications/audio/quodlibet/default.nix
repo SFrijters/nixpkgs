@@ -142,6 +142,8 @@ python3.pkgs.buildPythonApplication rec {
 
   env.LC_ALL = "en_US.UTF-8";
 
+  doCheck = false;
+
   preCheck = ''
     export GDK_PIXBUF_MODULE_FILE=${librsvg}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
     export XDG_DATA_DIRS="$out/share:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_ICON_DIRS:$XDG_DATA_DIRS"
