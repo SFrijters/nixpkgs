@@ -156,19 +156,12 @@ lib.fix (self: {
     runCommand "${pname}-${version}-sources"
       {
         inherit pname version;
-
-        passAsFile = [
-          "package"
-          "packageLock"
-        ];
-
-        package = toJSON packageJSON';
-        packageLock = toJSON packageLock';
+        __structuredAttrs = true;
       }
       ''
         mkdir $out
-        cp "$packagePath" $out/package.json
-        cp "$packageLockPath" $out/package-lock.json
+        echo -n "${toJSON packageJSON'}" > $out/package.json
+        echo -n "${toJSON packageLock'}" > $out/package-lock.json
       '';
 
   # Build node modules from package.json & package-lock.json
@@ -191,9 +184,6 @@ lib.fix (self: {
           inherit npmRoot package packageLock;
         };
 
-        package = toJSON package;
-        packageLock = toJSON packageLock;
-
         installPhase = ''
           runHook preInstall
           mkdir $out
@@ -202,6 +192,8 @@ lib.fix (self: {
           [[ -d node_modules ]] && mv node_modules $out/
           runHook postInstall
         '';
+
+        __structuredAttrs = true;
       }
       // derivationArgs
       // {
@@ -213,15 +205,9 @@ lib.fix (self: {
         ++ lib.optionals stdenv.hostPlatform.isDarwin [ cctools ]
         ++ derivationArgs.nativeBuildInputs or [ ];
 
-        passAsFile = [
-          "package"
-          "packageLock"
-        ]
-        ++ derivationArgs.passAsFile or [ ];
-
         postPatch = ''
-          cp --no-preserve=mode "$packagePath" package.json
-          cp --no-preserve=mode "$packageLockPath" package-lock.json
+          echo -n "${toJSON package}" > package.json
+          echo -n "${toJSON packageLock}" > package-lock.json
         ''
         + derivationArgs.postPatch or "";
       }
