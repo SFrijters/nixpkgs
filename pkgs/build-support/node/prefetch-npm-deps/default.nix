@@ -263,7 +263,7 @@
             exit 1
           fi
 
-          prefetch-npm-deps $srcLockfile $out
+          outputHash=${hash_.outputHash} prefetch-npm-deps $srcLockfile $out
 
           runHook postBuild
         '';
