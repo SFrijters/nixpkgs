@@ -599,6 +599,7 @@ rec {
           else
             f path
         ) paths;
+      mappedPaths = lib.flatten (mapPaths (path: "${path}${stripPrefix}") paths);
       args =
         removeAttrs args_ [
           "name"
@@ -609,13 +610,13 @@ rec {
         ]
         // {
           inherit preferLocalBuild allowSubstitutes;
-          paths = mapPaths (path: "${path}${stripPrefix}") paths;
-          passAsFile = [ "paths" ];
+          __structuredAttrs = true;
         }; # pass the defaults
     in
     runCommand name args ''
       mkdir -p $out
-      for i in $(cat $pathsPath); do
+      paths=(${lib.concatMapStringsSep " " (p: ''"${p}"'') mappedPaths})
+      for i in "''${paths[@]}"; do
         ${optionalString (!failOnMissing) "if test -d $i; then "}${lndir}/bin/lndir -silent $i $out${
           optionalString (!failOnMissing) "; fi"
         }
