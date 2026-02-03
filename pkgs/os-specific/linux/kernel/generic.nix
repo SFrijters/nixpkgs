@@ -224,12 +224,6 @@ let
           # Create the config file.
           echo "generating kernel configuration..."
           ln -s "${kernelConfigPath}" "$buildRoot/kernel-config"
-          echo ======================= DEBUG ========================
-          cat "$buildRoot/kernel-config"
-          echo "$buildRoot/kernel-config"
-          echo $kernelArch ${toString kernelArch}
-          echo $autoModules ${toString autoModules}
-          echo $preferBuiltin ${toString preferBuiltin}
           DEBUG=1 ARCH=${kernelArch} CROSS_COMPILE=${stdenv.cc.targetPrefix} \
             KERNEL_CONFIG="$buildRoot/kernel-config" AUTO_MODULES=${toString autoModules} \
             PREFER_BUILTIN=${toString preferBuiltin} BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
