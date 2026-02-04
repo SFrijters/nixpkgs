@@ -368,8 +368,10 @@ buildStdenv.mkDerivation {
   ];
 
   # if not explicitly set, wrong cc from buildStdenv would be used
-  HOST_CC = "${llvmPackagesBuildBuild.stdenv.cc}/bin/cc";
-  HOST_CXX = "${llvmPackagesBuildBuild.stdenv.cc}/bin/c++";
+  env = {
+    HOST_CC = "${llvmPackagesBuildBuild.stdenv.cc}/bin/cc";
+    HOST_CXX = "${llvmPackagesBuildBuild.stdenv.cc}/bin/c++";
+  };
 
   nativeBuildInputs = [
     autoconf
