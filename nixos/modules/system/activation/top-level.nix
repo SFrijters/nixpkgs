@@ -34,15 +34,15 @@ let
     ln -s ${config.system.build.etc}/etc $out/etc
 
     ln -s ${config.system.path} $out/sw
-    ln -s "$systemd" $out/systemd
+    ln -s "${config.systemd.package}" $out/systemd
 
     echo -n "systemd ${toString config.systemd.package.interfaceVersion}" > $out/init-interface-version
-    echo -n "$nixosLabel" > $out/nixos-version
+    echo -n "${config.system.nixos.label}" > $out/nixos-version
     echo -n "${config.boot.kernelPackages.stdenv.hostPlatform.system}" > $out/system
 
     ${config.system.systemBuilderCommands}
 
-    cp "$extraDependenciesPath" "$out/extra-dependencies"
+    echo -n '${lib.concatStringsSep " " config.system.extraDependencies}' > "$out/extra-dependencies"
 
     ${optionalString (!config.boot.isContainer && config.boot.bootspec.enable) ''
       ${config.boot.bootspec.writer}
@@ -60,14 +60,8 @@ let
       name = "nixos-system-${config.system.name}-${config.system.nixos.label}";
       preferLocalBuild = true;
       allowSubstitutes = false;
-      passAsFile = [ "extraDependencies" ];
       buildCommand = systemBuilder;
-
-      systemd = config.systemd.package;
-
-      nixosLabel = config.system.nixos.label;
-
-      inherit (config.system) extraDependencies;
+      __structuredAttrs = true;
     }
     // config.system.systemBuilderArgs
   );
