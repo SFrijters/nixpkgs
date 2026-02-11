@@ -56,7 +56,7 @@ buildPythonApplication rec {
     npmHooks.npmConfigHook
   ];
 
-  NODE_PATH = "$npmDeps";
+  env.NODE_PATH = "$npmDeps";
 
   preBuild = ''
     ln -s ${npmDeps}/node_modules ./node_modules
