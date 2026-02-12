@@ -23,21 +23,26 @@ in
 buildBazelPackage rec {
   pname = "verible";
 
-  # These environment variables are read in bazel/build-version.py to create
-  # a build string shown in the tools --version output.
-  # If env variables not set, it would attempt to extract it from .git/.
-  GIT_DATE = "2025-08-29";
-  GIT_VERSION = "v0.0-4023-gc1271a00";
+  env = {
+    # These environment variables are read in bazel/build-version.py to create
+    # a build string shown in the tools --version output.
+    # If env variables not set, it would attempt to extract it from .git/.
+    GIT_DATE = "2025-08-29";
+    GIT_VERSION = "v0.0-4023-gc1271a00";
+  }
+  // lib.optionalAttrs stdenv.hostPlatform.isDarwin {
+    LIBTOOL = "${cctools}/bin/libtool";
+  };
 
   # Derive nix package version from GIT_VERSION: "v1.2-345-abcde" -> "1.2.345"
   version = builtins.concatStringsSep "." (
-    lib.take 3 (lib.drop 1 (builtins.splitVersion GIT_VERSION))
+    lib.take 3 (lib.drop 1 (builtins.splitVersion env.GIT_VERSION))
   );
 
   src = fetchFromGitHub {
     owner = "chipsalliance";
     repo = "verible";
-    tag = GIT_VERSION;
+    tag = env.GIT_VERSION;
     hash = "sha256-N+yjRcVxFI56kP3zq+qFHNXZLTtVnQaVnseZS13YN0s=";
   };
 
@@ -64,7 +69,6 @@ buildBazelPackage rec {
     flex # .. to compile with newer glibc
     python3
   ];
-  LIBTOOL = lib.optionalString stdenv.hostPlatform.isDarwin "${cctools}/bin/libtool";
 
   postPatch = ''
     patchShebangs \
