@@ -51,22 +51,24 @@ let
         name = "${name}-${version}";
         inherit version src;
 
-        MIX_ENV = mixEnv;
-        MIX_TARGET = mixTarget;
-        MIX_BUILD_PREFIX = (if mixTarget == "host" then "" else "${mixTarget}_") + "${mixEnv}";
-        MIX_DEBUG = if enableDebugInfo then 1 else 0;
-        HEX_OFFLINE = 1;
-
         __darwinAllowLocalNetworking = true;
 
-        ERL_COMPILER_OPTIONS =
-          let
-            options = erlangCompilerOptions ++ lib.optionals erlangDeterministicBuilds [ "deterministic" ];
-          in
-          "[${lib.concatStringsSep "," options}]";
+        env = {
+          MIX_ENV = mixEnv;
+          MIX_TARGET = mixTarget;
+          MIX_BUILD_PREFIX = (if mixTarget == "host" then "" else "${mixTarget}_") + "${mixEnv}";
+          MIX_DEBUG = if enableDebugInfo then 1 else 0;
+          HEX_OFFLINE = 1;
 
-        LANG = if stdenv.hostPlatform.isLinux then "C.UTF-8" else "C";
-        LC_CTYPE = if stdenv.hostPlatform.isLinux then "C.UTF-8" else "UTF-8";
+          ERL_COMPILER_OPTIONS =
+            let
+              options = erlangCompilerOptions ++ lib.optionals erlangDeterministicBuilds [ "deterministic" ];
+            in
+            "[${lib.concatStringsSep "," options}]";
+
+          LANG = if stdenv.hostPlatform.isLinux then "C.UTF-8" else "C";
+          LC_CTYPE = if stdenv.hostPlatform.isLinux then "C.UTF-8" else "UTF-8";
+        };
 
         # add to ERL_LIBS so other modules can find at runtime.
         # http://erlang.org/doc/man/code.html#code-path
