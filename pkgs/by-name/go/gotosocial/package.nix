@@ -2,7 +2,7 @@
   lib,
   fetchurl,
   fetchFromCodeberg,
-  buildGo124Module,
+  buildGo125Module,
   nixosTests,
 }:
 let
@@ -16,7 +16,7 @@ let
     hash = "sha256-Xh4SgzBG2Cm4SaMb9lebW/gBv94HuVXNSjd8L+bowUg=";
   };
 in
-buildGo124Module rec {
+buildGo125Module rec {
   inherit version;
   pname = repo;
 
