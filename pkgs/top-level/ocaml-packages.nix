@@ -1213,6 +1213,8 @@ let
 
         menhir = callPackage ../development/ocaml-modules/menhir { };
 
+        menhirGLR = callPackage ../development/ocaml-modules/menhir/glr.nix { };
+
         menhirLib = callPackage ../development/ocaml-modules/menhir/lib.nix { };
 
         menhirSdk = callPackage ../development/ocaml-modules/menhir/sdk.nix { };
