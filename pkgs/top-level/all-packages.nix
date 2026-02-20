@@ -5284,8 +5284,6 @@ with pkgs;
 
   pipx = with python3.pkgs; toPythonApplication pipx;
 
-  wireplumber = callPackage ../development/libraries/pipewire/wireplumber.nix { };
-
   racket-minimal = callPackage ../by-name/ra/racket/minimal.nix {
     stdenv = stdenvAdapters.makeStaticLibraries stdenv;
   };
