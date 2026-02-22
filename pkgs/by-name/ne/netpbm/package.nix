@@ -35,6 +35,11 @@ stdenv.mkDerivation (finalAttrs: {
     sha256 = "sha256-WfmUfP/uc2k8qPki5Gh7WrTH6nIeyhACcn+F5GaFJCE=";
   };
 
+  patches = [
+    # Sent to maintainer 2026-02-22.
+    ./c23.patch
+  ];
+
   nativeBuildInputs = [
     pkg-config
     flex
