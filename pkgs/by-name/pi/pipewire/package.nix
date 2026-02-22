@@ -37,7 +37,11 @@
   libcamera,
   libdrm,
   gst_all_1,
-  ffmpeg,
+  # ffmpeg depends on SDL2 which depends on pipewire by default.
+  # Break the cycle by depending on ffmpeg-headless.
+  # Pipewire only uses libavcodec (via an SPA plugin), which isn't
+  # affected by the *-headless changes.
+  ffmpeg-headless,
   fftwFloat,
   bluezSupport ? stdenv.hostPlatform.isLinux,
   bluez,
@@ -47,8 +51,12 @@
   fdk_aac,
   libopus,
   ldacbt,
+  libldac-dec,
+  spandsp,
   modemmanager,
   libpulseaudio,
+  onnxruntimeSupport ? false,
+  onnxruntime,
   zeroconfSupport ? true,
   avahi,
   raopSupport ? true,
@@ -80,7 +88,7 @@ in
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "pipewire";
-  version = "1.4.10";
+  version = "1.6.0";
 
   outputs = [
     "out"
@@ -95,8 +103,8 @@ stdenv.mkDerivation (finalAttrs: {
     domain = "gitlab.freedesktop.org";
     owner = "pipewire";
     repo = "pipewire";
-    rev = finalAttrs.version;
-    sha256 = "sha256-/Av2iXWInsY6S+PdbfCm1AFtHEFt4LXhgRJ6r9lqOpM=";
+    tag = finalAttrs.version;
+    hash = "sha256-Xc5ouBvT8v0hA3lPfCjhCicoem0jk4knevj7LJJipJ4=";
   };
 
   patches = [
@@ -107,6 +115,8 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   strictDeps = true;
+  __structuredAttrs = true;
+
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [
     docutils
@@ -121,7 +131,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildInputs = [
     dbus
-    ffmpeg
+    ffmpeg-headless
     fftwFloat
     glib
     gst_all_1.gst-plugins-base
@@ -156,7 +166,10 @@ stdenv.mkDerivation (finalAttrs: {
   ]
   ++ lib.optional webrtcAudioProcessingSupport webrtc-audio-processing
   ++ lib.optional stdenv.hostPlatform.isLinux alsa-lib
-  ++ lib.optional ldacbtSupport ldacbt
+  ++ lib.optionals ldacbtSupport [
+    ldacbt
+    libldac-dec
+  ]
   ++ lib.optional libcameraSupport libcamera
   ++ lib.optional zeroconfSupport avahi
   ++ lib.optional raopSupport openssl
@@ -178,9 +191,11 @@ stdenv.mkDerivation (finalAttrs: {
     liblc3
     sbc
     fdk_aac
+    spandsp
   ]
   ++ lib.optional ffadoSupport ffado
   ++ lib.optional stdenv.hostPlatform.isLinux libselinux
+  ++ lib.optional onnxruntimeSupport onnxruntime
   ++ lib.optional modemmanagerSupport modemmanager;
 
   # Valgrind binary is required for running one optional test.
@@ -208,7 +223,7 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.mesonEnable "avb" stdenv.hostPlatform.isLinux)
     (lib.mesonEnable "v4l2" stdenv.hostPlatform.isLinux)
     (lib.mesonEnable "pipewire-v4l2" stdenv.hostPlatform.isLinux)
-    (lib.mesonEnable "systemd" enableSystemd)
+    (lib.mesonEnable "libsystemd" enableSystemd)
     (lib.mesonEnable "systemd-system-service" enableSystemd)
     (lib.mesonEnable "udev" (!enableSystemd && stdenv.hostPlatform.isLinux))
     (lib.mesonEnable "ffmpeg" true)
@@ -237,6 +252,7 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.mesonEnable "compress-offload" true)
     (lib.mesonEnable "man" true)
     (lib.mesonEnable "snap" false) # we don't currently have a working snapd
+    (lib.mesonEnable "onnxruntime" onnxruntimeSupport)
   ];
 
   # Fontconfig error: Cannot load default config file
@@ -249,8 +265,9 @@ stdenv.mkDerivation (finalAttrs: {
     patchShebangs doc/*.py
     patchShebangs doc/input-filter-h.sh
 
-    # Remove installed-test that runs forever
+    # Remove problematic installed-tests
     sed -i -e "/test-pipewire-alsa-stress/d" pipewire-alsa/tests/meson.build
+    sed -i -e "/benchmark-aec/d" spa/tests/meson.build
   '';
 
   postInstall = ''
@@ -272,6 +289,7 @@ stdenv.mkDerivation (finalAttrs: {
     platforms = lib.platforms.linux ++ lib.platforms.freebsd;
     maintainers = with lib.maintainers; [
       k900
+      qweered
     ];
     pkgConfigModules = [
       "libpipewire-0.3"
