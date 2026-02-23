@@ -84,6 +84,7 @@ python3Packages.buildPythonApplication rec {
       hash = "sha256-1+n0n0yCtjfAHkXzsZdIF0iCVdPGmsG7l8/VTqBVEjU=";
     })
     ./ffmpeg.patch
+    # https://github.com/blakeblackshear/frigate/pull/21876
     ./ai-edge-litert.patch
     (fetchpatch {
       # peewee-migrate 0.14.x compat
@@ -95,6 +96,10 @@ python3Packages.buildPythonApplication rec {
       ];
       hash = "sha256-RrmwjE4SHJIUOYfqcCtMy9Pht7UXhHcoAZlFQv9aQFw=";
     })
+    # https://github.com/microsoft/onnxruntime/issues/26717
+    ./onnxruntime-compat.patch
+    # https://github.com/blakeblackshear/frigate/pull/22089
+    ./proc-cmdline-strip.patch
   ];
 
   postPatch = ''

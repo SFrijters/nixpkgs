@@ -114,7 +114,6 @@ stdenv.mkDerivation (finalAttrs: {
     # upstream if you want sustainable Wayland support on macOS).
     badPlatforms = lib.platforms.darwin;
     maintainers = with lib.maintainers; [
-      codyopel
       qyliss
     ];
     pkgConfigModules = [
