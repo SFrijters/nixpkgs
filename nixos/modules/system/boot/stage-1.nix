@@ -659,16 +659,10 @@ in
     boot.initrd.secrets = mkOption {
       default = { };
       type = types.attrsOf (types.nullOr types.path);
+      visible = false;
       description = ''
-        Secrets to append to the initrd. The attribute name is the
-        path the secret should have inside the initrd, the value
-        is the path it should be copied from (or null for the same
-        path inside and out).
-
-        Note that `nixos-rebuild switch` will generate the initrd
-        also for past generations, so if secrets are moved or deleted
-        you will also have to garbage collect the generations that
-        use those secrets.
+        Secrets to append to the initrd. This option has been deprecated in
+        favour of `boot.initrd.secretPaths`.
       '';
       example = literalExpression ''
         { "/etc/dropbear/dropbear_rsa_host_key" =
@@ -872,6 +866,10 @@ in
         '';
       }
     ];
+
+    warnings = lib.optional (config.boot.initrd.secrets != { }) ''
+      The option `boot.initrd.secrets` has been deprecated in favour of `boot.initrd.secretPaths`.
+    '';
 
     # Backwards compatibility to the legacy `boot.initrd.secrets` option.
     boot.initrd.secretPaths = lib.mapAttrs' (dest: source: {
