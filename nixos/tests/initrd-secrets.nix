@@ -21,11 +21,11 @@ let
         { ... }:
         {
           virtualisation.useBootLoader = true;
-          boot.initrd.secrets = {
-            "/test" = secretInStore;
+          boot.initrd.secretPaths = {
+            "/test".source = secretInStore;
 
             # This should *not* need to be copied in postMountCommands
-            "/run/keys/test" = secretInStore;
+            "/run/keys/test".source = secretInStore;
           };
           boot.initrd.postMountCommands = ''
             cp /test /mnt-root/secret-from-initramfs
