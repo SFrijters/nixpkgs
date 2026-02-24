@@ -916,6 +916,7 @@ mapAliases {
   intel2200BGFirmware = warnAlias "'intel2200BGFirmware' has been renamed to 'ipw2200-firmware'" ipw2200-firmware; # Added 2026-02-08
   invalidateFetcherByDrvHash = throw "'invalidateFetcherByDrvHash' has been renamed to/replaced by 'testers.invalidateFetcherByDrvHash'"; # Converted to throw 2025-10-27
   ioccheck = throw "ioccheck was dropped since it was unmaintained."; # Added 2025-07-06
+  ion3 = throw "ion3 was dropped since it was unmaintained."; # Added 2026-02-18
   ipfs = throw "'ipfs' has been renamed to/replaced by 'kubo'"; # Converted to throw 2025-10-27
   ipfs-migrator = throw "'ipfs-migrator' has been renamed to/replaced by 'kubo-migrator'"; # Converted to throw 2025-10-27
   ipfs-migrator-all-fs-repo-migrations = throw "'ipfs-migrator-all-fs-repo-migrations' has been renamed to/replaced by 'kubo-fs-repo-migrations'"; # Converted to throw 2025-10-27
@@ -2052,6 +2053,7 @@ mapAliases {
   xcbutilrenderutil = libxcb-render-util; # Added 2026-02-04
   xcbutilwm = libxcb-wm; # Added 2026-02-04
   xcursorthemes = xcursor-themes; # Added 2026-01-19
+  xdeltaUnstable = throw "'xdeltaUnstable' has been replaced by 'xdelta'"; # Added 2026-02-17
   xdg-terminal-exec-mkhl = warnAlias "
     'xdg-terminal-exec-mkhl' has been removed due to being behind the xdg-terminal-exec spec for too long,
     use the reference implementation 'xdg-terminal-exec' instead.
