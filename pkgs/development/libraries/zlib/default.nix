@@ -18,7 +18,7 @@
   # We avoid the closure size penalty of this buggy upstream behavior by using
   # a dedicated output for the static library, which is fortuenatly also
   # supported by the `--libdir` argument to `./configure`.
-  splitStaticOutput ? shared && !stdenv.hostPlatform.isWindows,
+  splitStaticOutput ? shared && !(stdenv.hostPlatform.isWindows || stdenv.hostPlatform.isCygwin),
   testers,
   minizip,
 }:
