@@ -81,7 +81,7 @@ stdenvNoCC.mkDerivation rec {
     stripRoot = false;
   };
 
-  NIX_DONT_SET_RPATH = true;
+  env.NIX_DONT_SET_RPATH = true;
 
   dontConfigure = true;
   dontBuild = true;
