@@ -64,7 +64,7 @@ let
     version = "android-common-11-5.4";
     src = fetchzip {
       url = "https://android.googlesource.com/kernel/common/+archive/48ffcbf0b9e7f0280bfb8c32c68da0aaf0fdfef6.tar.gz";
-      sha256 = "1y7cmlmcr5vdqydd9n785s139yc4aylc3zhqa59xsylmkaf5habk";
+      hash = "sha256-cylYnJqVet1TURj+wahXhPk0gi7o2NSax22XzCqt7Pg=";
       stripRoot = false;
     };
   };
@@ -77,7 +77,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   src = fetchzip {
     url = "https://android.googlesource.com/platform/bionic/+archive/00e8ce1142d8823b0d2fc8a98b40119b0f1f02cd.tar.gz";
-    sha256 = "10z5mp4w0acvjvgxv7wlqa7m70hcyarmjdlfxbd9rwzf4mrsr8d1";
+    hash = "sha256-oaGscyXu85za6o42WbPyDIJTj8KUn93flpspwMmt5YM=";
     stripRoot = false;
   };
 
