@@ -613,6 +613,7 @@ rec {
       in
       {
         enableParallelBuilding = true;
+        __structuredAttrs = false;
         inherit name allowSubstitutes preferLocalBuild;
         passAsFile = [
           "buildCommand"
