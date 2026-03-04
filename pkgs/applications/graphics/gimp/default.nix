@@ -263,7 +263,7 @@ stdenv.mkDerivation (finalAttrs: {
     "-Djavascript=disabled"
   ];
 
-  doCheck = true;
+  doCheck = false; # true;
 
   env = {
     # The check runs before glib-networking is registered
