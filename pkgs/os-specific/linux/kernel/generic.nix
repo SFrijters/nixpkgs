@@ -168,7 +168,6 @@ lib.makeOverridable (
       generateConfig = ./generate-config.pl;
 
       kernelConfig = kernelConfigFun intermediateNixConfig;
-      passAsFile = [ "kernelConfig" ];
 
       depsBuildBuild = [ buildPackages.stdenv.cc ];
       nativeBuildInputs = [
@@ -185,7 +184,7 @@ lib.makeOverridable (
         rustc-unwrapped
       ];
 
-      RUST_LIB_SRC = lib.optionalString withRust rustPlatform.rustLibSrc;
+      env.RUST_LIB_SRC = lib.optionalString withRust rustPlatform.rustLibSrc;
 
       # e.g. "defconfig"
       kernelBaseConfig =
@@ -219,11 +218,13 @@ lib.makeOverridable (
             ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
             $makeFlags
 
+        kernelConfigPath="$buildRoot/kernel-config"
+        echo -n "$kernelConfig" > "$kernelConfigPath"
+
         # Create the config file.
         echo "generating kernel configuration..."
-        ln -s "$kernelConfigPath" "$buildRoot/kernel-config"
         DEBUG=1 ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
-          KERNEL_CONFIG="$buildRoot/kernel-config" AUTO_MODULES=$autoModules \
+          KERNEL_CONFIG="$kernelConfigPath" AUTO_MODULES=$autoModules \
           PREFER_BUILTIN=$preferBuiltin BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
           perl -w $generateConfig
       ''
@@ -249,6 +250,8 @@ lib.makeOverridable (
       installPhase = "mv $buildRoot/.config $out";
 
       enableParallelBuilding = true;
+
+      __structuredAttrs = true;
 
       passthru = rec {
         module = import ../../../../nixos/modules/system/boot/kernel_config.nix;
