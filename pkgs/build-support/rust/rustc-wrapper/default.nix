@@ -7,7 +7,7 @@
   shell ? stdenvNoCC.shell,
 }:
 let
-  sysrootFlag = lib.optionalString (sysroot != null) "--sysroot ${sysroot}";
+  sysrootFlag = lib.optionalString (sysroot != null) "--sysroot ${lib.escapeShellArg sysroot}";
 
   # Upstream rustc still assumes that musl = static[1].  The fix for
   # this is to disable crt-static by default for non-static musl
@@ -59,13 +59,13 @@ runCommand "${rustc-unwrapped.pname}-wrapper-${rustc-unwrapped.version}"
     ln -s ${rustc-unwrapped}/bin/* $out/bin
     rm $out/bin/{rustc,rustdoc}
     substitute ${./rustc-wrapper.sh} $out/bin/rustc \
-      --replace-fail "@shell@" "${shell}" \
+      --replace-fail "@shell@" "${lib.escapeShellArg shell}" \
       --replace-fail "@sysrootFlag@" "${sysrootFlag}" \
       --replace-fail "@defaultArgs@" "${defaultArgs}" \
       --replace-fail "@prog@" "${rustc-unwrapped}/bin/rustc" \
       --replace-fail "@extraFlagsVar@" "NIX_RUSTFLAGS"
     substitute ${./rustc-wrapper.sh} $out/bin/rustdoc \
-      --replace-fail "@shell@" "${shell}" \
+      --replace-fail "@shell@" "${lib.escapeShellArg shell}" \
       --replace-fail "@sysrootFlag@" "${sysrootFlag}" \
       --replace-fail "@defaultArgs@" "${defaultArgs}" \
       --replace-fail "@prog@" "${rustc-unwrapped}/bin/rustdoc" \
