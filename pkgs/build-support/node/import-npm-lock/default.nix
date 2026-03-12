@@ -12,6 +12,7 @@ let
     match
     elemAt
     toJSON
+    toFile
     removeAttrs
     ;
   inherit (lib) importJSON mapAttrs;
@@ -157,15 +158,15 @@ lib.fix (self: {
       {
         inherit pname version;
 
-        package = toJSON packageJSON';
-        packageLock = toJSON packageLock';
+        package = toFile (toJSON packageJSON');
+        packageLock = toFile (toJSON packageLock');
 
         __structuredAttrs = true;
       }
       ''
         mkdir $out
-        echo -n "$package" > $out/package.json
-        echo -n "$packageLock" > $out/package-lock.json
+        cp "${package}" > $out/package.json
+        cp "${packageLock}" > $out/package-lock.json
       '';
 
   # Build node modules from package.json & package-lock.json
