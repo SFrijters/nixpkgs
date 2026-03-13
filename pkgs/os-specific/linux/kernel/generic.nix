@@ -167,8 +167,6 @@ lib.makeOverridable (
 
       generateConfig = ./generate-config.pl;
 
-      kernelConfig = kernelConfigFun intermediateNixConfig;
-
       depsBuildBuild = [ buildPackages.stdenv.cc ];
       nativeBuildInputs = [
         perl
@@ -185,10 +183,6 @@ lib.makeOverridable (
       ];
 
       env.RUST_LIB_SRC = lib.optionalString withRust rustPlatform.rustLibSrc;
-
-      # e.g. "defconfig"
-      kernelBaseConfig =
-        if defconfig != null then defconfig else stdenv.hostPlatform.linux-kernel.baseConfig or "defconfig";
 
       makeFlags = import ./common-flags.nix {
         inherit
@@ -209,49 +203,54 @@ lib.makeOverridable (
 
       inherit (kernel) src patches;
 
-      buildPhase = ''
-        export buildRoot="''${buildRoot:-build}"
+      buildPhase =
+        let
+          # e.g. "defconfig"
+          kernelBaseConfig =
+            if defconfig != null then defconfig else stdenv.hostPlatform.linux-kernel.baseConfig or "defconfig";
+          kernelIntermediateConfig = builtins.toFile "kernel-intermediate-config" (
+            kernelConfigFun intermediateNixConfig
+          );
+        in
+        ''
+          export buildRoot="''${buildRoot:-build}"
 
-        # Get a basic config file for later refinement with $generateConfig.
-        make $makeFlags \
-            -C . O="$buildRoot" $kernelBaseConfig \
-            ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
-            $makeFlags
+          # Get a basic config file for later refinement with $generateConfig.
+          make $makeFlags \
+              -C . O="$buildRoot" ${kernelBaseConfig} \
+              ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
+              $makeFlags
 
-        kernelConfigPath="$buildRoot/kernel-config"
-        echo -n "$kernelConfig" > "$kernelConfigPath"
-
-        # Create the config file.
-        echo "generating kernel configuration..."
-        DEBUG=1 ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
-          KERNEL_CONFIG="$kernelConfigPath" AUTO_MODULES=$autoModules \
-          PREFER_BUILTIN=$preferBuiltin BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
-          perl -w $generateConfig
-      ''
-      + lib.optionalString stdenv.cc.isClang ''
-        if ! grep -Fq CONFIG_CC_IS_CLANG=y $buildRoot/.config; then
-          echo "Kernel config didn't recognize the clang compiler?"
-          exit 1
-        fi
-      ''
-      + lib.optionalString stdenv.cc.bintools.isLLVM ''
-        if ! grep -Fq CONFIG_LD_IS_LLD=y $buildRoot/.config; then
-          echo "Kernel config didn't recognize the LLVM linker?"
-          exit 1
-        fi
-      ''
-      + lib.optionalString withRust ''
-        if ! grep -Fq CONFIG_RUST_IS_AVAILABLE=y $buildRoot/.config; then
-          echo "Kernel config didn't find Rust toolchain?"
-          exit 1
-        fi
-      '';
+          # Create the config file.
+          echo "generating kernel configuration..."
+          ln -s "${kernelIntermediateConfig}" "$buildRoot/kernel-config"
+          DEBUG=1 ARCH=$kernelArch CROSS_COMPILE=${stdenv.cc.targetPrefix} \
+            KERNEL_CONFIG="$buildRoot/kernel-config" AUTO_MODULES=$autoModules \
+            PREFER_BUILTIN=$preferBuiltin BUILD_ROOT="$buildRoot" SRC=. MAKE_FLAGS="$makeFlags" \
+            perl -w $generateConfig
+        ''
+        + lib.optionalString stdenv.cc.isClang ''
+          if ! grep -Fq CONFIG_CC_IS_CLANG=y $buildRoot/.config; then
+            echo "Kernel config didn't recognize the clang compiler?"
+            exit 1
+          fi
+        ''
+        + lib.optionalString stdenv.cc.bintools.isLLVM ''
+          if ! grep -Fq CONFIG_LD_IS_LLD=y $buildRoot/.config; then
+            echo "Kernel config didn't recognize the LLVM linker?"
+            exit 1
+          fi
+        ''
+        + lib.optionalString withRust ''
+          if ! grep -Fq CONFIG_RUST_IS_AVAILABLE=y $buildRoot/.config; then
+            echo "Kernel config didn't find Rust toolchain?"
+            exit 1
+          fi
+        '';
 
       installPhase = "mv $buildRoot/.config $out";
 
       enableParallelBuilding = true;
-
-      __structuredAttrs = true;
 
       passthru = rec {
         module = import ../../../../nixos/modules/system/boot/kernel_config.nix;
