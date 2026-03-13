@@ -62,13 +62,13 @@ runCommand "${rustc-unwrapped.pname}-wrapper-${rustc-unwrapped.version}"
       --replace-fail "@shell@" "${lib.escapeShellArg shell}" \
       --replace-fail "@sysrootFlag@" "${sysrootFlag}" \
       --replace-fail "@defaultArgs@" "${defaultArgs}" \
-      --replace-fail "@prog@" "${rustc-unwrapped}/bin/rustc" \
+      --replace-fail "@prog@" "${lib.escapeShellArg rustc-unwrapped}/bin/rustc" \
       --replace-fail "@extraFlagsVar@" "NIX_RUSTFLAGS"
     substitute ${./rustc-wrapper.sh} $out/bin/rustdoc \
       --replace-fail "@shell@" "${lib.escapeShellArg shell}" \
       --replace-fail "@sysrootFlag@" "${sysrootFlag}" \
       --replace-fail "@defaultArgs@" "${defaultArgs}" \
-      --replace-fail "@prog@" "${rustc-unwrapped}/bin/rustdoc" \
+      --replace-fail "@prog@" "${lib.escapeShellArg rustc-unwrapped}/bin/rustdoc" \
       --replace-fail "@extraFlagsVar@" "NIX_RUSTDOCFLAGS"
     chmod +x $out/bin/{rustc,rustdoc}
     ${lib.concatMapStrings (output: "ln -s ${rustc-unwrapped.${output}} \$${output}\n") (
