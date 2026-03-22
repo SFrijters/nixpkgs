@@ -42,7 +42,7 @@ let
 
     ${config.system.systemBuilderCommands}
 
-    echo -n "$extraDependencies" > "$out/extra-dependencies"
+    cp "$extraDependenciesPath" "$out/extra-dependencies"
 
     ${optionalString (!config.boot.isContainer && config.boot.bootspec.enable) ''
       ${config.boot.bootspec.writer}
@@ -66,12 +66,9 @@ let
 
       nixosLabel = config.system.nixos.label;
 
-      inherit (config.system) extraDependencies;
+      extraDependenciesPath = builtins.toFile config.system.extraDependencies;
     }
     // config.system.systemBuilderArgs
-    // {
-      __structuredAttrs = true;
-    }
   );
 
   # Handle assertions and warnings
