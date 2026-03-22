@@ -503,7 +503,7 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              valuePath="value"
+              valuePath="$TMPDIR/value"
               printf "%s" "$value" > "$valuePath"
               json2cdn "$valuePath" > $out
             ''
@@ -970,11 +970,11 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              importsPath="imports"
+              importsPath="$TMPDIR/imports"
               printf "%s" "$imports" > "$importsPath"
-              valuePath="value"
+              valuePath="$TMPDIR/value"
               printf "%s" "$value" > "$valuePath"
-              pythonGenPath="pythonGen"
+              pythonGenPath="$TMPDIR/pythonGen"
               printf "%s" "$pythonGen" > "$pythonGenPath"
               cat "$valuePath"
               python3 "$pythonGenPath" > $out
@@ -1021,9 +1021,9 @@ optionalAttrs allowAliases aliases
                 __structuredAttrs = true;
               }
               ''
-                pythonGenPath="pythonGen"
+                pythonGenPath="$TMPDIR/pythonGen"
                 printf "%s" "$pythonGen" > "$pythonGenPath"
-                valuePath="value"
+                valuePath="$TMPDIR/value"
                 printf "%s" "$value" > "$valuePath"
                 python3 "$pythonGenPath" > $out
                 xmllint $out > /dev/null
