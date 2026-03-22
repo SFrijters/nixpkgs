@@ -218,11 +218,9 @@ rec {
         # merge with an empty set if baseOptionsJSON is null to run markdown
         # processing on the input options
         baseJSON = if baseOptionsJSON == null then builtins.toFile "base.json" "{}" else baseOptionsJSON;
-        __structuredAttrs = true;
+        optionsPath = builtins.toFile options;
       }
       ''
-          optionsPath=options
-          echo -n "$options" > "$optionsPath"
           # Export list of options in different format.
           dst=$out/share/doc/nixos
           mkdir -p $dst
