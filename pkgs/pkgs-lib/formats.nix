@@ -145,7 +145,7 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | jq . > $out
+              printf "%s" "$value" | jq . > $out
             ''
         ) { };
 
@@ -168,7 +168,7 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | json2yaml -o "$out"
+              printf "%s" "$value" | json2yaml -o "$out"
             ''
         ) { };
 
@@ -191,7 +191,7 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | json2yaml -o "$out"
+              printf "%s" "$value" | json2yaml -o "$out"
             ''
         ) { };
 
@@ -470,7 +470,7 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | json2toml -o "$out"
+              printf "%s" "$value" | json2toml -o "$out"
             ''
         ) { };
 
@@ -504,7 +504,7 @@ optionalAttrs allowAliases aliases
             }
             ''
               valuePath="value"
-              echo -n "$value" > "$valuePath"
+              printf "%s" "$value" > "$valuePath"
               json2cdn "$valuePath" > $out
             ''
         ) { };
@@ -741,7 +741,7 @@ optionalAttrs allowAliases aliases
             __structuredAttrs = true;
           }
           ''
-            echo -n "$value" > "$out"
+            printf "%s" "$value" > "$out"
             mix format "$out"
           '';
     };
@@ -790,9 +790,9 @@ optionalAttrs allowAliases aliases
             }
             ''
               ${optionalString (!asBindings) ''
-                echo -n 'return ' >> $out
+                printf "%s" 'return ' >> $out
               ''}
-              echo -n "$value" >> $out
+              printf "%s" "$value" >> $out
               stylua \
                 --no-editorconfig \
                 --line-endings Unix \
@@ -971,11 +971,11 @@ optionalAttrs allowAliases aliases
             }
             ''
               importsPath="imports"
-              echo -n "$imports" > "$importsPath"
+              printf "%s" "$imports" > "$importsPath"
               valuePath="value"
-              echo -n "$value" > "$valuePath"
+              printf "%s" "$value" > "$valuePath"
               pythonGenPath="pythonGen"
-              echo -n "$pythonGen" > "$pythonGenPath"
+              printf "%s" "$pythonGen" > "$pythonGenPath"
               cat "$valuePath"
               python3 "$pythonGenPath" > $out
               black $out
@@ -1022,9 +1022,9 @@ optionalAttrs allowAliases aliases
               }
               ''
                 pythonGenPath="pythonGen"
-                echo -n "$pythonGen" > "$pythonGenPath"
+                printf "%s" "$pythonGen" > "$pythonGenPath"
                 valuePath="value"
-                echo -n "$value" > "$valuePath"
+                printf "%s" "$value" > "$valuePath"
                 python3 "$pythonGenPath" > $out
                 xmllint $out > /dev/null
               ''

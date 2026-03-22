@@ -159,7 +159,7 @@ rec {
         if [ -e "$textPath" ]; then
           mv "$textPath" "$target"
         else
-          echo -n "$text" > "$target"
+          printf "%s" "$text" > "$target"
         fi
 
         if [ -n "$executable" ]; then
@@ -415,7 +415,7 @@ rec {
       ''
         n=$out/bin/${pname}
         mkdir -p "$(dirname "$n")"
-        echo -n "$code" > code.c
+        printf "%s" "$code" > code.c
         $CC -x c code.c -o "$n"
       '';
 

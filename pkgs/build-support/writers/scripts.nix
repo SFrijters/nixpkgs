@@ -146,7 +146,7 @@ rec {
               if (types.str.check content) then
                 ''
                   contentPath="/build/content"
-                  echo -n "$content" > "$contentPath"
+                  printf "%s" "$content" > "$contentPath"
                 ''
               else
                 ''
@@ -271,7 +271,7 @@ rec {
               if (types.str.check content) then
                 ''
                   contentPath="/build/content"
-                  echo -n "$content" > "$contentPath"
+                  printf "%s" "$content" > "$contentPath"
                 ''
               else
                 ''
@@ -1120,7 +1120,7 @@ rec {
       } # sh
       ''
         # nginx-config-formatter has an error - https://github.com/1connect/nginx-config-formatter/issues/16
-        echo -n "$text" | awk -f ${awkFormatNginx} | sed '/^\s*$/d' > $out
+        printf "%s" "$text" | awk -f ${awkFormatNginx} | sed '/^\s*$/d' > $out
         gixy $out || (echo "\n\nThis can be caused by combining multiple incompatible services on the same hostname.\n\nFull merged config:\n\n"; cat $out; exit 1)
       '';
 

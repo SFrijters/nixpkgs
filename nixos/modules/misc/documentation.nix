@@ -147,7 +147,7 @@ let
         }
         ''
           modulesPath="$TMPDIR/modules"
-          echo -n "$modules" > "$modulesPath"
+          printf "%s" "$modules" > "$modulesPath"
           export NIX_STORE_DIR=$TMPDIR/store
           export NIX_STATE_DIR=$TMPDIR/state
           ${pkgs.buildPackages.nix}/bin/nix-instantiate \
