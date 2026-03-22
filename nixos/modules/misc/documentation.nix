@@ -134,20 +134,17 @@ let
           pkgsLibPath = filter (pkgs.path + "/pkgs/pkgs-lib");
           nixosPath = filteredModules + "/nixos";
           env.NIX_ABORT_ON_WARN = warningsAreErrors;
-          modules =
+          modulesFile = builtins.toFile (
             "[ "
             + concatMapStringsSep " " (p: ''"${removePrefix "${modulesPath}/" (toString p)}"'') docModules.lazy
-            + " ]";
+            + " ]");
           disallowedReferences = [
             filteredModules
             libPath
             pkgsLibPath
           ];
-          __structuredAttrs = true;
         }
         ''
-          modulesPath="$TMPDIR/modules"
-          echo -n "$modules" > "$modulesPath"
           export NIX_STORE_DIR=$TMPDIR/store
           export NIX_STATE_DIR=$TMPDIR/state
           ${pkgs.buildPackages.nix}/bin/nix-instantiate \
@@ -156,7 +153,7 @@ let
             --argstr libPath "$libPath" \
             --argstr pkgsLibPath "$pkgsLibPath" \
             --argstr nixosPath "$nixosPath" \
-            --arg modules "import $modulesPath" \
+            --arg modules "import $modulesFile" \
             --argstr stateVersion "${options.system.stateVersion.default}" \
             --argstr release "${config.system.nixos.release}" \
             $nixosPath/lib/eval-cacheable-options.nix > $out \
