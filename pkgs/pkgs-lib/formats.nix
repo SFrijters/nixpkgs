@@ -140,12 +140,11 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ jq ];
-              value = builtins.toJSON value;
+              valuePath = builtins.toFile (builtins.toJSON value);
               preferLocalBuild = true;
-              __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | jq . > $out
+              jq . "$valuePath" > $out
             ''
         ) { };
 
@@ -163,12 +162,11 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ remarshal_0_17 ];
-              value = builtins.toJSON value;
+              valuePath = builtins.toFile (builtins.toJSON value);
               preferLocalBuild = true;
-              __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | json2yaml -o "$out"
+              json2yaml "$valuePath" "$out"
             ''
         ) { };
 
@@ -186,12 +184,11 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ remarshal ];
-              value = builtins.toJSON value;
+              valuePath = builtins.toFile (builtins.toJSON value);
               preferLocalBuild = true;
-              __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | json2yaml -o "$out"
+              json2yaml "$valuePath" "$out"
             ''
         ) { };
 
@@ -465,12 +462,11 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ remarshal ];
-              value = builtins.toJSON value;
+              valuePath = builtins.toFile (builtins.toJSON value);
               preferLocalBuild = true;
-              __structuredAttrs = true;
             }
             ''
-              echo -n "$value" | json2toml -o "$out"
+              json2toml "$valuePath" "$out"
             ''
         ) { };
 
@@ -498,13 +494,10 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ json2cdn ];
-              value = builtins.toJSON value;
+              valuePath = builtins.toFile (builtins.toJSON value);
               preferLocalBuild = true;
-              __structuredAttrs = true;
             }
             ''
-              valuePath="value"
-              echo -n "$value" > "$valuePath"
               json2cdn "$valuePath" > $out
             ''
         ) { };
@@ -735,13 +728,12 @@ optionalAttrs allowAliases aliases
         name: value:
         pkgs.runCommand name
           {
-            value = toConf value;
+            valuePath = builtins.toFile (toConf value);
             nativeBuildInputs = [ elixir ];
             preferLocalBuild = true;
-            __structuredAttrs = true;
           }
           ''
-            echo -n "$value" > "$out"
+            cp "$valuePath" "$out"
             mix format "$out"
           '';
     };
@@ -784,15 +776,14 @@ optionalAttrs allowAliases aliases
               inherit columnWidth;
               inherit indentWidth;
               indentType = if indentUsingTabs then "Tabs" else "Spaces";
-              value = toLua { inherit asBindings multiline; } value;
+              valuePath = builtins.toFile (toLua { inherit asBindings multiline; } value);
               preferLocalBuild = true;
-              __structuredAttrs = true;
             }
             ''
               ${optionalString (!asBindings) ''
                 echo -n 'return ' >> $out
               ''}
-              echo -n "$value" >> $out
+              cat $valuePath >> $out
               stylua \
                 --no-editorconfig \
                 --line-endings Unix \
@@ -931,9 +922,9 @@ optionalAttrs allowAliases aliases
                 python3
                 black
               ];
-              imports = builtins.toJSON (value._imports or [ ]);
-              value = builtins.toJSON (removeAttrs value [ "_imports" ]);
-              pythonGen = ''
+              importsPath = builtins.toFile (builtins.toJSON (value._imports or [ ]));
+              valuePath = builtins.toFile (builtins.toJSON (removeAttrs value [ "_imports" ]));
+              pythonGenPath = builtins.toFile ''
                 import json
                 import os
 
@@ -967,15 +958,8 @@ optionalAttrs allowAliases aliases
                         print(f"{key} = {recursive_repr(value)}")
               '';
               preferLocalBuild = true;
-              __structuredAttrs = true;
             }
             ''
-              importsPath="imports"
-              echo -n "$imports" > "$importsPath"
-              valuePath="value"
-              echo -n "$value" > "$valuePath"
-              pythonGenPath="pythonGen"
-              echo -n "$pythonGen" > "$pythonGenPath"
               cat "$valuePath"
               python3 "$pythonGenPath" > $out
               black $out
@@ -1006,8 +990,8 @@ optionalAttrs allowAliases aliases
                   python3Packages.xmltodict
                   libxml2Python
                 ];
-                value = builtins.toJSON value;
-                pythonGen = ''
+                valuePath = builtins.toFile (builtins.toJSON value);
+                pythonGenPath = builtins.toFile ''
                   import json
                   import os
                   import xmltodict
@@ -1018,13 +1002,8 @@ optionalAttrs allowAliases aliases
                       }, pretty=True, indent=" " * 2))
                 '';
                 preferLocalBuild = true;
-                __structuredAttrs = true;
               }
               ''
-                pythonGenPath="pythonGen"
-                echo -n "$pythonGen" > "$pythonGenPath"
-                valuePath="value"
-                echo -n "$value" > "$valuePath"
                 python3 "$pythonGenPath" > $out
                 xmllint $out > /dev/null
               ''
