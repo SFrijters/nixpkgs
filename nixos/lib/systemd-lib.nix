@@ -79,7 +79,7 @@ rec {
           # unit.text can be null. But variables that are null listed in
           # passAsFile are ignored by nix, resulting in no file being created,
           # making the mv operation fail.
-          textPath = builtins.toFile (optionalString (unit.text != null) unit.text);
+          textPath = builtins.toFile "unit-text" (optionalString (unit.text != null) unit.text);
         }
         ''
           name=${shellEscape name}

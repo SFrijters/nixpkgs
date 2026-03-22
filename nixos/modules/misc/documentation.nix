@@ -134,7 +134,7 @@ let
           pkgsLibPath = filter (pkgs.path + "/pkgs/pkgs-lib");
           nixosPath = filteredModules + "/nixos";
           env.NIX_ABORT_ON_WARN = warningsAreErrors;
-          modulesFile = builtins.toFile (
+          modulesFile = builtins.toFile "modules" (
             "[ "
             + concatMapStringsSep " " (p: ''"${removePrefix "${modulesPath}/" (toString p)}"'') docModules.lazy
             + " ]");

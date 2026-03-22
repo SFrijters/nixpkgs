@@ -66,7 +66,7 @@ let
 
       nixosLabel = config.system.nixos.label;
 
-      extraDependenciesPath = builtins.toFile config.system.extraDependencies;
+      extraDependenciesPath = builtins.toFile "extra-dependencies" config.system.extraDependencies;
     }
     // config.system.systemBuilderArgs
   );

@@ -214,11 +214,10 @@ rec {
           pkgs.brotli
           pkgs.python3
         ];
-        options = builtins.unsafeDiscardStringContext (builtins.toJSON optionsNix);
+        optionsJSON = builtins.toFile "options.json" (builtins.unsafeDiscardStringContext (builtins.toJSON optionsNix));
         # merge with an empty set if baseOptionsJSON is null to run markdown
         # processing on the input options
         baseJSON = if baseOptionsJSON == null then builtins.toFile "base.json" "{}" else baseOptionsJSON;
-        optionsPath = builtins.toFile options;
       }
       ''
           # Export list of options in different format.
@@ -228,7 +227,7 @@ rec {
           TOUCH_IF_DB=$dst/.used-docbook \
           python ${./mergeJSON.py} \
             ${lib.optionalString warningsAreErrors "--warnings-are-errors"} \
-            $baseJSON $optionsPath \
+            $baseJSON $optionsJSON \
             > $dst/options.json
 
         if grep /nixpkgs/nixos/modules $dst/options.json; then

@@ -118,7 +118,7 @@ rec {
               if (types.str.check content) then
                 {
                   inherit interpreter;
-                  contentPath = builtins.toFile content;
+                  contentPath = builtins.toFile "content" content;
                 }
               else
                 {
@@ -263,7 +263,7 @@ rec {
             }
             // (
               if (types.str.check content) then
-                { contentPath = builtins.toFile content; }
+                { contentPath = builtins.toFile "content" content; }
               else
                 { contentPath = content; }
             )
@@ -1103,7 +1103,7 @@ rec {
     name: text:
     pkgs.runCommandLocal name
       {
-        textPath = builtins.toFile text;
+        textPath = builtins.toFile "text" text;
         nativeBuildInputs = [ gixy ];
       } # sh
       ''

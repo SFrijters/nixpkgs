@@ -140,7 +140,7 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ jq ];
-              valuePath = builtins.toFile (builtins.toJSON value);
+              valuePath = builtins.toFile "value" (builtins.toJSON value);
               preferLocalBuild = true;
             }
             ''
@@ -162,7 +162,7 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ remarshal_0_17 ];
-              valuePath = builtins.toFile (builtins.toJSON value);
+              valuePath = builtins.toFile "value" (builtins.toJSON value);
               preferLocalBuild = true;
             }
             ''
@@ -184,7 +184,7 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ remarshal ];
-              valuePath = builtins.toFile (builtins.toJSON value);
+              valuePath = builtins.toFile "value" (builtins.toJSON value);
               preferLocalBuild = true;
             }
             ''
@@ -462,7 +462,7 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ remarshal ];
-              valuePath = builtins.toFile (builtins.toJSON value);
+              valuePath = builtins.toFile "value" (builtins.toJSON value);
               preferLocalBuild = true;
             }
             ''
@@ -494,7 +494,7 @@ optionalAttrs allowAliases aliases
           runCommand name
             {
               nativeBuildInputs = [ json2cdn ];
-              valuePath = builtins.toFile (builtins.toJSON value);
+              valuePath = builtins.toFile "value" (builtins.toJSON value);
               preferLocalBuild = true;
             }
             ''
@@ -728,7 +728,7 @@ optionalAttrs allowAliases aliases
         name: value:
         pkgs.runCommand name
           {
-            valuePath = builtins.toFile (toConf value);
+            valuePath = builtins.toFile "value" (toConf value);
             nativeBuildInputs = [ elixir ];
             preferLocalBuild = true;
           }
@@ -776,7 +776,7 @@ optionalAttrs allowAliases aliases
               inherit columnWidth;
               inherit indentWidth;
               indentType = if indentUsingTabs then "Tabs" else "Spaces";
-              valuePath = builtins.toFile (toLua { inherit asBindings multiline; } value);
+              valuePath = builtins.toFile "value" (toLua { inherit asBindings multiline; } value);
               preferLocalBuild = true;
             }
             ''
@@ -922,9 +922,9 @@ optionalAttrs allowAliases aliases
                 python3
                 black
               ];
-              importsPath = builtins.toFile (builtins.toJSON (value._imports or [ ]));
-              valuePath = builtins.toFile (builtins.toJSON (removeAttrs value [ "_imports" ]));
-              pythonGenPath = builtins.toFile ''
+              importsPath = builtins.toFile "imports" (builtins.toJSON (value._imports or [ ]));
+              valuePath = builtins.toFile "value" (builtins.toJSON (removeAttrs value [ "_imports" ]));
+              pythonGenPath = builtins.toFile "pythonGen" ''
                 import json
                 import os
 
@@ -990,8 +990,8 @@ optionalAttrs allowAliases aliases
                   python3Packages.xmltodict
                   libxml2Python
                 ];
-                valuePath = builtins.toFile (builtins.toJSON value);
-                pythonGenPath = builtins.toFile ''
+                valuePath = builtins.toFile "value" (builtins.toJSON value);
+                pythonGenPath = builtins.toFile "pythonGen" ''
                   import json
                   import os
                   import xmltodict
