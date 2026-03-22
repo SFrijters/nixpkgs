@@ -145,7 +145,9 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              printf "%s" "$value" | jq . > $out
+              valuePath="$TMPDIR/value"
+              printf "%s" "$value" > "$valuePath"
+              jq . "$valuePath" > $out
             ''
         ) { };
 
@@ -168,7 +170,9 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              printf "%s" "$value" | json2yaml -o "$out"
+              valuePath="$TMPDIR/value"
+              printf "%s" "$value" > "$valuePath"
+              json2yaml "$valuePath" "$out"
             ''
         ) { };
 
@@ -191,7 +195,9 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              printf "%s" "$value" | json2yaml -o "$out"
+              valuePath="$TMPDIR/value"
+              printf "%s" "$value" > "$valuePath"
+              json2yaml "$valuePath" "$out"
             ''
         ) { };
 
@@ -470,7 +476,9 @@ optionalAttrs allowAliases aliases
               __structuredAttrs = true;
             }
             ''
-              printf "%s" "$value" | json2toml -o "$out"
+              valuePath="$TMPDIR/value"
+              printf "%s" "$value" > "$valuePath"
+              json2toml "$valuePath" "$out"
             ''
         ) { };
 
@@ -790,7 +798,7 @@ optionalAttrs allowAliases aliases
             }
             ''
               ${optionalString (!asBindings) ''
-                printf "%s" 'return ' >> $out
+                echo -n 'return ' >> $out
               ''}
               printf "%s" "$value" >> $out
               stylua \
@@ -933,7 +941,7 @@ optionalAttrs allowAliases aliases
               ];
               imports = builtins.toJSON (value._imports or [ ]);
               value = builtins.toJSON (removeAttrs value [ "_imports" ]);
-              pythonGen = ''
+              pythonGen = builtins.toFile "pythonGen" ''
                 import json
                 import os
 
@@ -974,10 +982,8 @@ optionalAttrs allowAliases aliases
               printf "%s" "$imports" > "$importsPath"
               valuePath="$TMPDIR/value"
               printf "%s" "$value" > "$valuePath"
-              pythonGenPath="$TMPDIR/pythonGen"
-              printf "%s" "$pythonGen" > "$pythonGenPath"
               cat "$valuePath"
-              python3 "$pythonGenPath" > $out
+              python3 "$pythonGen" > $out
               black $out
             ''
         ) { };
@@ -1007,7 +1013,7 @@ optionalAttrs allowAliases aliases
                   libxml2Python
                 ];
                 value = builtins.toJSON value;
-                pythonGen = ''
+                pythonGen = builtins.toFile "pythonGen" ''
                   import json
                   import os
                   import xmltodict
@@ -1021,11 +1027,9 @@ optionalAttrs allowAliases aliases
                 __structuredAttrs = true;
               }
               ''
-                pythonGenPath="$TMPDIR/pythonGen"
-                printf "%s" "$pythonGen" > "$pythonGenPath"
                 valuePath="$TMPDIR/value"
                 printf "%s" "$value" > "$valuePath"
-                python3 "$pythonGenPath" > $out
+                python3 "$pythonGen" > $out
                 xmllint $out > /dev/null
               ''
           ) { };
