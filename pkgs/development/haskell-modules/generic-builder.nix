@@ -121,6 +121,7 @@ in
   haddockFlags ? [ ],
   description ? null,
   doCheck ? !isCross,
+  checkFlags ? [ ],
   doBenchmark ? false,
   doHoogle ? true,
   doHaddockQuickjump ? doHoogle,
@@ -713,8 +714,10 @@ lib.fix (
         packageConfDir="$builddir/package.conf.d"
         mkdir -p $packageConfDir
 
-        setupCompileFlags="${concatStringsSep " " setupCompileFlags}"
-        configureFlags="${concatStringsSep " " defaultConfigureFlags} $configureFlags"
+        setupCompileFlags=(${concatStringsSep " " setupCompileFlags})
+        configureFlags=(${concatStringsSep " " defaultConfigureFlags} ${concatStringsSep " " configureFlags})
+        buildFlags=(${concatStringsSep " " buildFlags})
+        checkFlags=(${concatStringsSep " " checkFlags})
       ''
       # We build the Setup.hs on the *build* machine, and as such should only add
       # dependencies for the build machine.
@@ -804,15 +807,14 @@ lib.fix (
           test -f $i && break
         done
 
-        echo setupCompileFlags: $setupCompileFlags
-        ${nativeGhcCommand} $setupCompileFlags --make -o Setup -odir $builddir -hidir $builddir $i
+        echo setupCompileFlags: "''${setupCompileFlags[@]}"
+        ${nativeGhcCommand} "''${setupCompileFlags[@]}" --make -o Setup -odir $builddir -hidir $builddir $i
 
         runHook postCompileBuildDriver
       '';
 
       # Cabal takes flags like `--configure-option=--host=...` instead
       configurePlatforms = [ ];
-      inherit configureFlags buildFlags;
 
       # Note: the options here must be always added, regardless of whether the
       # package specifies `hardeningDisable`.
@@ -823,8 +825,8 @@ lib.fix (
       configurePhase = ''
         runHook preConfigure
 
-        echo configureFlags: $configureFlags
-        ${setupCommand} configure $configureFlags 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
+        echo configureFlags: "''${configureFlags[@]}"
+        ${setupCommand} configure "''${configureFlags[@]}" 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
         ${lib.optionalString (!allowInconsistentDependencies) ''
           if grep -E -q -z 'Warning:.*depends on multiple versions' "$NIX_BUILD_TOP/cabal-configure.log"; then
             echo >&2 "*** abort because of serious configure-time warning from Cabal"
@@ -846,14 +848,14 @@ lib.fix (
         find dist/build -exec touch -d '1970-01-01T00:00:00Z' {} +
       ''
       + ''
-        ${setupCommand} build ${buildTarget} $buildFlags
+        ${setupCommand} build ${buildTarget} "''${buildFlags[@]}"
         runHook postBuild
       '';
 
       inherit doCheck;
 
-      # Run test suite(s) and pass `checkFlags` as well as `checkFlagsArray`.
-      # `testFlags` are added to `checkFlagsArray` each prefixed with
+      # Run test suite(s) and pass `checkFlags`.
+      # `testFlags` are added to `checkFlags` each prefixed with
       # `--test-option`, so Cabal passes it to the underlying test suite binary.
       #
       # We also take care of setting GHC_PACKAGE_PATH during test suite execution,
@@ -865,13 +867,10 @@ lib.fix (
       #   plus GHC's core packages.
       checkPhase = ''
         runHook preCheck
-        checkFlagsArray+=(
-          "--show-details=streaming"
-          "--test-wrapper=${testWrapperScript}"
-          ${lib.escapeShellArgs (map (opt: "--test-option=${opt}") testFlags)}
-        )
+        appendToVar checkFlags "--show-details=streaming" "--test-wrapper=${testWrapperScript}"
+        appendToVar checkFlags ${lib.escapeShellArgs (map (opt: "--test-option=${opt}") testFlags)}
         export NIX_GHC_PACKAGE_PATH_FOR_TEST="''${NIX_GHC_PACKAGE_PATH_FOR_TEST:-$packageConfDir:}"
-        ${setupCommand} test ${testTargetsString} $checkFlags ''${checkFlagsArray:+"''${checkFlagsArray[@]}"}
+        ${setupCommand} test ${testTargetsString} "''${checkFlags[@]}"
         runHook postCheck
       '';
 
