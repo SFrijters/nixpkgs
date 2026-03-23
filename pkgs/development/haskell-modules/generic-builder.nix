@@ -745,8 +745,10 @@ lib.fix (
         packageConfDir="$builddir/package.conf.d"
         mkdir -p $packageConfDir
 
-        setupCompileFlags="${concatStringsSep " " setupCompileFlags}"
-        configureFlags="${concatStringsSep " " defaultConfigureFlags} $configureFlags"
+        setupCompileFlags=(${concatStringsSep " " (map (f: ''"${f}"'') setupCompileFlags)})
+        configureFlags=(${concatStringsSep " " (map (f: ''"${f}"'') defaultConfigureFlags)} ${
+          concatStringsSep " " (map (f: ''"${f}"'') configureFlags)
+        })
       ''
       # We build the Setup.hs on the *build* machine, and as such should only add
       # dependencies for the build machine.
@@ -836,8 +838,8 @@ lib.fix (
           test -f $i && break
         done
 
-        echo setupCompileFlags: $setupCompileFlags
-        ${nativeGhcCommand} $setupCompileFlags --make -o Setup -odir $builddir -hidir $builddir $i
+        echo setupCompileFlags: "''${setupCompileFlags[@]}"
+        ${nativeGhcCommand} "''${setupCompileFlags[@]}" --make -o Setup -odir $builddir -hidir $builddir $i
 
         runHook postCompileBuildDriver
       '';
@@ -857,8 +859,8 @@ lib.fix (
       configurePhase = ''
         runHook preConfigure
 
-        echo configureFlags: $configureFlags
-        ${setupCommand} configure $configureFlags 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
+        echo configureFlags: "''${configureFlags[@]}"
+        ${setupCommand} configure "''${configureFlags[@]}" 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
         ${lib.optionalString (!allowInconsistentDependencies) ''
           if grep -E -q -z 'Warning:.*depends on multiple versions' "$NIX_BUILD_TOP/cabal-configure.log"; then
             echo >&2 "*** abort because of serious configure-time warning from Cabal"
@@ -880,7 +882,7 @@ lib.fix (
         find dist/build -exec touch -d '1970-01-01T00:00:00Z' {} +
       ''
       + ''
-        ${setupCommand} build ${buildTarget} $buildFlags
+        ${setupCommand} build ${buildTarget} "''${buildFlags[@]}"
         runHook postBuild
       '';
 
