@@ -715,8 +715,7 @@ lib.fix (
         mkdir -p $packageConfDir
 
         setupCompileFlags=(${concatStringsSep " " setupCompileFlags})
-        configureFlags=(${concatStringsSep " " defaultConfigureFlags} ${
-          concatStringsSep " " configureFlags})
+        configureFlags=(${concatStringsSep " " defaultConfigureFlags} ${concatStringsSep " " configureFlags})
         buildFlags=(${concatStringsSep " " buildFlags})
         checkFlags=(${concatStringsSep " " checkFlags})
       ''
@@ -855,8 +854,8 @@ lib.fix (
 
       inherit doCheck;
 
-      # Run test suite(s) and pass `checkFlags` as well as `checkFlagsArray`.
-      # `testFlags` are added to `checkFlagsArray` each prefixed with
+      # Run test suite(s) and pass `checkFlags`.
+      # `testFlags` are added to `checkFlags` each prefixed with
       # `--test-option`, so Cabal passes it to the underlying test suite binary.
       #
       # We also take care of setting GHC_PACKAGE_PATH during test suite execution,
@@ -868,12 +867,8 @@ lib.fix (
       #   plus GHC's core packages.
       checkPhase = ''
         runHook preCheck
-        checkFlagsArray=(
-          "--show-details=streaming"
-          "--test-wrapper=${testWrapperScript}"
-          ${lib.escapeShellArgs (map (opt: "--test-option=${opt}") testFlags)}
-        )
-        appendToVar checkFlags checkFlagsArray
+        appendToVar checkFlags "--show-details=streaming" "--test-wrapper=${testWrapperScript}"
+        appendToVar checkFlags ${lib.escapeShellArgs (map (opt: "--test-option=${opt}") testFlags)}
         export NIX_GHC_PACKAGE_PATH_FOR_TEST="''${NIX_GHC_PACKAGE_PATH_FOR_TEST:-$packageConfDir:}"
         ${setupCommand} test ${testTargetsString} "''${checkFlags[@]}"
         runHook postCheck
