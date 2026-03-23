@@ -549,6 +549,11 @@ rec {
       in
       {
         enableParallelBuilding = true;
+        # The current implementation doesn't support __structuredAttrs and things break when
+        # structuredAttrsByDefault is enabled.
+        # This should be either changed to `__structuredAttrs = true;` or removed
+        # when one of both of these cases are supported.
+        __structuredAttrs = false;
         inherit name allowSubstitutes preferLocalBuild;
         passAsFile = [
           "buildCommand"
