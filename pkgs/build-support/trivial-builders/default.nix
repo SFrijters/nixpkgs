@@ -153,7 +153,7 @@ rec {
         if [ -e "$textPath" ]; then
           mv "$textPath" "$target"
         else
-          echo -n "$text" > "$target"
+          printf "%s" "$text" > "$target"
         fi
 
         if [ -n "$executable" ]; then
