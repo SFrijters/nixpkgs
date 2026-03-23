@@ -121,6 +121,7 @@ in
   haddockFlags ? [ ],
   description ? null,
   doCheck ? !isCross,
+  checkFlags ? [ ],
   doBenchmark ? false,
   doHoogle ? true,
   doHaddockQuickjump ? doHoogle,
@@ -749,6 +750,8 @@ lib.fix (
         configureFlags=(${concatStringsSep " " (map (f: ''"${f}"'') defaultConfigureFlags)} ${
           concatStringsSep " " (map (f: ''"${f}"'') configureFlags)
         })
+        buildFlags=(${concatStringsSep " " (map (f: ''"${f}"'') buildFlags)})
+        checkFlags=(${concatStringsSep " " (map (f: ''"${f}"'') checkFlags)})
       ''
       # We build the Setup.hs on the *build* machine, and as such should only add
       # dependencies for the build machine.
@@ -846,7 +849,6 @@ lib.fix (
 
       # Cabal takes flags like `--configure-option=--host=...` instead
       configurePlatforms = [ ];
-      inherit configureFlags buildFlags;
 
       # Note: the options here must be always added, regardless of whether the
       # package specifies `hardeningDisable`.
@@ -901,13 +903,14 @@ lib.fix (
       #   plus GHC's core packages.
       checkPhase = ''
         runHook preCheck
-        checkFlagsArray+=(
+        checkFlagsArray=(
           "--show-details=streaming"
           "--test-wrapper=${testWrapperScript}"
           ${lib.escapeShellArgs (map (opt: "--test-option=${opt}") testFlags)}
         )
+        appendToVar checkFlags checkFlagsArray
         export NIX_GHC_PACKAGE_PATH_FOR_TEST="''${NIX_GHC_PACKAGE_PATH_FOR_TEST:-$packageConfDir:}"
-        ${setupCommand} test ${testTargetsString} $checkFlags ''${checkFlagsArray:+"''${checkFlagsArray[@]}"}
+        ${setupCommand} test ${testTargetsString} "''${checkFlags[@]}"
         runHook postCheck
       '';
 
