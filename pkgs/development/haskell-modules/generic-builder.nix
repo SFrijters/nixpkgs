@@ -746,10 +746,12 @@ lib.fix (
         packageConfDir="$builddir/package.conf.d"
         mkdir -p $packageConfDir
 
-        setupCompileFlags=(${concatStringsSep " " setupCompileFlags})
-        configureFlags=(${concatStringsSep " " defaultConfigureFlags} ${concatStringsSep " " configureFlags})
-        buildFlags=(${concatStringsSep " " buildFlags})
-        checkFlags=(${concatStringsSep " " checkFlags})
+        setupCompileFlags=(${concatStringsSep " " (map (f: ''"${f}"'') setupCompileFlags)})
+        configureFlags=(${concatStringsSep " " (map (f: ''"${f}"'') defaultConfigureFlags)} ${
+          concatStringsSep " " (map (f: ''"${f}"'') configureFlags)
+        })
+        buildFlags=(${concatStringsSep " " (map (f: ''"${f}"'') buildFlags)})
+        checkFlags=(${concatStringsSep " " (map (f: ''"${f}"'') checkFlags)})
       ''
       # We build the Setup.hs on the *build* machine, and as such should only add
       # dependencies for the build machine.
