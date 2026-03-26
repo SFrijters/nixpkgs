@@ -664,6 +664,10 @@ let
       + lib.optionalString (env ? NIX_CFLAGS_COMPILE) (" " + env.NIX_CFLAGS_COMPILE);
   };
 
+  # Do not use escapeShellArgs because flags can contain $var
+  # that actually need to be expanded in the bash code
+  toBashArray = flags: "(${concatStringsSep " " (map (f: ''"${f}"'') flags)})";
+
 in
 lib.fix (
   drv:
@@ -746,12 +750,11 @@ lib.fix (
         packageConfDir="$builddir/package.conf.d"
         mkdir -p $packageConfDir
 
-        setupCompileFlags=(${concatStringsSep " " (map (f: ''"${f}"'') setupCompileFlags)})
-        configureFlags=(${concatStringsSep " " (map (f: ''"${f}"'') defaultConfigureFlags)} ${
-          concatStringsSep " " (map (f: ''"${f}"'') configureFlags)
-        })
-        buildFlags=(${concatStringsSep " " (map (f: ''"${f}"'') buildFlags)})
-        checkFlags=(${concatStringsSep " " (map (f: ''"${f}"'') checkFlags)})
+        setupCompileFlags=${toBashArray setupCompileFlags}
+        configureFlags=${toBashArray (defaultConfigureFlags ++ configureFlags)}
+        buildFlags=${toBashArray buildFlags}
+        checkFlags=${toBashArray checkFlags}
+        haddockFlags=${toBashArray haddockFlags}
       ''
       # We build the Setup.hs on the *build* machine, and as such should only add
       # dependencies for the build machine.
@@ -884,6 +887,7 @@ lib.fix (
         find dist/build -exec touch -d '1970-01-01T00:00:00Z' {} +
       ''
       + ''
+        echo buildFlags: "''${buildFlags[@]}"
         ${setupCommand} build ${buildTarget} "''${buildFlags[@]}"
         runHook postBuild
       '';
@@ -906,6 +910,7 @@ lib.fix (
         appendToVar checkFlags "--show-details=streaming" "--test-wrapper=${testWrapperScript}"
         appendToVar checkFlags ${lib.escapeShellArgs (map (opt: "--test-option=${opt}") testFlags)}
         export NIX_GHC_PACKAGE_PATH_FOR_TEST="''${NIX_GHC_PACKAGE_PATH_FOR_TEST:-$packageConfDir:}"
+        echo checkFlags: "''${checkFlags[@]}"
         ${setupCommand} test ${testTargetsString} "''${checkFlags[@]}"
         runHook postCheck
       '';
@@ -913,13 +918,14 @@ lib.fix (
       haddockPhase = ''
         runHook preHaddock
         ${optionalString (doHaddock && isLibrary) ''
+          echo haddockFlags: "''${haddockFlags[@]}"
           ${setupCommand} haddock --html \
             ${optionalString doHoogle "--hoogle"} \
             ${optionalString doHaddockQuickjump "--quickjump"} \
             ${optionalString (isLibrary && hyperlinkSource) "--hyperlink-source"} \
             ${optionalString enableParallelBuilding "--haddock-option=-j$NIX_BUILD_CORES"} \
             --haddock-option=--no-tmp-comp-dir \
-            ${lib.concatStringsSep " " haddockFlags}
+            "''${haddockFlags[@]}"
         ''}
         runHook postHaddock
       '';
