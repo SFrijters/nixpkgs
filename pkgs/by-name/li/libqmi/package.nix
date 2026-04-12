@@ -41,10 +41,13 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-bJbNfnKVJuhy/6EJgu5b7t6vxNTex/5heTzMzTzVREw=";
   };
 
+  depsBuildBuild = [
+    pkg-config
+  ];
+
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
     python3
   ]
   ++ lib.optionals withMan [
@@ -53,6 +56,10 @@ stdenv.mkDerivation (finalAttrs: {
   ++ lib.optionals withIntrospection [
     gi-docgen
     gobject-introspection
+    bash-completion
+    libgudev
+    libmbim
+    libqrtr-glib
     docbook-xsl-nons
     docbook_xml_dtd_43
   ]
@@ -74,6 +81,8 @@ stdenv.mkDerivation (finalAttrs: {
   ++ lib.optionals withIntrospection [
     libqrtr-glib
   ];
+
+  strictDeps = true;
 
   mesonFlags = [
     "-Dudevdir=${placeholder "out"}/lib/udev"
