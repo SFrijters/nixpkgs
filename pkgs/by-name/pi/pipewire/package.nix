@@ -198,7 +198,7 @@ stdenv.mkDerivation (finalAttrs: {
   ++ lib.optional modemmanagerSupport modemmanager;
 
   # Valgrind binary is required for running one optional test.
-  # nativeCheckInputs = lib.optional (lib.meta.availableOn stdenv.hostPlatform valgrind) valgrind;
+  nativeCheckInputs = lib.optional (lib.meta.availableOn stdenv.hostPlatform valgrind) valgrind;
 
   mesonFlags = [
     (lib.mesonEnable "pipewire-alsa" stdenv.hostPlatform.isLinux)
