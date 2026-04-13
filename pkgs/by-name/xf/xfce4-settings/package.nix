@@ -18,6 +18,8 @@
   libxfce4ui,
   libxfce4util,
   libxklavier,
+  libxml2,
+  bashNonInteractive,
   withXrandr ? true,
   upower,
   # Disabled by default on upstream and actually causes issues:
@@ -50,9 +52,11 @@ stdenv.mkDerivation (finalAttrs: {
     xfce4-dev-tools
     wayland-scanner
     wrapGAppsHook3
+    libxml2
   ];
 
   buildInputs = [
+    bashNonInteractive
     xfce4-exo
     garcon
     glib
@@ -71,6 +75,8 @@ stdenv.mkDerivation (finalAttrs: {
   ]
   ++ lib.optionals withUpower [ upower ]
   ++ lib.optionals withColord [ colord ];
+
+  strictDeps = true;
 
   configureFlags = [
     "--enable-maintainer-mode"
