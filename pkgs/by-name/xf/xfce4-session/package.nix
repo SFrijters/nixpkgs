@@ -7,6 +7,7 @@
   xfce4-dev-tools,
   wrapGAppsHook3,
   polkit,
+  bashNonInteractive,
   xfce4-exo,
   libxfce4util,
   libxfce4ui,
@@ -32,14 +33,22 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-mL5fOWJtpkpskBQmyYhcVRzGJlzAHsvtcy4j3DceOBE=";
   };
 
+  depsBuildBuild = [
+    pkg-config
+  ];
+
   nativeBuildInputs = [
     gettext
-    pkg-config
     xfce4-dev-tools
+    libxfce4ui
+    libxfce4util
+    libxfce4windowing
+    xfconf
     wrapGAppsHook3
   ];
 
   buildInputs = [
+    bashNonInteractive
     xfce4-exo
     gtk3
     gtk-layer-shell
@@ -52,6 +61,8 @@ stdenv.mkDerivation (finalAttrs: {
     polkit
     iceauth
   ];
+
+  strictDeps = true;
 
   configureFlags = [
     "--enable-maintainer-mode"
