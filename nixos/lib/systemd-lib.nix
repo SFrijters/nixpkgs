@@ -80,12 +80,12 @@ rec {
           # passAsFile are ignored by nix, resulting in no file being created,
           # making the mv operation fail.
           text = optionalString (unit.text != null) unit.text;
-          __structuredAttrs = true;
+          passAsFile = [ "text" ];
         }
         ''
           name=${shellEscape name}
           mkdir -p "$out/$(dirname -- "$name")"
-          printf "%s" "$text" > "$out/$name"
+          mv "$textPath" "$out/$name"
         ''
     else
       pkgs.runCommand "unit-${mkPathSafeName name}-disabled"
