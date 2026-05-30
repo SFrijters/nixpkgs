@@ -321,9 +321,7 @@ in
               ../catch_conflicts/catch_conflicts_py2.py
             else
               ../catch_conflicts/catch_conflicts.py;
-        }
-        // lib.optionalAttrs useLegacyHook {
-          inherit setuptools;
+          setuptools = if useLegacyHook then setuptools else "";
         };
       passthru.tests = import ./python-catch-conflicts-hook-tests.nix {
         inherit pythonOnBuildForHost runCommand;
