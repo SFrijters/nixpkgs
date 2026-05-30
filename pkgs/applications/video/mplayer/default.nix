@@ -66,6 +66,7 @@
   libjpeg,
   useUnfreeCodecs ? false,
   buildPackages,
+  versionCheckHook,
 }:
 
 assert xineramaSupport -> x11Support;
@@ -117,7 +118,7 @@ let
 
 in
 
-stdenv.mkDerivation {
+stdenv.mkDerivation (finalAttrs: {
   pname = "mplayer";
   version = "1.5-unstable-2024-12-21";
 
@@ -128,6 +129,7 @@ stdenv.mkDerivation {
   };
 
   prePatch = ''
+    echo "${finalAttrs.version}" > VERSION
     sed -i /^_install_strip/d configure
 
     rm -rf ffmpeg
@@ -281,6 +283,10 @@ stdenv.mkDerivation {
     fi
   '';
 
+  nativeInstallCheckInputs = [ versionCheckHook ];
+  versionCheckProgramArg = "--help";
+  doInstallCheck = true;
+
   __structuredAttrs = true;
 
   meta = {
@@ -297,4 +303,4 @@ stdenv.mkDerivation {
       "aarch64-linux"
     ];
   };
-}
+})
