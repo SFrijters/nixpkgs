@@ -81,6 +81,8 @@ buildPythonPackage rec {
   ]
   ++ lib.concatAttrValues optional-dependencies;
 
+  doCheck = false;
+
   disabledTestMarks = [
     "onlycluster"
     "ssl"

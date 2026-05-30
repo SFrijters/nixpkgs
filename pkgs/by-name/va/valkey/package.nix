@@ -66,7 +66,7 @@ stdenv.mkDerivation (finalAttrs: {
   env.NIX_CFLAGS_COMPILE = toString (lib.optionals stdenv.cc.isClang [ "-std=c11" ]);
 
   # darwin currently lacks a pure `pgrep` which is extensively used here
-  doCheck = false;
+  doCheck = !stdenv.hostPlatform.isDarwin;
   nativeCheckInputs = [
     which
     tcl
