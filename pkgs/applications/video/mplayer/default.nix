@@ -136,6 +136,7 @@ stdenv.mkDerivation {
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [
     pkg-config
+    libcaca # caca-config
     yasm
   ];
   buildInputs = [
@@ -175,6 +176,8 @@ stdenv.mkDerivation {
   ++ lib.optional libjpegSupport libjpeg
   ++ lib.optional bs2bSupport libbs2b
   ++ lib.optional v4lSupport libv4l;
+
+  strictDeps = true;
 
   configurePlatforms = [ ];
   configureFlags = [
@@ -277,6 +280,8 @@ stdenv.mkDerivation {
       echo "NoDisplay=True" >> $out/share/applications/mplayer.desktop
     fi
   '';
+
+  __structuredAttrs = true;
 
   meta = {
     description = "Movie player that supports many video formats";
