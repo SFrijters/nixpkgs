@@ -7,6 +7,7 @@
   lndir,
   runtimeShell,
   shellcheck-minimal,
+  replaceVars,
 }:
 
 let
@@ -732,10 +733,6 @@ rec {
           # Make the position of the derivation accurate.
           # Since not having `name` is deprecated, this should be fairly accurate.
           pos = lib.unsafeGetAttrPos "name" args;
-          # TODO(@Artturin:) substitutions should be inside the env attrset
-          # but users are likely passing non-substitution arguments through substitutions
-          # turn off __structuredAttrs to unbreak substituteAll
-          __structuredAttrs = false;
           pname = name;
           version = "26.05pre-git";
           inherit meta;
@@ -758,7 +755,7 @@ rec {
           recordPropagatedDependencies
         ''
         + lib.optionalString (substitutions != { }) ''
-          substituteAll ${script} $out/nix-support/setup-hook
+          cp -f ${replaceVars script substitutions} $out/nix-support/setup-hook
         ''
       );
 
