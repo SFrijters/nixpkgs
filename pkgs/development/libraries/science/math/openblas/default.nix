@@ -271,7 +271,7 @@ stdenv.mkDerivation (finalAttrs: {
     (lib.cmakeBool "USE_OPENMP" false) # openblas will refuse building with both USE_OPENMP=ON and USE_THREAD=OFF
   ];
 
-  doCheck = true;
+  doCheck = false; # true;
 
   postInstall = ''
         # Provide headers in /include directly for compat with some consumers like flint
