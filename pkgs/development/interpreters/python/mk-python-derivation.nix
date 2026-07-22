@@ -443,6 +443,8 @@ lib.extendMkDerivation {
       }
       // attrs.passthru or { };
 
+      __structuredAttrs = true;
+
       meta = {
         # default to python's platforms
         platforms = python.meta.platforms;
