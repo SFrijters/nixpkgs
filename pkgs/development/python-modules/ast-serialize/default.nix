@@ -31,6 +31,8 @@ buildPythonPackage (finalAttrs: {
     "ast_serialize"
   ];
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Fast Python parser that generates a serialized AST";
     homepage = "https://github.com/mypyc/ast_serialize";
