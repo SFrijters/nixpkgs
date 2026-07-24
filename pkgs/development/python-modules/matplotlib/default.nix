@@ -184,6 +184,8 @@ buildPythonPackage (finalAttrs: {
     cd $out
   '';
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Python plotting library, making publication quality plots";
     homepage = "https://matplotlib.org/";
