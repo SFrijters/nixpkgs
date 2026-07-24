@@ -22,6 +22,8 @@ stdenv.mkDerivation {
     cp sitecustomize.* $dst/
   '';
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Enable recursive processing of pth files anywhere in sys.path";
     license = lib.licenses.mit;
