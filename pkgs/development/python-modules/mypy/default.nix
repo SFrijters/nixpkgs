@@ -34,7 +34,7 @@
   nixosTests,
 }:
 
-buildPythonPackage rec {
+buildPythonPackage (finalAttrs: {
   pname = "mypy";
   version = "2.1.0";
   pyproject = true;
@@ -45,7 +45,7 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "python";
     repo = "mypy";
-    tag = "v${version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-sm/pxQGxH5XuPH7B8i3fpp30KaFU9aSp6BT67UcDPvU=";
   };
 
@@ -108,7 +108,7 @@ buildPythonPackage rec {
     setuptools
     tomli
   ]
-  ++ lib.concatAttrValues optional-dependencies;
+  ++ lib.concatAttrValues finalAttrs.passthru.optional-dependencies;
 
   disabledTests = [
     # A change to the base64 decoder in CPython 3.13.13 and 3.14.4 causes this
@@ -147,13 +147,15 @@ buildPythonPackage rec {
     inherit (nixosTests) nixos-test-driver;
   };
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Optional static typing for Python";
     homepage = "https://www.mypy-lang.org";
-    changelog = "https://github.com/python/mypy/blob/${src.rev}/CHANGELOG.md";
+    changelog = "https://github.com/python/mypy/blob/${finalAttrs.src.tag}/CHANGELOG.md";
     downloadPage = "https://github.com/python/mypy";
     license = lib.licenses.mit;
     mainProgram = "mypy";
     maintainers = [ ];
   };
-}
+})
