@@ -11,14 +11,14 @@
   curlWithGnuTls,
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "ngtcp2";
   version = "1.24.0";
 
   src = fetchFromGitHub {
     owner = "ngtcp2";
     repo = "ngtcp2";
-    rev = "v${version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-RAW31xSZRgrl71zDeWq+7XRHEEw6CdID/41taW0d5ZI=";
   };
 
@@ -42,6 +42,8 @@ stdenv.mkDerivation rec {
   passthru.tests = knot-dns.passthru.tests // {
     inherit curlWithGnuTls;
   };
+
+  __structuredAttrs = true;
 
   meta = {
     homepage = "https://github.com/ngtcp2/ngtcp2";
