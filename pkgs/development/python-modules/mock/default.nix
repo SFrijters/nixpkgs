@@ -22,6 +22,8 @@ buildPythonPackage (finalAttrs: {
 
   pythonImportsCheck = [ "mock" ];
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Rolling backport of unittest.mock for all Pythons";
     homepage = "https://github.com/testing-cabal/mock";
