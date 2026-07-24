@@ -17,13 +17,13 @@
   sage,
 }:
 
-buildPythonPackage rec {
+buildPythonPackage (finalAttrs: {
   pname = "jinja2";
   version = "3.1.6";
   pyproject = true;
 
   src = fetchPypi {
-    inherit pname version;
+    inherit (finalAttrs) pname version;
     hash = "sha256-ATf7BZkNNfEnWlh+mu5tVtqCH8g0kaD7g4GDvkP2bW0=";
   };
 
@@ -76,14 +76,18 @@ buildPythonPackage rec {
 
     inherit (python) pythonVersion;
     inherit meta;
+
+    __structuredAttrs = true;
   };
 
   passthru.tests = {
     inherit sage;
   };
 
+  __structuredAttrs = true;
+
   meta = {
-    changelog = "https://github.com/pallets/jinja/blob/${version}/CHANGES.rst";
+    changelog = "https://github.com/pallets/jinja/blob/${finalAttrs.version}/CHANGES.rst";
     description = "Very fast and expressive template engine";
     downloadPage = "https://github.com/pallets/jinja";
     homepage = "https://jinja.palletsprojects.com";
@@ -95,4 +99,4 @@ buildPythonPackage rec {
     '';
     maintainers = with lib.maintainers; [ pierron ];
   };
-}
+})
