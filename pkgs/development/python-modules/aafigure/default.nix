@@ -30,6 +30,8 @@ buildPythonPackage (finalAttrs: {
     sed -i "s|/usr/share/fonts|/nonexisting-fonts-path|" aafigure/PILhelper.py
   '';
 
+  __structuredAttrs = true;
+
   meta = {
     description = "ASCII art to image converter";
     mainProgram = "aafigure";
