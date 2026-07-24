@@ -191,6 +191,8 @@ buildPythonPackage (finalAttrs: {
   # - test_large_file_support: takes a long time and can cause the machine to run out of disk space
   env.NOSE_EXCLUDE = "test_large_file_support";
 
+  __structuredAttrs = true;
+
   meta = {
     changelog = "https://github.com/numpy/numpy/releases/tag/v${finalAttrs.version}";
     description = "Scientific tools for Python";
