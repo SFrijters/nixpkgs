@@ -231,6 +231,8 @@ buildPythonPackage (finalAttrs: {
     };
   };
 
+  __structuredAttrs = true;
+
   meta = {
     changelog = "https://github.com/numpy/numpy/releases/tag/${finalAttrs.src.tag}";
     description = "Scientific tools for Python";
