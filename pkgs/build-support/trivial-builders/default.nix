@@ -75,12 +75,15 @@ rec {
       derivationArgs ? { },
       # name of the resulting derivation
       name,
-      # TODO(@Artturin): enable strictDeps always
     }:
     buildCommand:
     stdenv.mkDerivation (
       {
         enableParallelBuilding = true;
+        strictDeps = true;
+        # Keep compatibility for out-of-tree consumers
+        # Set it to true by default, unless otherwise specified or if passAsFile is present
+        __structuredAttrs = derivationArgs.__structuredAttrs or (! derivationArgs ? passAsFile);
         inherit buildCommand name;
         passAsFile = defaultPassAsFile ++ (derivationArgs.passAsFile or [ ]);
         ${if !derivationArgs ? meta then "pos" else null} =
