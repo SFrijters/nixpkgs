@@ -6,6 +6,7 @@
   numpy,
   cmake,
   stdenv,
+  buildPackages,
 }:
 
 let
@@ -36,6 +37,8 @@ stdenv'.mkDerivation (finalAttrs: {
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin python.pkgs.qt6.darwinVersionInputs;
 
+  strictDeps = true;
+
   cmakeFlags = [
     "-DBUILD_TESTS=OFF"
     "-DNUMPY_INCLUDE_DIR=${numpy.coreIncludeDir}"
@@ -57,11 +60,13 @@ stdenv'.mkDerivation (finalAttrs: {
   postInstall = ''
     cd ../../..
     chmod +w .
-    python3 setup.py egg_info --build-type=shiboken6
+    python3 setup.py egg_info --build-type=shiboken6 --qtpaths=${lib.getExe' buildPackages.python3.pkgs.qt6.qtbase "qtpaths"}
     cp -r shiboken6.egg-info $out/${python.sitePackages}/
   '';
 
   dontWrapQtApps = true;
+
+  __structuredAttrs = true;
 
   meta = {
     description = "Generator for the pyside6 Qt bindings - Python library";
