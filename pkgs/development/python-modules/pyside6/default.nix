@@ -21,6 +21,7 @@ let
 
     # optional
     qt3d
+    qtcanvaspainter
     qtcharts
     qtconnectivity
     qtdatavis3d
