@@ -25,14 +25,16 @@ stdenv'.mkDerivation (finalAttrs: {
       ps.packaging
       ps.setuptools
     ]))
-    python.pkgs.qt6.qtbase
   ];
 
   propagatedNativeBuildInputs = [
     shiboken6-generator
   ];
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin python.pkgs.qt6.darwinVersionInputs;
+  buildInputs = [
+    python.pkgs.qt6.qtbase
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isDarwin python.pkgs.qt6.darwinVersionInputs;
 
   strictDeps = true;
 
@@ -57,7 +59,7 @@ stdenv'.mkDerivation (finalAttrs: {
   postInstall = ''
     cd ../../..
     chmod +w .
-    python3 setup.py egg_info --build-type=shiboken6
+    python3 setup.py egg_info --build-type=shiboken6 --qtpaths=${lib.getExe' python.pkgs.qt6.qtbase "qtpaths"}
     cp -r shiboken6.egg-info $out/${python.sitePackages}/
   '';
 

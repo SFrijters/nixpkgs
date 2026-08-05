@@ -92,14 +92,13 @@ stdenv.mkDerivation (finalAttrs: {
     python
     pythonImportsCheckHook
   ]
-  ++ lib.optionals stdenv.hostPlatform.isLinux [ python.pkgs.qt6.qtwebengine ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [ moveBuildTree ];
 
   buildInputs = (
     if stdenv.hostPlatform.isLinux then
       # qtwebengine fails under darwin
       # see https://github.com/NixOS/nixpkgs/pull/312987
-      packages
+      packages ++ [ python.pkgs.qt6.qtwebengine ]
     else
       python.pkgs.qt6.darwinVersionInputs
       ++ [
@@ -122,7 +121,7 @@ stdenv.mkDerivation (finalAttrs: {
   postInstall = ''
     cd ../../..
     chmod +w .
-    ${python.pythonOnBuildForHost.interpreter} setup.py egg_info --build-type=pyside6
+    ${python.pythonOnBuildForHost.interpreter} setup.py egg_info --build-type=pyside6 --qtpaths=${lib.getExe' python.pkgs.qt6.qtbase "qtpaths"}
     cp -r PySide6.egg-info $out/${python.sitePackages}/
 
     mkdir -p "$devtools"

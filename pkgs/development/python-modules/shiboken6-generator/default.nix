@@ -33,12 +33,12 @@ stdenv'.mkDerivation (finalAttrs: {
       ps.packaging
       ps.setuptools
     ]))
-    python.pkgs.qt6.qtbase
   ];
 
   buildInputs = [
     llvmPackages.llvm
     llvmPackages.libclang
+    python.pkgs.qt6.qtbase
   ];
 
   strictDeps = true;
@@ -52,7 +52,7 @@ stdenv'.mkDerivation (finalAttrs: {
   postInstall = ''
     cd ../../..
     chmod +w .
-    python3 setup.py egg_info --build-type=shiboken6-generator
+    python3 setup.py egg_info --build-type=shiboken6-generator --qtpaths=${lib.getExe' python.pkgs.qt6.qtbase "qtpaths"}
     cp -r shiboken6_generator.egg-info $out/${python.sitePackages}/
   '';
 
