@@ -831,7 +831,7 @@ rec {
     path:
     runCommand "runtime-references"
       {
-        exportReferencesGraph = [
+        exportReferencesGraph.graph = [
           "graph"
           path
         ];
