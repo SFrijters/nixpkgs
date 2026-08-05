@@ -6,6 +6,7 @@
   numpy,
   cmake,
   stdenv,
+  buildPackages,
 }:
 
 let
@@ -59,7 +60,7 @@ stdenv'.mkDerivation (finalAttrs: {
   postInstall = ''
     cd ../../..
     chmod +w .
-    python3 setup.py egg_info --build-type=shiboken6 --qtpaths=${lib.getExe' python.pkgs.qt6.qtbase "qtpaths"}
+    python3 setup.py egg_info --build-type=shiboken6 --qtpaths=${lib.getExe' buildPackages.python3.pkgs.qt6.qtbase "qtpaths"}
     cp -r shiboken6.egg-info $out/${python.sitePackages}/
   '';
 
