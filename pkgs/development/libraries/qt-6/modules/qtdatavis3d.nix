@@ -2,6 +2,7 @@
   qtModule,
   qtbase,
   qtdeclarative,
+  qtquick3d,
 }:
 
 qtModule {
@@ -9,5 +10,6 @@ qtModule {
   propagatedBuildInputs = [
     qtbase
     qtdeclarative
+    qtquick3d
   ];
 }
