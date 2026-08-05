@@ -61,6 +61,8 @@ lib.throwIf (attrs ? name)
             nativeBuildInputs
             ++ (if !(stdenv.buildPlatform.canExecute stdenv.hostPlatform) then [ perl.mini ] else [ perl ]);
 
+          strictDeps = true;
+
           inherit
             outputs
             doCheck
