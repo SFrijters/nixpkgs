@@ -10,6 +10,7 @@
   shiboken6,
   llvmPackages,
   symlinkJoin,
+  buildPackages,
 }:
 let
   packages = with python.pkgs.qt6; [
@@ -110,6 +111,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   propagatedBuildInputs = [ shiboken6 ];
 
+  strictDeps = true;
+
   cmakeFlags = [
     "-DBUILD_TESTS=OFF"
     "-Dis_pyside6_superproject_build=1"
@@ -120,7 +123,7 @@ stdenv.mkDerivation (finalAttrs: {
   postInstall = ''
     cd ../../..
     chmod +w .
-    ${python.pythonOnBuildForHost.interpreter} setup.py egg_info --build-type=pyside6
+    ${python.pythonOnBuildForHost.interpreter} setup.py egg_info --build-type=pyside6 --qtpaths=${lib.getExe' buildPackages.python3.pkgs.qt6.qtbase "qtpaths"}
     cp -r PySide6.egg-info $out/${python.sitePackages}/
 
     mkdir -p "$devtools"
@@ -128,6 +131,8 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   pythonImportsCheck = [ "PySide6" ];
+
+  __structuredAttrs = true;
 
   meta = {
     description = "Python bindings for Qt";
