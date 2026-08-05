@@ -70,6 +70,7 @@ let
       env = callPackage ./qt-env.nix { };
       qt3d = callPackage ./modules/qt3d.nix { };
       qt5compat = callPackage ./modules/qt5compat.nix { };
+      qtcanvaspainter = callPackage ./modules/qtcanvaspainter.nix { };
       qtcharts = callPackage ./modules/qtcharts.nix { };
       qtconnectivity = callPackage ./modules/qtconnectivity.nix { };
       qtdatavis3d = callPackage ./modules/qtdatavis3d.nix { };
