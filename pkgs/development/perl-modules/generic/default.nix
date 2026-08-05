@@ -76,6 +76,8 @@ lib.throwIf (attrs ? name)
           }
           // env;
 
+          __structuredAttrs = true;
+
           meta = defaultMeta // (attrs.meta or { });
         }
       );
