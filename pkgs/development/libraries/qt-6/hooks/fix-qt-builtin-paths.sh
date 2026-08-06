@@ -16,7 +16,6 @@ fixQtBuiltinPaths() {
                 sed -i "${pr_:?}" \
                     -e "s|\\\$\\\$\\[QT_HOST_BINS[^]]*\\]|$lib/bin|g" \
                     -e "s|\\\$\\\$\\[QT_HOST_LIBEXECS[^]]*\\]|$lib/libexec|g" \
-                    -e "s|\\\$\\\$\\[QT_HOST_LIBS[^]]*\\]|$lib/lib|g" \
                     -e "s|\\\$\\\$\\[QT_HOST_DATA[^]]*\\]/mkspecs|$lib/mkspecs|g" \
                     -e "s|\\\$\\\$\\[QT_HOST_PREFIX[^]]*\\]|$lib|g" \
                     -e "s|\\\$\\\$\\[QT_INSTALL_ARCHDATA[^]]*\\]|$lib|g" \
@@ -41,7 +40,6 @@ fixQtBuiltinPaths() {
             sed -i "${dir:?}" \
                 -e "s|\\\$\\\$\\[QT_HOST_BINS[^]]*\\]|$lib/bin|g" \
                 -e "s|\\\$\\\$\\[QT_HOST_LIBEXECS[^]]*\\]|$lib/libexec|g" \
-                -e "s|\\\$\\\$\\[QT_HOST_LIBS[^]]*\\]|$lib/lib|g" \
                 -e "s|\\\$\\\$\\[QT_HOST_DATA[^]]*\\]/mkspecs|$lib/mkspecs|g" \
                 -e "s|\\\$\\\$\\[QT_HOST_PREFIX[^]]*\\]|$lib|g" \
                 -e "s|\\\$\\\$\\[QT_INSTALL_ARCHDATA[^]]*\\]|$lib|g" \

@@ -29,13 +29,11 @@ else # Only set up Qt once.
         if [ -n "${qmakePathSeen[$1]-}" ]; then return; fi
         qmakePathSeen[$1]=1
         if [ -d "$1/mkspecs" ]; then
-            echo >&2 "Adding $1 to QMAKEMODULES and QMAKEPATH"
             QMAKEMODULES="${QMAKEMODULES}${QMAKEMODULES:+:}$1/mkspecs"
             QMAKEPATH="${QMAKEPATH}${QMAKEPATH:+:}$1"
         fi
     }
     addEnvHooks "$hostOffset" qmakePathHook
-    # envBuildHostHooks+=(qmakePathHook)
 
     declare -g qttoolsPathSeen=
     qtToolsHook() {
