@@ -37,8 +37,8 @@ qtModule {
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [ cups ];
 
-  cmakeFlags =
-    lib.optionals (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
+  # Conditional is required to prevent infinite recursion during a cross build
+  cmakeFlags = lib.optionals (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
       "-DQt6LinguistTools_DIR=${pkgsBuildBuild.qt6.qttools}/lib/cmake/Qt6LinguistTools"
       "-DQt6ToolsTools_DIR=${pkgsBuildBuild.qt6.qttools}/lib/cmake/Qt6ToolsTools"
     ]
