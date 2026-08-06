@@ -1,12 +1,12 @@
 {
+  lib,
+  stdenv,
   qtModule,
   qtbase,
   libwebp,
   jasper,
   libmng,
   zlib,
-  lib,
-  stdenv,
 }:
 
 qtModule {
