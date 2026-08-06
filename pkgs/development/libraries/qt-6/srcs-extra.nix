@@ -1,9 +1,10 @@
 { fetchFromGitHub }:
 
 {
-  qtmqtt = let
-    version = "6.11.1";
-  in
+  qtmqtt =
+    let
+      version = "6.11.1";
+    in
     {
       inherit version;
       src = fetchFromGitHub {

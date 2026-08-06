@@ -22,12 +22,14 @@
 }:
 
 let
-  srcs = import ./srcs.nix {
-    inherit fetchurl;
-    mirror = "mirror://qt";
-  } // import ./srcs-extra.nix {
-    inherit fetchFromGitHub;
-  };
+  srcs =
+    import ./srcs.nix {
+      inherit fetchurl;
+      mirror = "mirror://qt";
+    }
+    // import ./srcs-extra.nix {
+      inherit fetchFromGitHub;
+    };
 
   addPackages =
     self:
