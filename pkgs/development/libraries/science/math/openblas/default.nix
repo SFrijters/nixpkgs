@@ -81,7 +81,7 @@ let
     aarch64-linux = {
       BINARY = 64;
       TARGET = setTarget "ARMV8";
-      DYNAMIC_ARCH = setDynamicArch true;
+      DYNAMIC_ARCH = setDynamicArch false;
       USE_OPENMP = true;
     };
 
