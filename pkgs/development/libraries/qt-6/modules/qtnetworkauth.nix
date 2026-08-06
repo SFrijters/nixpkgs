@@ -1,4 +1,7 @@
-{ qtModule, qtbase }:
+{
+  qtModule,
+  qtbase,
+}:
 
 qtModule {
   pname = "qtnetworkauth";
