@@ -27,10 +27,14 @@ stdenv'.mkDerivation (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/sources/shiboken6_generator";
 
+  preConfigure = ''
+    env
+  '';
+
   nativeBuildInputs = [
     cmake
-    python.pkgs.ninja
-    (python.withPackages (ps: [
+    buildPackages.python3.pkgs.ninja
+    (buildPackages.python3.withPackages (ps: [
       ps.packaging
       ps.setuptools
     ]))
