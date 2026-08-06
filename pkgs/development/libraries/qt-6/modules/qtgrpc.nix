@@ -1,6 +1,6 @@
 {
-  stdenv,
   lib,
+  stdenv,
   qtModule,
   qtbase,
   qtdeclarative,

@@ -1,7 +1,7 @@
 {
-  qtModule,
   lib,
   stdenv,
+  qtModule,
   qtbase,
   qtdeclarative,
   bluez,

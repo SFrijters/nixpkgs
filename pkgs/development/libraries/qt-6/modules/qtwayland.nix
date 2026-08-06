@@ -1,11 +1,11 @@
 {
-  pkgsBuildBuild,
-  stdenv,
   lib,
+  stdenv,
   qtModule,
   qtbase,
   qtdeclarative,
   libdrm,
+  pkgsBuildBuild,
 }:
 
 qtModule {

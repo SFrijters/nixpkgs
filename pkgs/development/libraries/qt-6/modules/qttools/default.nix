@@ -1,12 +1,12 @@
 {
-  pkgsBuildBuild,
-  qtModule,
-  stdenv,
   lib,
+  stdenv,
+  qtModule,
   qtbase,
   qtdeclarative,
   cups,
   llvmPackages,
+  pkgsBuildBuild,
   # clang-based c++ parser for qdoc and lupdate
   withClang ? false,
 }:
