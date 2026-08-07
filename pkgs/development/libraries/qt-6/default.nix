@@ -58,119 +58,118 @@ let
           test -d "${drv'}/${qtPluginPrefix}" && ln -s "${drv'}/${qtPluginPrefix}" "$out/${qtPluginPrefix}" || true
           test -d "${drv'}/${qtQmlPrefix}" && ln -s "${drv'}/${qtQmlPrefix}" "$out/${qtQmlPrefix}" || true
         '');
-      attrs =
-    {
+      attrs = {
 
-      inherit callPackage srcs darwinVersionInputs;
+        inherit callPackage srcs darwinVersionInputs;
 
-      qtModule = callPackage ./qtModule.nix {
-        inherit darwinVersionInputs;
-      };
-
-      qtbase = callPackage ./modules/qtbase {
-        withGtk3 = !stdenv.hostPlatform.isMinGW;
-        inherit darwinVersionInputs;
-        inherit (srcs.qtbase) src version;
-      };
-      env = callPackage ./qt-env.nix { };
-      qt3d = callPackage ./modules/qt3d.nix { };
-      # TODO qtactiveqt
-      qt5compat = callPackage ./modules/qt5compat.nix { };
-      qtcanvaspainter = callPackage ./modules/qtcanvaspainter.nix { };
-      qtcharts = callPackage ./modules/qtcharts.nix { };
-      qtconnectivity = callPackage ./modules/qtconnectivity.nix { };
-      qtdatavis3d = callPackage ./modules/qtdatavis3d.nix { };
-      qtdeclarative = callPackage ./modules/qtdeclarative { };
-      qtdoc = callPackage ./modules/qtdoc.nix { };
-      qtgraphs = callPackage ./modules/qtgraphs.nix { };
-      qtgrpc = callPackage ./modules/qtgrpc.nix { };
-      qthttpserver = callPackage ./modules/qthttpserver.nix { };
-      qtimageformats = callPackage ./modules/qtimageformats.nix { };
-      qtlanguageserver = callPackage ./modules/qtlanguageserver.nix { };
-      qtlocation = callPackage ./modules/qtlocation.nix { };
-      qtlottie = callPackage ./modules/qtlottie.nix { };
-      qtmultimedia = callPackage ./modules/qtmultimedia {
-        inherit (gst_all_1)
-          gstreamer
-          gst-plugins-bad
-          gst-plugins-base
-          gst-plugins-good
-          gst-libav
-          ;
-      };
-      qtmqtt = callPackage ./modules/qtmqtt.nix { };
-      qtnetworkauth = callPackage ./modules/qtnetworkauth.nix { };
-      # TODO qtopenapi
-      qtpositioning = callPackage ./modules/qtpositioning.nix { };
-      qtquick3d = callPackage ./modules/qtquick3d.nix { };
-      qtquick3dphysics = callPackage ./modules/qtquick3dphysics.nix { };
-      qtquickeffectmaker = callPackage ./modules/qtquickeffectmaker.nix { };
-      qtquicktimeline = callPackage ./modules/qtquicktimeline.nix { };
-      qtremoteobjects = callPackage ./modules/qtremoteobjects.nix { };
-      qtscxml = callPackage ./modules/qtscxml.nix { };
-      qtsensors = callPackage ./modules/qtsensors.nix { };
-      qtserialbus = callPackage ./modules/qtserialbus.nix { };
-      qtserialport = callPackage ./modules/qtserialport.nix { };
-      qtshadertools = callPackage ./modules/qtshadertools.nix { };
-      qtspeech = callPackage ./modules/qtspeech.nix { };
-      qtsvg = callPackage ./modules/qtsvg.nix { };
-      # TODO qttasktree
-      qttools = callPackage ./modules/qttools { };
-      qttranslations = callPackage ./modules/qttranslations.nix {
-        qttools = self.qttools.override {
-          qtbase = self.qtbase.override { qttranslations = null; };
-          qtdeclarative = null;
+        qtModule = callPackage ./qtModule.nix {
+          inherit darwinVersionInputs;
         };
-      };
-      qtvirtualkeyboard = callPackage ./modules/qtvirtualkeyboard.nix { };
-      qtwayland = callPackage ./modules/qtwayland.nix { };
-      qtwebchannel = callPackage ./modules/qtwebchannel.nix { };
-      qtwebengine = callPackage ./modules/qtwebengine {
-        inherit (darwin) bootstrap_cmds;
-      };
-      qtwebsockets = callPackage ./modules/qtwebsockets.nix { };
-      qtwebview = callPackage ./modules/qtwebview.nix { };
 
-      wrapQtAppsHook = callPackage (
-        {
-          wrapQtAppsHook,
-          makeBinaryWrapper,
-          qtwayland,
-          qtbase,
-        }:
-        makeSetupHook {
-          name = "wrap-qt6-apps-hook";
-          propagatedBuildInputs = [ makeBinaryWrapper ];
-          depsTargetTargetPropagated = [
-            (onlyPluginsAndQml qtbase)
-          ];
-          passthru.tests = callPackages ./tests/wrap-qt-apps-hook.nix {
-            inherit qtbase wrapQtAppsHook;
+        qtbase = callPackage ./modules/qtbase {
+          withGtk3 = !stdenv.hostPlatform.isMinGW;
+          inherit darwinVersionInputs;
+          inherit (srcs.qtbase) src version;
+        };
+        env = callPackage ./qt-env.nix { };
+        qt3d = callPackage ./modules/qt3d.nix { };
+        # TODO qtactiveqt
+        qt5compat = callPackage ./modules/qt5compat.nix { };
+        qtcanvaspainter = callPackage ./modules/qtcanvaspainter.nix { };
+        qtcharts = callPackage ./modules/qtcharts.nix { };
+        qtconnectivity = callPackage ./modules/qtconnectivity.nix { };
+        qtdatavis3d = callPackage ./modules/qtdatavis3d.nix { };
+        qtdeclarative = callPackage ./modules/qtdeclarative { };
+        qtdoc = callPackage ./modules/qtdoc.nix { };
+        qtgraphs = callPackage ./modules/qtgraphs.nix { };
+        qtgrpc = callPackage ./modules/qtgrpc.nix { };
+        qthttpserver = callPackage ./modules/qthttpserver.nix { };
+        qtimageformats = callPackage ./modules/qtimageformats.nix { };
+        qtlanguageserver = callPackage ./modules/qtlanguageserver.nix { };
+        qtlocation = callPackage ./modules/qtlocation.nix { };
+        qtlottie = callPackage ./modules/qtlottie.nix { };
+        qtmultimedia = callPackage ./modules/qtmultimedia {
+          inherit (gst_all_1)
+            gstreamer
+            gst-plugins-bad
+            gst-plugins-base
+            gst-plugins-good
+            gst-libav
+            ;
+        };
+        qtmqtt = callPackage ./modules/qtmqtt.nix { };
+        qtnetworkauth = callPackage ./modules/qtnetworkauth.nix { };
+        # TODO qtopenapi
+        qtpositioning = callPackage ./modules/qtpositioning.nix { };
+        qtquick3d = callPackage ./modules/qtquick3d.nix { };
+        qtquick3dphysics = callPackage ./modules/qtquick3dphysics.nix { };
+        qtquickeffectmaker = callPackage ./modules/qtquickeffectmaker.nix { };
+        qtquicktimeline = callPackage ./modules/qtquicktimeline.nix { };
+        qtremoteobjects = callPackage ./modules/qtremoteobjects.nix { };
+        qtscxml = callPackage ./modules/qtscxml.nix { };
+        qtsensors = callPackage ./modules/qtsensors.nix { };
+        qtserialbus = callPackage ./modules/qtserialbus.nix { };
+        qtserialport = callPackage ./modules/qtserialport.nix { };
+        qtshadertools = callPackage ./modules/qtshadertools.nix { };
+        qtspeech = callPackage ./modules/qtspeech.nix { };
+        qtsvg = callPackage ./modules/qtsvg.nix { };
+        # TODO qttasktree
+        qttools = callPackage ./modules/qttools { };
+        qttranslations = callPackage ./modules/qttranslations.nix {
+          qttools = self.qttools.override {
+            qtbase = self.qtbase.override { qttranslations = null; };
+            qtdeclarative = null;
           };
-          meta.license = lib.licenses.mit;
-        } ./hooks/wrap-qt-apps-hook.sh
-      ) { };
+        };
+        qtvirtualkeyboard = callPackage ./modules/qtvirtualkeyboard.nix { };
+        qtwayland = callPackage ./modules/qtwayland.nix { };
+        qtwebchannel = callPackage ./modules/qtwebchannel.nix { };
+        qtwebengine = callPackage ./modules/qtwebengine {
+          inherit (darwin) bootstrap_cmds;
+        };
+        qtwebsockets = callPackage ./modules/qtwebsockets.nix { };
+        qtwebview = callPackage ./modules/qtwebview.nix { };
 
-      qmake = callPackage (
-        { qtbase }:
-        makeSetupHook {
-          name = "qmake6-hook";
-          propagatedBuildInputs = [ qtbase.dev ];
-          substitutions = {
-            fix_qmake_libtool = ./hooks/fix-qmake-libtool.sh;
-          };
-          meta.license = lib.licenses.mit;
-        } ./hooks/qmake-hook.sh
-      ) { };
-    }
-    // lib.optionalAttrs config.allowAliases {
-      full = throw "qt6.full has been removed. Please use individual packages instead."; # Added 2025-10-21
-      wrapQtAppsNoGuiHook = lib.warn "wrapQtAppsNoGuiHook is deprecated, use wrapQtAppsHook instead" self.wrapQtAppsHook;
-    };
+        wrapQtAppsHook = callPackage (
+          {
+            wrapQtAppsHook,
+            makeBinaryWrapper,
+            qtwayland,
+            qtbase,
+          }:
+          makeSetupHook {
+            name = "wrap-qt6-apps-hook";
+            propagatedBuildInputs = [ makeBinaryWrapper ];
+            depsTargetTargetPropagated = [
+              (onlyPluginsAndQml qtbase)
+            ];
+            passthru.tests = callPackages ./tests/wrap-qt-apps-hook.nix {
+              inherit qtbase wrapQtAppsHook;
+            };
+            meta.license = lib.licenses.mit;
+          } ./hooks/wrap-qt-apps-hook.sh
+        ) { };
+
+        qmake = callPackage (
+          { qtbase }:
+          makeSetupHook {
+            name = "qmake6-hook";
+            propagatedBuildInputs = [ qtbase.dev ];
+            substitutions = {
+              fix_qmake_libtool = ./hooks/fix-qmake-libtool.sh;
+            };
+            meta.license = lib.licenses.mit;
+          } ./hooks/qmake-hook.sh
+        ) { };
+      }
+      // lib.optionalAttrs config.allowAliases {
+        full = throw "qt6.full has been removed. Please use individual packages instead."; # Added 2025-10-21
+        wrapQtAppsNoGuiHook = lib.warn "wrapQtAppsNoGuiHook is deprecated, use wrapQtAppsHook instead" self.wrapQtAppsHook;
+      };
 
     in
-      assert lib.subtractLists (lib.attrNames attrs) (lib.attrNames srcs) == [ ];
-      attrs;
+    assert lib.subtractLists (lib.attrNames attrs) (lib.attrNames srcs) == [ ];
+    attrs;
 
   baseScope = makeScopeWithSplicing' {
     otherSplices = generateSplicesForMkScope "qt6";
