@@ -74,6 +74,7 @@ let
       };
       env = callPackage ./qt-env.nix { };
       qt3d = callPackage ./modules/qt3d.nix { };
+      # TODO qtactiveqt
       qt5compat = callPackage ./modules/qt5compat.nix { };
       qtcanvaspainter = callPackage ./modules/qtcanvaspainter.nix { };
       qtcharts = callPackage ./modules/qtcharts.nix { };
@@ -99,19 +100,21 @@ let
       };
       qtmqtt = callPackage ./modules/qtmqtt.nix { };
       qtnetworkauth = callPackage ./modules/qtnetworkauth.nix { };
+      # TODO qtopenapi
       qtpositioning = callPackage ./modules/qtpositioning.nix { };
-      qtsensors = callPackage ./modules/qtsensors.nix { };
-      qtserialbus = callPackage ./modules/qtserialbus.nix { };
-      qtserialport = callPackage ./modules/qtserialport.nix { };
-      qtshadertools = callPackage ./modules/qtshadertools.nix { };
-      qtspeech = callPackage ./modules/qtspeech.nix { };
       qtquick3d = callPackage ./modules/qtquick3d.nix { };
       qtquick3dphysics = callPackage ./modules/qtquick3dphysics.nix { };
       qtquickeffectmaker = callPackage ./modules/qtquickeffectmaker.nix { };
       qtquicktimeline = callPackage ./modules/qtquicktimeline.nix { };
       qtremoteobjects = callPackage ./modules/qtremoteobjects.nix { };
-      qtsvg = callPackage ./modules/qtsvg.nix { };
       qtscxml = callPackage ./modules/qtscxml.nix { };
+      qtsensors = callPackage ./modules/qtsensors.nix { };
+      qtserialbus = callPackage ./modules/qtserialbus.nix { };
+      qtserialport = callPackage ./modules/qtserialport.nix { };
+      qtshadertools = callPackage ./modules/qtshadertools.nix { };
+      qtspeech = callPackage ./modules/qtspeech.nix { };
+      qtsvg = callPackage ./modules/qtsvg.nix { };
+      # TODO qttasktree
       qttools = callPackage ./modules/qttools { };
       qttranslations = callPackage ./modules/qttranslations.nix {
         qttools = self.qttools.override {
