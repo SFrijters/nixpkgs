@@ -58,7 +58,7 @@ let
           test -d "${drv'}/${qtPluginPrefix}" && ln -s "${drv'}/${qtPluginPrefix}" "$out/${qtPluginPrefix}" || true
           test -d "${drv'}/${qtQmlPrefix}" && ln -s "${drv'}/${qtQmlPrefix}" "$out/${qtQmlPrefix}" || true
         '');
-    in
+      attrs =
     {
 
       inherit callPackage srcs darwinVersionInputs;
@@ -167,6 +167,10 @@ let
       full = throw "qt6.full has been removed. Please use individual packages instead."; # Added 2025-10-21
       wrapQtAppsNoGuiHook = lib.warn "wrapQtAppsNoGuiHook is deprecated, use wrapQtAppsHook instead" self.wrapQtAppsHook;
     };
+
+    in
+      assert lib.subtractLists (lib.attrNames attrs) (lib.attrNames srcs) == [ ];
+      attrs;
 
   baseScope = makeScopeWithSplicing' {
     otherSplices = generateSplicesForMkScope "qt6";
