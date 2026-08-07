@@ -4,12 +4,19 @@
   llvmPackages,
   python,
   cmake,
+  ninja,
   stdenv,
+  qt6,
   buildPackages,
 }:
 
 let
   stdenv' = if stdenv.cc.isClang then stdenv else llvmPackages.stdenv;
+  pwp =     (python.withPackages (ps: [
+      ps.packaging
+      ps.setuptools
+    ]));
+
 in
 stdenv'.mkDerivation (finalAttrs: {
   pname = "shiboken6-generator";
@@ -27,17 +34,16 @@ stdenv'.mkDerivation (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/sources/shiboken6_generator";
 
-  preConfigure = ''
-    env
-  '';
-
-  nativeBuildInputs = [
-    cmake
-    buildPackages.python3.pkgs.ninja
+  depsBuildBuild = [
     (buildPackages.python3.withPackages (ps: [
       ps.packaging
       ps.setuptools
     ]))
+  ];
+
+  nativeBuildInputs = [
+    cmake
+    ninja
   ];
 
   buildInputs = [
@@ -51,6 +57,10 @@ stdenv'.mkDerivation (finalAttrs: {
   cmakeFlags = [
     "-Dis_pyside6_superproject_build=1"
   ];
+
+  preBuild = ''
+    command -v python
+  '';
 
   dontWrapQtApps = true;
 

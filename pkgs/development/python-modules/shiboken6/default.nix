@@ -5,12 +5,18 @@
   shiboken6-generator,
   numpy,
   cmake,
+  ninja,
   stdenv,
   buildPackages,
 }:
 
 let
   stdenv' = if stdenv.cc.isClang then stdenv else llvmPackages.stdenv;
+  pwp =     (buildPackages.python3.withPackages (ps: [
+      ps.packaging
+      ps.setuptools
+    ]));
+
 in
 stdenv'.mkDerivation (finalAttrs: {
   pname = "shiboken6";
@@ -19,13 +25,13 @@ stdenv'.mkDerivation (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/sources/shiboken6";
 
+  depsBuildBuild = [
+    pwp
+  ];
+
   nativeBuildInputs = [
     cmake
-    python.pkgs.ninja
-    (python.pythonOnBuildForHost.withPackages (ps: [
-      ps.packaging
-      ps.setuptools
-    ]))
+    ninja
   ];
 
   propagatedNativeBuildInputs = [
@@ -43,7 +49,13 @@ stdenv'.mkDerivation (finalAttrs: {
     "-DBUILD_TESTS=OFF"
     "-DNUMPY_INCLUDE_DIR=${numpy.coreIncludeDir}"
     "-Dis_pyside6_superproject_build=1"
+    "-DQFP_PYTHON_HOST_PATH=${pwp.interpreter}"
   ];
+
+  preBuild = ''
+    command -v python
+    echo ${pwp.interpreter}
+  '';
 
   # We intentionally use single quotes around `${BASH}` since it expands from a CMake
   # variable available in this file.
