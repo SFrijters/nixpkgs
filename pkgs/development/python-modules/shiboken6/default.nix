@@ -45,6 +45,7 @@ stdenv'.mkDerivation (finalAttrs: {
     "-DBUILD_TESTS=OFF"
     "-DNUMPY_INCLUDE_DIR=${numpy.coreIncludeDir}"
     "-Dis_pyside6_superproject_build=1"
+    # Upstream variable explicitly provided to help with cross-compilation
     "-DQFP_PYTHON_HOST_PATH=${pythonWithPackages.interpreter}"
   ];
 

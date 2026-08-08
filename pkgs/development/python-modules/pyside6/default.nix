@@ -96,7 +96,6 @@ stdenv.mkDerivation (finalAttrs: {
     cmake
     ninja
     python
-    pythonImportsCheckHook
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [ moveBuildTree ];
 
@@ -105,9 +104,10 @@ stdenv.mkDerivation (finalAttrs: {
       # qtwebengine fails under darwin
       # see https://github.com/NixOS/nixpkgs/pull/312987
       packages
-      ++
-      lib.optionals (stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
-        python.pkgs.qt6.qtwebengine ]
+      # Doesn't work in cross build
+      ++ lib.optionals (stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
+        python.pkgs.qt6.qtwebengine
+      ]
     else
       python.pkgs.qt6.darwinVersionInputs
       ++ [
@@ -123,6 +123,7 @@ stdenv.mkDerivation (finalAttrs: {
   cmakeFlags = [
     "-DBUILD_TESTS=OFF"
     "-Dis_pyside6_superproject_build=1"
+    # Needed for cross, similarly to the way the indivudual Qt6 modules are built
     "-DQt6CanvasPainterTools_DIR=${pkgsBuildBuild.qt6.qtcanvaspainter}/lib/cmake/Qt6CanvasPainterTools"
     "-DQt6QmlTools_DIR=${pkgsBuildBuild.qt6.qtdeclarative}/lib/cmake/Qt6QmlTools"
     "-DQt6QuickTools_DIR=${pkgsBuildBuild.qt6.qtdeclarative}/lib/cmake/Qt6QuickTools"

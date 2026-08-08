@@ -6,17 +6,11 @@
   cmake,
   ninja,
   stdenv,
-  qt6,
   buildPackages,
 }:
 
 let
   stdenv' = if stdenv.cc.isClang then stdenv else llvmPackages.stdenv;
-  pwp =     (python.withPackages (ps: [
-      ps.packaging
-      ps.setuptools
-    ]));
-
 in
 stdenv'.mkDerivation (finalAttrs: {
   pname = "shiboken6-generator";
@@ -58,6 +52,7 @@ stdenv'.mkDerivation (finalAttrs: {
     "-Dis_pyside6_superproject_build=1"
   ];
 
+  # TODO: Removeme
   preBuild = ''
     command -v python
   '';
