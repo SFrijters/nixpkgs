@@ -28,16 +28,13 @@ stdenv'.mkDerivation (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/sources/shiboken6_generator";
 
-  depsBuildBuild = [
+  nativeBuildInputs = [
+    cmake
+    ninja
     (buildPackages.python3.withPackages (ps: [
       ps.packaging
       ps.setuptools
     ]))
-  ];
-
-  nativeBuildInputs = [
-    cmake
-    ninja
   ];
 
   buildInputs = [
@@ -51,11 +48,6 @@ stdenv'.mkDerivation (finalAttrs: {
   cmakeFlags = [
     "-Dis_pyside6_superproject_build=1"
   ];
-
-  # TODO: Removeme
-  preBuild = ''
-    command -v python
-  '';
 
   dontWrapQtApps = true;
 
