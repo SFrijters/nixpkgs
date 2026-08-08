@@ -7,7 +7,6 @@
   makeScopeWithSplicing',
   fetchurl,
   fetchpatch2,
-  fetchFromGitHub,
   makeSetupHook,
   makeWrapper,
   runCommand,
@@ -22,14 +21,10 @@
 }:
 
 let
-  srcs =
-    import ./srcs.nix {
-      inherit fetchurl;
-      mirror = "mirror://qt";
-    }
-    // import ./srcs-extra.nix {
-      inherit fetchFromGitHub;
-    };
+  srcs = import ./srcs.nix {
+    inherit fetchurl;
+    mirror = "mirror://qt";
+  };
 
   addPackages =
     self:
