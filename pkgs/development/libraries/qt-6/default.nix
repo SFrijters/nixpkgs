@@ -69,9 +69,7 @@ let
       };
       env = callPackage ./qt-env.nix { };
       qt3d = callPackage ./modules/qt3d.nix { };
-      qtactiveqt = callPackage ./modules/qtactiveqt.nix { };
       qt5compat = callPackage ./modules/qt5compat.nix { };
-      qtcanvaspainter = callPackage ./modules/qtcanvaspainter.nix { };
       qtcharts = callPackage ./modules/qtcharts.nix { };
       qtconnectivity = callPackage ./modules/qtconnectivity.nix { };
       qtdatavis3d = callPackage ./modules/qtdatavis3d.nix { };
@@ -95,7 +93,6 @@ let
       };
       qtmqtt = callPackage ./modules/qtmqtt.nix { };
       qtnetworkauth = callPackage ./modules/qtnetworkauth.nix { };
-      qtopenapi = callPackage ./modules/qtopenapi.nix { };
       qtpositioning = callPackage ./modules/qtpositioning.nix { };
       qtsensors = callPackage ./modules/qtsensors.nix { };
       qtserialbus = callPackage ./modules/qtserialbus.nix { };
@@ -109,7 +106,6 @@ let
       qtremoteobjects = callPackage ./modules/qtremoteobjects.nix { };
       qtsvg = callPackage ./modules/qtsvg.nix { };
       qtscxml = callPackage ./modules/qtscxml.nix { };
-      qttasktree = callPackage ./modules/qttasktree.nix { };
       qttools = callPackage ./modules/qttools { };
       qttranslations = callPackage ./modules/qttranslations.nix {
         qttools = self.qttools.override {
