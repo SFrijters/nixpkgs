@@ -31,7 +31,7 @@ effectiveStdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "zfp";
-    tag = finalAttrs.version;
+    rev = finalAttrs.version;
     hash = "sha256-iZxA4lIviZQgaeHj6tEQzEFSKocfgpUyf4WvUykb9qk=";
   };
 
@@ -41,58 +41,49 @@ effectiveStdenv.mkDerivation (finalAttrs: {
     ./python312.patch
   ];
 
-  nativeBuildInputs = [
-    cmake
-  ]
-  ++ lib.optionals enableFortran [
-    gfortran
-  ]
-  ++ lib.optionals enablePython (
-    with python3Packages;
-    [
-      cython
-      numpy
-      python
-    ]
-  );
+  nativeBuildInputs = [ cmake ];
 
-  buildInputs = lib.optionals enableCuda [
-    cudatoolkit
-  ];
+  buildInputs =
+    lib.optional enableCuda cudatoolkit
+    ++ lib.optional enableFortran gfortran
+    ++ lib.optionals enablePython (
+      with python3Packages;
+      [
+        cython
+        numpy
+        python
+      ]
+    );
 
   propagatedBuildInputs = lib.optionals (enableOpenMP && effectiveStdenv.cc.isClang) [
     llvmPackages.openmp
   ];
-
-  strictDeps = true;
 
   # compile CUDA code for all extant GPUs so the binary will work with any GPU
   # and driver combination. to be ultimately solved upstream:
   # https://github.com/LLNL/zfp/issues/178
   # NB: not in cmakeFlags due to https://github.com/NixOS/nixpkgs/issues/114044
   preConfigure = lib.optionalString enableCuda ''
-    cmakeFlags+=(
+    cmakeFlagsArray+=(
       "-DCMAKE_CUDA_FLAGS=-gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_87,code=sm_87 -gencode=arch=compute_86,code=compute_86"
     )
   '';
 
   cmakeFlags = [
-    (lib.cmakeBool "BUILD_UTILITIES" enableUtilities)
-    (lib.cmakeBool "BUILD_CFP" enableCfp)
-    (lib.cmakeBool "ZFP_WITH_CUDA" enableCuda)
-    (lib.cmakeBool "BUILD_ZFORP" enableFortran)
-    (lib.cmakeBool "ZFP_WITH_OPENMP" enableOpenMP)
-    (lib.cmakeBool "BUILD_ZFPY" enablePython)
   ]
-  ++ lib.optionals (bitStreamWordSize != 64) [
-    (lib.cmakeFeature "ZFP_BIT_STREAM_WORD_SIZE" (toString bitStreamWordSize))
-  ];
+  ++ lib.optional (bitStreamWordSize != 64) "-DZFP_BIT_STREAM_WORD_SIZE=${toString bitStreamWordSize}"
+  ++ lib.optional enableCfp "-DBUILD_CFP=ON"
+  ++ lib.optional enableCuda "-DZFP_WITH_CUDA=ON"
+  ++ lib.optional enableFortran "-DBUILD_ZFORP=ON"
+  ++ lib.optional enableOpenMP "-DZFP_WITH_OPENMP=ON"
+  ++ lib.optional enablePython "-DBUILD_ZFPY=ON"
+  ++ [ "-DBUILD_UTILITIES=${if enableUtilities then "ON" else "OFF"}" ];
 
   doCheck = true;
 
   # the testzfp regression test only supports the default 64-bit bitstream word
   preCheck = lib.optionalString (bitStreamWordSize != 64) ''
-    checkFlags+=(ARGS="--exclude-regex testzfp")
+    checkFlagsArray+=(ARGS="--exclude-regex testzfp")
   '';
 
   passthru.tests = {
@@ -101,8 +92,6 @@ effectiveStdenv.mkDerivation (finalAttrs: {
       package = finalAttrs.finalPackage;
     };
   };
-
-  __structuredAttrs = true;
 
   meta = {
     homepage = "https://computing.llnl.gov/projects/zfp";
