@@ -24,6 +24,7 @@ let
     isList
     isString
     length
+    mapAttrs
     match
     warn
     ;
@@ -44,8 +45,11 @@ let
       strictDeps = true;
       builder = ./write-mirror-list.sh;
       preferLocalBuild = true;
+      __structuredAttrs = true;
     }
-    // mirrors
+    # Flatten arrays to a representation that the builder understands
+    # i.e. space separated strings
+    // (mapAttrs (_: v: toString v) mirrors)
   );
 
   # Names of the master sites that are mirrored (i.e., "sourceforge",
