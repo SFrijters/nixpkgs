@@ -713,7 +713,9 @@ let
 
           inherit userHook;
           __ignoreNulls = true;
-          inherit __structuredAttrs strictDeps;
+
+          __structuredAttrs = if __structuredAttrs then true else throw "__structuredAttrs = false";
+          strictDeps = if strictDeps then true else throw "strictDeps = false";
 
           depsBuildBuild = buildBuildOutputs;
           nativeBuildInputs = buildHostOutputs;
