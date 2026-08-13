@@ -52,6 +52,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   passthru.updateScript = nix-update-script { };
 
+  __structuredAttrs = true;
+
   meta = {
     description = "du, but more intuitive";
     homepage = "https://github.com/bootandy/dust";
