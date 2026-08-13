@@ -171,10 +171,13 @@ rec {
       makeWrapper
     ]
     ++ lib.optional (!stdenv.hostPlatform.isDarwin) autoPatchelfHook;
+
     buildInputs = [
       bash
     ]
     ++ lib.optional (!stdenv.hostPlatform.isDarwin && !stdenv.hostPlatform.isFreeBSD) gcc.cc.lib;
+
+    strictDeps = true;
 
     postPatch = ''
       patchShebangs .
