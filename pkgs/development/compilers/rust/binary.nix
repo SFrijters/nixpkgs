@@ -48,6 +48,8 @@ rec {
     ++ lib.optional (!stdenv.hostPlatform.isDarwin && !stdenv.hostPlatform.isFreeBSD) gcc.cc.lib
     ++ lib.optional (!stdenv.hostPlatform.isDarwin) zlib;
 
+    strictDeps = true;
+
     postPatch = ''
       patchShebangs .
     '';
