@@ -92,6 +92,8 @@ rec {
 
     setupHooks = ./setup-hook.sh;
 
+    __structuredAttrs = true;
+
     passthru = rec {
       targetPlatformsWithHostTools = [
         # Platforms with host tools from
