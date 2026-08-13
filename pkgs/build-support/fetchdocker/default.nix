@@ -58,7 +58,11 @@ let
 in
 stdenv.mkDerivation {
   builder = ./fetchdocker-builder.sh;
-  buildInputs = [ coreutils ];
+  nativeBuildInputs = [ coreutils ];
+
+  strictDeps = true;
+  __structuredAttrs = true;
+
   preferLocalBuild = true;
 
   inherit
