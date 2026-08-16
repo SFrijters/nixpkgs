@@ -1,2 +1,3 @@
-# !!! this is kinda hacky.
-set | grep -E '^[a-zA-Z]+=.*://' > $out
+for mirror in "${!mirrors[@]}"; do
+    printf "%s='%s'\n" "${mirror}" "${mirrors[${mirror}]}" >> $out
+done

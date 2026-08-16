@@ -14,6 +14,7 @@ let
   defaultNativeBuildInputs = [ curl ];
   inherit (lib)
     concatMap
+    concatStringsSep
     elemAt
     fakeHash
     fakeSha256
@@ -39,18 +40,18 @@ let
   # fetchurl instantiations via environment variables.  This makes the
   # resulting store derivations (.drv files) much smaller, which in
   # turn makes nix-env/nix-instantiate faster.
-  mirrorsFile = buildPackages.stdenvNoCC.mkDerivation (
-    {
-      name = "mirrors-list";
-      strictDeps = true;
-      builder = ./write-mirror-list.sh;
-      preferLocalBuild = true;
-      __structuredAttrs = true;
-    }
-    # Flatten arrays to a representation that the builder understands
-    # i.e. space separated strings
-    // (mapAttrs (_: v: toString v) mirrors)
-  );
+  mirrorsFile = buildPackages.stdenvNoCC.mkDerivation {
+    name = "mirrors-list";
+    strictDeps = true;
+    builder = ./write-mirror-list.sh;
+    preferLocalBuild = true;
+    __structuredAttrs = true;
+    # Associative array where keys are the names of the mirrors,
+    # and the values are the space-separated URLs for that mirror,
+    # Ideally we'd want to pass arrays of URLs,
+    # but we cannot pass an associative array of arrays to bash.
+    mirrors = mapAttrs (_: v: concatStringsSep " " v) mirrors;
+  };
 
   # Names of the master sites that are mirrored (i.e., "sourceforge",
   # "gnu", etc.).
