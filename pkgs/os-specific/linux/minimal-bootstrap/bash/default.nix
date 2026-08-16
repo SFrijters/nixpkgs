@@ -84,7 +84,7 @@ bootBash.runCommand "${pname}-${version}"
               bash -eux $buildCommandPath
             '')
           ];
-          passAsFile = [ "buildCommand" ];
+          passAsFile = [ "buildCommand" ]; # derivationWithMeta
 
           SHELL = "${bash}/bin/bash";
           PATH =

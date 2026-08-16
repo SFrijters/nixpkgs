@@ -114,7 +114,7 @@ let
     pkgs.runCommand "weblate_settings.py"
       {
         inherit weblateConfig;
-        passAsFile = [ "weblateConfig" ];
+        passAsFile = [ "weblateConfig" ]; # runCommand
       }
       ''
         mkdir -p $out

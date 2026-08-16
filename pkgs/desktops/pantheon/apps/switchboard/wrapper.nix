@@ -32,7 +32,7 @@ stdenv.mkDerivation {
   ]
   ++ selectedPlugs;
 
-  passAsFile = [ "paths" ];
+  passAsFile = [ "paths" ]; # mkDerivation
 
   nativeBuildInputs = [
     glib

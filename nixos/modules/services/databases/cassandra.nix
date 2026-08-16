@@ -69,7 +69,7 @@ let
     cassandraEnvPkg = "${cfg.package}/conf/cassandra-env.sh";
     cassandraLogbackConfig = pkgs.writeText "logback.xml" cfg.logbackConfig;
 
-    passAsFile = [ "extraEnvSh" ];
+    passAsFile = [ "extraEnvSh" ]; # mkDerivation
     inherit (cfg) extraEnvSh package;
 
     buildCommand = ''

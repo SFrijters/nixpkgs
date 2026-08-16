@@ -190,7 +190,7 @@ in
               ${config.users.defaultUserShell} = icnu
           '';
           footer = "${pkgs.apparmor-utils}/etc/apparmor/logprof.conf";
-          passAsFile = [ "header" ];
+          passAsFile = [ "header" ]; # runCommand
         }
         ''
           cp $headerPath $out

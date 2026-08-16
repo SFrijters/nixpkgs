@@ -114,7 +114,7 @@ kaem.runCommand "${pname}-${version}"
             "-e"
             bashBuilder
           ];
-          passAsFile = [ "buildCommand" ];
+          passAsFile = [ "buildCommand" ]; # derivationWithMeta
 
           SHELL = "${bash_2_05}/bin/bash";
           PATH =

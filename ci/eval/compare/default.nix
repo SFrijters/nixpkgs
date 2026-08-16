@@ -221,7 +221,7 @@ runCommand "compare"
     users = builtins.toJSON users;
     teams = builtins.toJSON teams;
     packages = builtins.toJSON (lib.map (lib.concatStringsSep ".") packages);
-    passAsFile = [
+    passAsFile = [ # runCommand
       "users"
       "teams"
       "packages"

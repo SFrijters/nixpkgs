@@ -17,7 +17,7 @@ let
       {
         nativeBuildInputs = [ remarshal ];
         value = builtins.toJSON cfg.settings;
-        passAsFile = [ "value" ];
+        passAsFile = [ "value" ]; # runCommandLocal
       }
       ''
         remarshal --from json --to yaml-1.1 "$valuePath" "$out"

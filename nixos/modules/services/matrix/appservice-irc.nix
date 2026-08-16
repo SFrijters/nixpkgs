@@ -23,7 +23,7 @@ let
         preferLocalBuild = true;
 
         config = builtins.toJSON cfg.settings;
-        passAsFile = [ "config" ];
+        passAsFile = [ "config" ]; # runCommand
       }
       ''
         # The schema is given as yaml, we need to convert it to json

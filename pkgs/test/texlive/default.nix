@@ -997,7 +997,7 @@ rec {
     runCommand "texlive-test-fixed-hashes"
       {
         inherit errorText;
-        passAsFile = [ "errorText" ];
+        passAsFile = [ "errorText" ]; # runCommand
       }
       ''
         if [[ -s "$errorTextPath" ]] ; then

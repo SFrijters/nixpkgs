@@ -49,7 +49,7 @@ in
     runCommand name
       {
         input = input data;
-        passAsFile = [ "input" ];
+        passAsFile = [ "input" ]; # runCommand (REMOVED)
       }
       ''
         ${output}

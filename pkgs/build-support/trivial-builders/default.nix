@@ -82,7 +82,7 @@ rec {
       {
         enableParallelBuilding = true;
         inherit buildCommand name;
-        passAsFile = defaultPassAsFile ++ (derivationArgs.passAsFile or [ ]);
+        passAsFile = defaultPassAsFile ++ (derivationArgs.passAsFile or [ ]); # mkDerivation
         ${if !derivationArgs ? meta then "pos" else null} =
           let
             args = builtins.attrNames derivationArgs;
@@ -149,7 +149,7 @@ rec {
               Ensure that the path starts with a / and specifies at least the filename.
             '';
           destination;
-        passAsFile = defaultPassAsFile ++ derivationArgs.passAsFile or [ ];
+        passAsFile = defaultPassAsFile ++ derivationArgs.passAsFile or [ ]; # mkDerivation
 
         buildCommand = ''
           target=$out$destination
@@ -581,7 +581,7 @@ rec {
       {
         enableParallelBuilding = true;
         inherit name allowSubstitutes preferLocalBuild;
-        passAsFile = defaultPassAsFile;
+        passAsFile = defaultPassAsFile; # mkDerivation / supported
         paths = mapPaths (path: "${path}${stripPrefix}") paths;
         buildCommand = ''
           mkdir -p $out

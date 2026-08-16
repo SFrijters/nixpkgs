@@ -928,7 +928,7 @@ rec {
     tag = "latest";
     drv = pkgs.mkShell {
       str = "this is a string";
-      passAsFile = [ "str" ];
+      passAsFile = [ "str" ]; # mkShell
     };
     command = ''
       cat "$strPath"

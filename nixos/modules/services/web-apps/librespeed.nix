@@ -28,7 +28,7 @@ let
           ]}
           }
         '';
-        passAsFile = [ "serversList" ];
+        passAsFile = [ "serversList" ]; # runCommand
       }
       ''
         cp -r ${cfg.package}/assets $out

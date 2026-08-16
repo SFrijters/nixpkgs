@@ -30,7 +30,7 @@ stdenv.mkDerivation {
   ]
   ++ selectedIndicators;
 
-  passAsFile = [ "paths" ];
+  passAsFile = [ "paths" ]; # mkDerivation
 
   nativeBuildInputs = [
     glib

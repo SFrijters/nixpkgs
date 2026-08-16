@@ -120,7 +120,7 @@ rec {
               if (types.str.check content) then
                 {
                   inherit content interpreter;
-                  passAsFile = [ "content" ];
+                  passAsFile = [ "content" ]; # runCommandLocal
                 }
               else
                 {
@@ -267,7 +267,7 @@ rec {
               if (types.str.check content) then
                 {
                   inherit content;
-                  passAsFile = [ "content" ];
+                  passAsFile = [ "content" ]; # runCommandLocal
                 }
               else
                 { contentPath = content; }

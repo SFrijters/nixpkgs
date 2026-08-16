@@ -54,7 +54,7 @@ buildPackages.stdenv.mkDerivation (finalAttrs: {
   # thus probably intend to substitute it.
   allowSubstitutes = true;
 
-  passAsFile = [ "buildCommand" ];
+  passAsFile = [ "buildCommand" ]; # mkDerivation
 
   buildCommand = ''
     ${

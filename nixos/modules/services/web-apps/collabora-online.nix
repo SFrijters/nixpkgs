@@ -42,7 +42,7 @@ let
           pkgs.yq-go
         ];
         userConfig = builtins.toJSON { config = cfg.settings; };
-        passAsFile = [ "userConfig" ];
+        passAsFile = [ "userConfig" ]; # runCommandLocal
       }
       # Merge the cfg.settings into the default coolwsd.xml.
       # See https://github.com/CollaboraOnline/online/issues/10049.

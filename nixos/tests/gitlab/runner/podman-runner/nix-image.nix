@@ -269,7 +269,7 @@ let
           shadowContents
           nixConfContents
           ;
-        passAsFile = [
+        passAsFile = [ # runCommand
           "passwdContents"
           "groupContents"
           "shadowContents"

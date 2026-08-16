@@ -186,7 +186,7 @@ derivation.
           jq
           lndir
         ];
-        passAsFile = [ "config" ];
+        passAsFile = [ "config" ]; # runCommand
       }
       ''
         mkdir $out

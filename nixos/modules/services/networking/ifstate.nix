@@ -21,7 +21,7 @@ let
             check-jsonschema
           ];
           value = builtins.toJSON value;
-          passAsFile = [ "value" ];
+          passAsFile = [ "value" ]; # runCommand
         }
         ''
           yq --yaml-output . $valuePath > $out

@@ -37,7 +37,7 @@ let
         // {
           inherit content;
           nativeBuildInputs = args.nativeBuildInputs or [ ] ++ [ makeWrapper ];
-          passAsFile = args.passAsFile or [ ] ++ [ "content" ];
+          passAsFile = args.passAsFile or [ ] ++ [ "content" ]; # runCommand
         }
       )
       ''

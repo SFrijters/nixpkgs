@@ -25,7 +25,7 @@ let
             cfg.package
           ];
           value = builtins.toJSON value;
-          passAsFile = [ "value" ];
+          passAsFile = [ "value" ]; # runCommand
           preferLocalBuild = true;
         }
         ''

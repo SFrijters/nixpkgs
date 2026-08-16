@@ -25,7 +25,7 @@ let
     name: drv: expected:
     pkgs.runCommand name
       {
-        passAsFile = [ "expected" ];
+        passAsFile = [ "expected" ]; # runCommand
         inherit expected drv;
       }
       ''
@@ -76,7 +76,7 @@ let
       typeSucceeds =
         pkgs.runCommand "test-format-${name}"
           {
-            passAsFile = [ "inputText" ];
+            passAsFile = [ "inputText" ]; # runCommand
             testName = name;
             # this will fail if the input contains functions as values
             # however that should get caught by the type check already

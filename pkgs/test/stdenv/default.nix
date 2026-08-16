@@ -77,7 +77,7 @@ let
           string = "testing-string";
         };
 
-        passAsFile = [ "buildCommand" ];
+        passAsFile = [ "buildCommand" ]; # stdenv'.mkDerivation
         buildCommand = ''
           declare -p string
           echo "env.string = $string"
@@ -102,7 +102,7 @@ let
           string = "testing-string";
         };
 
-        passAsFile = [ "buildCommand" ] ++ lib.optionals (extraAttrs ? extraTest) [ "extraTest" ];
+        passAsFile = [ "buildCommand" ] ++ lib.optionals (extraAttrs ? extraTest) [ "extraTest" ]; # stdenv'.mkDerivation
         buildCommand = ''
           declare -p string
           appendToVar string hello
@@ -151,7 +151,7 @@ let
           "d"
         ];
 
-        passAsFile = [ "buildCommand" ] ++ lib.optionals (extraAttrs ? extraTest) [ "extraTest" ];
+        passAsFile = [ "buildCommand" ] ++ lib.optionals (extraAttrs ? extraTest) [ "extraTest" ]; # stdenv'.mkDerivation
         buildCommand = ''
           declare -A associativeArray=(["X"]="Y")
           [[ $(concatTo nowhere associativeArray 2>&1) =~ "trying to use" ]] || (echo "concatTo did not throw concatenating associativeArray" && false)
@@ -197,7 +197,7 @@ let
       # NOTE: Testing with "&" as separator is intentional, because unquoted
       # "&" has a special meaning in the "${var//pattern/replacement}" syntax.
       # Cf. https://github.com/NixOS/nixpkgs/pull/318614#discussion_r1706191919
-      passAsFile = [ "buildCommand" ];
+      passAsFile = [ "buildCommand" ]; # stdenv'.mkDerivation
       buildCommand = ''
         declare -A associativeArray=(["X"]="Y")
         [[ $(concatStringsSep ";" associativeArray 2>&1) =~ "trying to use" ]] || (echo "concatStringsSep did not throw concatenating associativeArray" && false)
@@ -319,7 +319,7 @@ in
             ];
             inherit (stdenv.buildPlatform) system;
           };
-          passAsFile = [ "dep2" ];
+          passAsFile = [ "dep2" ]; # mkDerivation
         })
         inputDerivation
         ;
@@ -366,7 +366,7 @@ in
           buildCommand = ''
             touch $out
           '';
-          passAsFile = [ "dep2" ];
+          passAsFile = [ "dep2" ]; # mkDerivation
         })
         inputDerivation
         ;

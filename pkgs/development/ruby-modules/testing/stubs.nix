@@ -27,7 +27,7 @@ let
         "echo  $(<$textPath) > $out"
       ];
       system = stdenv.hostPlatform.system;
-      passAsFile = [ "text" ];
+      passAsFile = [ "text" ]; # derivation
     };
   fetchurl =
     {

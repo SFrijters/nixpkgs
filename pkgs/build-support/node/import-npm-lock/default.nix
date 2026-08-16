@@ -247,7 +247,7 @@ lib.fix (self: {
         inherit __structuredAttrs;
       }
       // lib.optionalAttrs (!__structuredAttrs) {
-        passAsFile = [
+        passAsFile = [ # mkDerivation, supported
           "package"
           "packageLock"
         ]

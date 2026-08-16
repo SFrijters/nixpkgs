@@ -183,7 +183,7 @@ let
         disallowedRequisites = disallowedRefsForToolchain;
         passthru.linked = linked;
         linkPaths = linkPaths;
-        passAsFile = [ "linkPaths" ];
+        passAsFile = [ "linkPaths" ]; # runCommand
         # TODO(@LunNova): Try to use --sysroot with clang in its original location instead of
         # relying on copying the binary?
         # $clang/bin/clang++ --sysroot=$rocm-toolchain is not equivalent

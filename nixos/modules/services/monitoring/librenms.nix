@@ -32,7 +32,7 @@ let
         inherit (package) phpPackage;
         phpOptions = toKeyValue cfg.phpOptions;
         preferLocalBuild = true;
-        passAsFile = [ "phpOptions" ];
+        passAsFile = [ "phpOptions" ]; # runCommand
       }
       ''
         cat $phpPackage/etc/php.ini $phpOptionsPath > $out

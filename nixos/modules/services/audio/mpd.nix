@@ -84,7 +84,7 @@ let
           }
         }
       '';
-      passAsFile = [
+      passAsFile = [ # writeTextFile
         "expectScript"
       ];
     };

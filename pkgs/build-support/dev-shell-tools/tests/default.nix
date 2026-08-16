@@ -100,7 +100,7 @@ lib.recurseIntoAttrs {
           "Nix doesn't do it."
         ];
 
-        passAsFile = [ "bar" ];
+        passAsFile = [ "bar" ]; # devShellTools
         bar = ''
           bar
           ${writeText "qux" "yea"}
@@ -121,7 +121,7 @@ lib.recurseIntoAttrs {
         anOutPath = "${hello.outPath}";
         anAnAlternateOutput = "${zlib.dev}";
 
-        passAsFile = "bar";
+        passAsFile = "bar"; # devShellTools
         barPath = "<check later>";
       };
 

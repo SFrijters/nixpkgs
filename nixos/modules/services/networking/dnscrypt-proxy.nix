@@ -61,7 +61,7 @@ in
         pkgs.runCommand "dnscrypt-proxy.toml"
           {
             json = builtins.toJSON cfg.settings;
-            passAsFile = [ "json" ];
+            passAsFile = [ "json" ]; # runCommand
           }
           ''
             ${

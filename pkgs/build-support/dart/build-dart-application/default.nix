@@ -201,7 +201,7 @@ lib.extendMkDerivation {
       # runs instead of the expected program. Don't strip if it's an exe output.
       dontStrip = args.dontStrip or (dartOutputType == "exe");
 
-      passAsFile = [ "pubspecLockFile" ];
+      passAsFile = [ "pubspecLockFile" ]; # mkDerivation
 
       passthru = {
         pubspecLock = pubspecLockData;

@@ -71,7 +71,7 @@ let
       dontBuild = true;
 
       inherit emptyCDISpec;
-      passAsFile = [ "emptyCDISpec" ];
+      passAsFile = [ "emptyCDISpec" ]; # mkDerivation
 
       installPhase = ''
         mkdir -p $out/bin $out/share/nvidia-container-toolkit

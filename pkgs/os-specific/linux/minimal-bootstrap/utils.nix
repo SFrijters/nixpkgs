@@ -99,7 +99,7 @@ rec {
     }:
     derivationWithMeta {
       inherit name text;
-      passAsFile = [ "text" ];
+      passAsFile = [ "text" ]; # derivationWithMeta
 
       builder = "${kaem}/bin/kaem";
       args = [

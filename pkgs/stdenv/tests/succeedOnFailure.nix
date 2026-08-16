@@ -5,7 +5,7 @@ stdenv.mkDerivation {
 
   succeedOnFailure = true;
 
-  passAsFile = [ "buildCommand" ];
+  passAsFile = [ "buildCommand" ]; # mkDerivation
   buildCommand = ''
     mkdir $out
     echo foo > $out/foo

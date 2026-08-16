@@ -214,7 +214,7 @@ rec {
           pkgs.brotli
           pkgs.python3
         ];
-        passAsFile = [ "options" ];
+        passAsFile = [ "options" ]; # runCommand
         options = builtins.unsafeDiscardStringContext (builtins.toJSON optionsNix);
         # merge with an empty set if baseOptionsJSON is null to run markdown
         # processing on the input options

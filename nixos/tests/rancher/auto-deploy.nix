@@ -75,7 +75,7 @@ let
             };
           };
         };
-        passAsFile = [
+        passAsFile = [ # runCommand
           "values"
           "chart"
           "job"

@@ -30,7 +30,7 @@ let
     pkgs.runCommandLocal name {
       nativeBuildInputs = [ cfg.package ];
       inherit text;
-      passAsFile = [ "text" ];
+      passAsFile = [ "text" ]; # runCommandLocal
     } "fish --no-config -c 'fish_indent $textPath' > $out";
 
   sourceEnv =
