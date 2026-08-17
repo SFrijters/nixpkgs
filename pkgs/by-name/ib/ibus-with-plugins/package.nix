@@ -27,11 +27,15 @@ buildEnv {
     "/share/systemd/user/gnome-session.target.wants"
   ];
 
-  nativeBuildInputs = [
-    makeWrapper
-  ];
-
-  buildInputs = [ ibus ] ++ plugins;
+  derivationArgs = {
+    strictDeps = true;
+    nativeBuildInputs = [
+      makeWrapper
+      ibus
+    ]
+    ++ plugins;
+    buildInputs = [ ibus ] ++ plugins;
+  };
 
   postBuild = ''
     for prog in ibus; do
@@ -82,7 +86,7 @@ buildEnv {
         "share/systemd/user/org.freedesktop.IBus.session.GNOME.service"
     do
         unlink "$out/$service"
-        substitute "$ibusPackage/$service" "$out/$service" --replace "$ibusPackage/bin" "$out/bin"
+        substitute "$ibusPackage/$service" "$out/$service" --replace-fail "$ibusPackage/bin" "$out/bin"
     done
 
     # Re-create relative symbolic links.
