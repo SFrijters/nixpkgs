@@ -26,16 +26,10 @@ let
 
   configDir = cfg.dataDir + "/config";
 
-  elasticsearchYml = pkgs.writeTextFile {
-    name = "elasticsearch.yml";
-    text = esConfig;
-  };
+  elasticsearchYml = pkgs.writeText "elasticsearch.yml" esConfig;
 
   loggingConfigFilename = "log4j2.properties";
-  loggingConfigFile = pkgs.writeTextFile {
-    name = loggingConfigFilename;
-    text = cfg.logging;
-  };
+  loggingConfigFile = pkgs.writeText loggingConfigFilename cfg.logging;
 
   esPlugins = pkgs.buildEnv {
     name = "elasticsearch-plugins";

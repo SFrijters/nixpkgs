@@ -4,7 +4,7 @@
   lib,
   fetchurl,
   makeWrapper,
-  writeTextFile,
+  writeText,
   replaceVars,
   fetchpatch,
   writeShellApplication,
@@ -291,21 +291,18 @@ let
   # on aarch64 Darwin, `uname -m` returns "arm64"
   arch = with stdenv.hostPlatform; if isDarwin && isAarch64 then "arm64" else parsed.cpu.name;
 
-  bazelRC = writeTextFile {
-    name = "bazel-rc";
-    text = ''
-      startup --server_javabase=${runJdk}
+  bazelRC = writeText "bazel-rc" ''
+    startup --server_javabase=${runJdk}
 
-      # Register nix-specific nonprebuilt java toolchains
-      build --extra_toolchains=@bazel_tools//tools/jdk:all
-      # and set bazel to use them by default
-      build --tool_java_runtime_version=local_jdk
-      build --java_runtime_version=local_jdk
+    # Register nix-specific nonprebuilt java toolchains
+    build --extra_toolchains=@bazel_tools//tools/jdk:all
+    # and set bazel to use them by default
+    build --tool_java_runtime_version=local_jdk
+    build --java_runtime_version=local_jdk
 
-      # load default location for the system wide configuration
-      try-import /etc/bazel.bazelrc
-    '';
-  };
+    # load default location for the system wide configuration
+    try-import /etc/bazel.bazelrc
+  '';
 
 in
 stdenv.mkDerivation rec {

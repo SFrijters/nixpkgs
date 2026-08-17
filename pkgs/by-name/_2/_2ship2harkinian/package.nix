@@ -4,7 +4,7 @@
   applyPatches,
   _2ship2harkinian,
   fetchurl,
-  writeTextFile,
+  writeText,
   stdenv,
   cmake,
   copyDesktopItems,
@@ -74,13 +74,10 @@ let
     hash = "sha256-jRPwO1Vub0cH12YMlME6kd8zGzKmcfIrIJZYpQJeOks=";
   };
 
-  stb_impl = writeTextFile {
-    name = "stb_impl.c";
-    text = ''
-      #define STB_IMAGE_IMPLEMENTATION
-      #include "stb_image.h"
-    '';
-  };
+  stb_impl = writeText "stb_impl.c" ''
+    #define STB_IMAGE_IMPLEMENTATION
+    #include "stb_image.h"
+  '';
 
   stb' = fetchurl {
     name = "stb_image.h";

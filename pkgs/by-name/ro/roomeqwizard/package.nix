@@ -9,7 +9,7 @@
   makeWrapper,
   stdenv,
   writeScript,
-  writeTextFile,
+  writeText,
   recommendedUdevRules ? true,
 }:
 
@@ -35,19 +35,16 @@ stdenv.mkDerivation rec {
     categories = [ "AudioVideo" ];
   };
 
-  responseFile = writeTextFile {
-    name = "response.varfile";
-    text = ''
-      createDesktopLinkAction$Boolean=false
-      executeLauncherAction$Boolean=false
-      mem$Integer=1
-      opengl$Boolean=false
-      sys.adminRights$Boolean=false
-      sys.installationDir=INSTALLDIR
-      sys.languageId=en
-      sys.programGroupDisabled$Boolean=true
-    '';
-  };
+  responseFile = writeText "response.varfile" ''
+    createDesktopLinkAction$Boolean=false
+    executeLauncherAction$Boolean=false
+    mem$Integer=1
+    opengl$Boolean=false
+    sys.adminRights$Boolean=false
+    sys.installationDir=INSTALLDIR
+    sys.languageId=en
+    sys.programGroupDisabled$Boolean=true
+  '';
 
   udevRules = ''
     # MiniDSP UMIK-1 calibrated USB microphone

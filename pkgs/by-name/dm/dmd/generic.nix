@@ -11,7 +11,7 @@
   removeReferencesTo,
   makeWrapper,
   which,
-  writeTextFile,
+  writeText,
   curl,
   tzdata,
   gdb,
@@ -27,18 +27,15 @@
 }:
 
 let
-  dmdConfFile = writeTextFile {
-    name = "dmd.conf";
-    text = (
-      lib.generators.toINI { } {
-        Environment = {
-          DFLAGS = "-I@out@/include/dmd -L-L@out@/lib -fPIC ${
-            lib.optionalString (!targetPackages.stdenv.cc.isClang) "-L--export-dynamic"
-          }";
-        };
-      }
-    );
-  };
+  dmdConfFile = writeText "dmd.conf" (
+    lib.generators.toINI { } {
+      Environment = {
+        DFLAGS = "-I@out@/include/dmd -L-L@out@/lib -fPIC ${
+          lib.optionalString (!targetPackages.stdenv.cc.isClang) "-L--export-dynamic"
+        }";
+      };
+    }
+  );
 
   bits = toString stdenv.hostPlatform.parsed.cpu.bits;
   osname = if stdenv.hostPlatform.isDarwin then "osx" else stdenv.hostPlatform.parsed.kernel.name;

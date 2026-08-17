@@ -7,7 +7,6 @@
   fetchzip,
   fetchpatch,
   makeWrapper,
-  writeTextFile,
   replaceVars,
   # native build inputs
   runtimeShell,

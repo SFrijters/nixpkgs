@@ -5,7 +5,7 @@
   lua,
   wrapLua,
   luarocks_bootstrap,
-  writeTextFile,
+  writeText,
   buildPackages,
 
   # Whether the derivation provides a lua module or not.
@@ -133,10 +133,7 @@ let
         # builder
         rocksSubdir = "${self.pname}-${self.version}-rocks";
 
-        configFile = writeTextFile {
-          name = self.pname + "-luarocks-config.lua";
-          text = self.luarocks_content;
-        };
+        configFile = writeText (self.pname + "-luarocks-config.lua") self.luarocks_content;
 
         luarocks_content = (lib.generators.toLua { asBindings = true; } self.luarocksConfig) + ''
 

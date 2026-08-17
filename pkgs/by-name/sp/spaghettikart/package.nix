@@ -2,7 +2,7 @@
   lib,
   fetchFromGitHub,
   applyPatches,
-  writeTextFile,
+  writeText,
   fetchurl,
   fetchpatch,
   stdenv,
@@ -75,13 +75,10 @@ let
     hash = "sha256-rywMUxJNx/UsWKcgXkWK0++6wvYc5Vrd+cj5QzigQYI=";
   };
 
-  stb_impl = writeTextFile {
-    name = "stb_impl.c";
-    text = ''
-      #define STB_IMAGE_IMPLEMENTATION
-      #include "stb_image.h"
-    '';
-  };
+  stb_impl = writeText "stb_impl.c" ''
+    #define STB_IMAGE_IMPLEMENTATION
+    #include "stb_image.h"
+  '';
 
   stb' = fetchurl {
     name = "stb_image.h";
