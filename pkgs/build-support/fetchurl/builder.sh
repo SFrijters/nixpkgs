@@ -1,5 +1,5 @@
 source "$NIX_ATTRS_SH_FILE"
-source $mirrorsFile
+source $mirrorsListFile
 
 # Normalize `curlOpts` as a string.
 # If defined as a list (deprecated), it would be a bash array.
@@ -125,28 +125,43 @@ tryHashedMirrors() {
 set -o noglob
 
 resolvedUrls=()
-for url in "${urls[@]}"; do
-    if test "${url:0:9}" != "mirror://"; then
-        resolvedUrls+=("$url")
-    else
-        url2="${url:9}"; echo "${url2/\// }" > split; read site fileName < split
-        #varName="mirror_$site"
-        varName="$site" # !!! danger of name clash, fix this
-        if test -z "${!varName}"; then
-            echo "warning: unknown mirror:// site \`$site'"
-        else
-            mirrors=${!varName}
 
-            # Allow command-line override by setting NIX_MIRRORS_$site.
-            varName="NIX_MIRRORS_$site"
-            if test -n "${!varName}"; then mirrors="${!varName}"; fi
-
-            for url3 in $mirrors; do
-                resolvedUrls+=("$url3$fileName");
-            done
+_resolveUrls() {
+    local url
+    for url in "${urls[@]}"; do
+        # Direct URL
+        if test "${url:0:9}" != "mirror://"; then
+            resolvedUrls+=("${url}")
+            continue
         fi
-    fi
-done
+
+        # Try to get appropriate mirrors via the sourced mirrorsListFile
+        local urlAfterMirrorPrefix="${url:9}"
+        local site filePath
+        read -r site filePath < <(echo "${urlAfterMirrorPrefix/\// }")
+        local varName="${site}"
+        if test -z "${!varName}"; then
+            echo "warning: unknown mirror:// site \`${site}'"
+            continue
+        fi
+        local arrName="${varName}[@]"
+        local mirrorUrls
+        mirrorUrls=("${!arrName}")
+
+        # Allow command-line override by setting NIX_MIRRORS_$site.
+        varName="NIX_MIRRORS_${site}"
+        if test -n "${!varName}"; then
+            IFS=' ' read -r -a mirrorUrls <<< "${!varName}"
+        fi
+
+        local mirrorUrl
+        for mirrorUrl in "${mirrorUrls[@]}"; do
+            resolvedUrls+=("${mirrorUrl}${filePath}");
+        done
+    done
+}
+
+_resolveUrls
 
 # Restore globbing settings
 set +o noglob

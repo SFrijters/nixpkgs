@@ -14,7 +14,8 @@ let
   defaultNativeBuildInputs = [ curl ];
   inherit (lib)
     concatMap
-    concatStringsSep
+    concatMapStringsSep
+    concatMapAttrsStringSep
     elemAt
     fakeHash
     fakeSha256
@@ -25,7 +26,6 @@ let
     isList
     isString
     length
-    mapAttrs
     match
     warn
     ;
@@ -40,18 +40,14 @@ let
   # fetchurl instantiations via environment variables.  This makes the
   # resulting store derivations (.drv files) much smaller, which in
   # turn makes nix-env/nix-instantiate faster.
-  mirrorsFile = buildPackages.stdenvNoCC.mkDerivation {
-    name = "mirrors-list";
-    strictDeps = true;
-    builder = ./write-mirror-list.sh;
-    preferLocalBuild = true;
-    __structuredAttrs = true;
-    # Associative array where keys are the names of the mirrors,
-    # and the values are the space-separated URLs for that mirror,
-    # Ideally we'd want to pass arrays of URLs,
-    # but we cannot pass an associative array of arrays to bash.
-    mirrors = mapAttrs (_: v: concatStringsSep " " v) mirrors;
-  };
+  mirrorsListFile =
+    let
+      toBashArrayValues = concatMapStringsSep " " (m: "'${m}'");
+      toBashArrays = concatMapAttrsStringSep "\n" (
+        mirrorName: mirrorUrls: "${mirrorName}=(${toBashArrayValues mirrorUrls})"
+      );
+    in
+    buildPackages.writeText "mirrors-list" (toBashArrays mirrors);
 
   # Names of the master sites that are mirrored (i.e., "sourceforge",
   # "gnu", etc.).
@@ -380,7 +376,7 @@ lib.extendMkDerivation {
         curlOptsList
         downloadToTemp
         executable
-        mirrorsFile
+        mirrorsListFile
         postFetch
         showURLs
         ;
