@@ -1,8 +1,5 @@
 {
   lib,
-  buildPackages ? {
-    inherit stdenvNoCC;
-  },
   stdenvNoCC,
   curl, # Note that `curl' may be `null', in case of the native stdenvNoCC.
   cacert ? null,
@@ -47,7 +44,7 @@ let
         mirrorName: mirrorUrls: "${mirrorName}=(${toBashArrayValues mirrorUrls})"
       );
     in
-    buildPackages.writeText "mirrors-list" (toBashArrays mirrors);
+    builtins.toFile "mirrors-list" (toBashArrays mirrors);
 
   # Names of the master sites that are mirrored (i.e., "sourceforge",
   # "gnu", etc.).
