@@ -24,6 +24,8 @@ let
     isString
     length
     match
+    toFile
+    toShellVars
     warn
     ;
   nixpkgsVersion = lib.trivial.release;
@@ -37,14 +39,7 @@ let
   # fetchurl instantiations via environment variables.  This makes the
   # resulting store derivations (.drv files) much smaller, which in
   # turn makes nix-env/nix-instantiate faster.
-  mirrorsListFile =
-    let
-      toBashArrayValues = concatMapStringsSep " " (m: "'${m}'");
-      toBashArrays = concatMapAttrsStringSep "\n" (
-        mirrorName: mirrorUrls: "${mirrorName}=(${toBashArrayValues mirrorUrls})"
-      );
-    in
-    builtins.toFile "mirrors-list" (toBashArrays mirrors);
+  mirrorsListFile = toFile "mirrors-list" (toShellVars mirrors);
 
   # Names of the master sites that are mirrored (i.e., "sourceforge",
   # "gnu", etc.).
