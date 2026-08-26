@@ -713,7 +713,9 @@ let
 
           inherit userHook;
           __ignoreNulls = true;
-          inherit __structuredAttrs strictDeps;
+
+          __structuredAttrs = if __structuredAttrs then true else lib.warn "${attrs.pname or attrs.name}: __structuredAttrs = false" false;
+          strictDeps = if strictDeps then true else lib.warn "${attrs.pname or attrs.name}: strictDeps = false" false;
 
           depsBuildBuild = buildBuildOutputs;
           nativeBuildInputs = buildHostOutputs;
