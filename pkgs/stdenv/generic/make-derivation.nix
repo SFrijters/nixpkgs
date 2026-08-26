@@ -536,6 +536,9 @@ let
       )
     else
       let
+        name' = if attrs ? pname then "pname" else "name";
+        pos = builtins.unsafeGetAttrPos name' attrs;
+        pos' = "${pos.file}:${toString pos.line}:${toString pos.column}";
         doCheck = doCheck';
         doInstallCheck = doInstallCheck';
         buildInputs' =
@@ -713,7 +716,9 @@ let
 
           inherit userHook;
           __ignoreNulls = true;
-          inherit __structuredAttrs strictDeps;
+
+          __structuredAttrs = if __structuredAttrs then true else lib.warn "${lib.getAttr name' attrs} ${attrs.version or ""} ${pos'} __structuredAttrs = false" false;
+          strictDeps = if strictDeps then true else lib.warn "${lib.getAttr name' attrs} ${attrs.version or ""} ${pos'} strictDeps = false" false;
 
           depsBuildBuild = buildBuildOutputs;
           nativeBuildInputs = buildHostOutputs;
