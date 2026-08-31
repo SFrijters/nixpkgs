@@ -48,6 +48,8 @@ rec {
     ++ lib.optional (!stdenv.hostPlatform.isDarwin && !stdenv.hostPlatform.isFreeBSD) gcc.cc.lib
     ++ lib.optional (!stdenv.hostPlatform.isDarwin) zlib;
 
+    strictDeps = true;
+
     postPatch = ''
       patchShebangs .
     '';
@@ -89,6 +91,8 @@ rec {
     dontStrip = true;
 
     setupHooks = ./setup-hook.sh;
+
+    __structuredAttrs = true;
 
     passthru = rec {
       targetPlatformsWithHostTools = [
@@ -167,10 +171,14 @@ rec {
       makeWrapper
     ]
     ++ lib.optional (!stdenv.hostPlatform.isDarwin) autoPatchelfHook;
+
     buildInputs = [
       bash
     ]
     ++ lib.optional (!stdenv.hostPlatform.isDarwin && !stdenv.hostPlatform.isFreeBSD) gcc.cc.lib;
+
+    strictDeps = true;
+    __structuredAttrs = true;
 
     postPatch = ''
       patchShebangs .

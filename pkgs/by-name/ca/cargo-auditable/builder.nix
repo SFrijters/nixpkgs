@@ -35,6 +35,8 @@ lib.extendMkDerivation {
         installShellFiles
       ];
 
+      strictDeps = true;
+
       checkFlags = [
         # requires wasm32-unknown-unknown target
         "--skip=test_wasm"
