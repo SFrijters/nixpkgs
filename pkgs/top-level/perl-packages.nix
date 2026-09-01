@@ -19405,6 +19405,7 @@ with self;
       hash = "sha256-kJ1HlUaX58BCGPlykVt4e9EkTXXjvQFiC8Fn1bvEnBU=";
     };
     env.LANG = "C";
+    __structuredAttrs = true;
     meta = {
       description = "Perl extension for emulating gettext-related API";
       license = with lib.licenses; [
