@@ -19,6 +19,8 @@ stdenv.mkDerivation {
   # We must preserve the signature on Darwin
   dontStrip = stdenv.hostPlatform.isDarwin;
 
+  strictDeps = true;
+
   installPhase = ''
     runHook preInstall
     mkdir -p $out/share/go $out/bin
