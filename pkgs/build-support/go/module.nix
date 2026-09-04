@@ -99,6 +99,8 @@ lib.extendMkDerivation {
               cacert
             ];
 
+            strictDeps = true;
+
             inherit (finalAttrs) src modRoot goSum;
 
             # The following inheritance behavior is not trivial to expect, and some may
@@ -196,6 +198,7 @@ lib.extendMkDerivation {
               '';
 
             dontFixup = true;
+            __structuredAttrs = true;
 
             outputHashMode = "recursive";
             outputHash = finalAttrs.vendorHash;
@@ -407,6 +410,8 @@ lib.extendMkDerivation {
         overrideModAttrs = lib.toExtension overrideModAttrs;
       }
       // passthru;
+
+      __structuredAttrs = true;
 
       meta = {
         # Add default meta information.
