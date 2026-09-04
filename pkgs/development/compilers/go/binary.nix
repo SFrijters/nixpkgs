@@ -1,14 +1,16 @@
 {
   lib,
-  stdenv,
+  stdenvNoCC,
   fetchurl,
   version,
   hashes,
 }:
 let
-  platform = with stdenv.hostPlatform.go; "${GOOS}-${if GOARCH == "arm" then "armv6l" else GOARCH}";
+  platform =
+    with stdenvNoCC.hostPlatform.go;
+    "${GOOS}-${if GOARCH == "arm" then "armv6l" else GOARCH}";
 in
-stdenv.mkDerivation {
+stdenvNoCC.mkDerivation {
   name = "go-${version}-${platform}-bootstrap";
 
   src = fetchurl {
@@ -17,7 +19,7 @@ stdenv.mkDerivation {
   };
 
   # We must preserve the signature on Darwin
-  dontStrip = stdenv.hostPlatform.isDarwin;
+  dontStrip = stdenvNoCC.hostPlatform.isDarwin;
 
   strictDeps = true;
 
