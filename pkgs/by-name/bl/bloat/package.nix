@@ -29,6 +29,8 @@ buildGoModule {
 
   passthru.updateScript = unstableGitUpdater { };
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Web client for Pleroma and Mastodon";
     longDescription = ''
