@@ -16,6 +16,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [ autoreconfHook ];
 
+  strictDeps = true;
+
   # The configure script of libpaper is buggy: it uses AC_SUBST on a headerfile
   # to compile sysconfdir into the library. Autoconf however defines sysconfdir
   # as "${prefix}/etc", which is not expanded by AC_SUBST so libpaper will look
