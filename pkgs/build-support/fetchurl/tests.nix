@@ -241,42 +241,34 @@ in
     '';
   });
 
-  # Tests that custom mirror names can be used and resolved via NIX_MIRRORS_* environment variables.
-  # Note that we set the env variable here via the nix derivation - this won't immediately work via an externally
-  # set variable since these custom variables are not added to impureEnvVars.
-  urls-env-mirrors =
-    let
-      helloWithTestMirror = hello.overrideAttrs (prevAttrs: {
-        src = prevAttrs.src.overrideAttrs (prevAttrsSrc: {
-          urls = lib.map (lib.replaceString "gnu" "gnutest") prevAttrsSrc.urls;
-        });
-      });
-      NIX_MIRRORS_gnutest = "https://ftp.nluug.nl/pub/gnu/";
-      urls = [ "http://broken" ] ++ helloWithTestMirror.src.urls;
-      # We can't use fetchurl.resolveUrl here because it doesn't allow mirrors that are
-      # not in the mirrorsListFile.
-      resolvedUrls = lib.map (lib.replaceString "mirror://gnutest/" NIX_MIRRORS_gnutest) urls;
-    in
-    testers.invalidateFetcherByDrvHash fetchurl {
-      name = "test-fetchurl-urls-env.mirrors";
-      inherit urls;
-      hash = hello.src.outputHash;
-      derivationArgs.env = { inherit NIX_MIRRORS_gnutest; };
-
-      curlOptsList = [
-        "--retry"
-        "0"
+  # Tests that alternative mirror URLs can be provided via the NIX_MIRRORS_* environment variables.
+  # NIX_MIRRORS_ variables for known mirrors are added to impureEnvVars.
+  urls-env-mirrors = testers.invalidateFetcherByDrvHash fetchurl (finalAttrs: {
+    name = "test-fetchurl-urls-env-mirrors";
+    inherit (hello.src) urls;
+    hash = hello.src.outputHash;
+    derivationArgs.env = {
+      # Two mirrors taken from the mirrors.nix file
+      NIX_MIRRORS_gnu = toString [
+        "https://ftp.nluug.nl/pub/gnu/"
+        "https://mirrors.kernel.org/gnu/"
       ];
-
-      postFetch = hello.postFetch or "" + ''
-        if ! diff -u ${
-          builtins.toFile "urls-resolved-by-hand" (lib.concatStringsSep "\n" resolvedUrls + "\n")
-        } <(printf '%s\n' "''${resolvedUrls[@]}"); then
-          echo "ERROR: fetchurl: build-time-resolved URLs \`urls' differ from the expected URLs." >&2
-          exit 1
-        fi
-        touch $out
-      '';
     };
+
+    curlOptsList = [
+      "--retry"
+      "0"
+    ];
+
+    postFetch = hello.postFetch or "" + ''
+      if ! diff -u ${builtins.toFile "urls-resolved-by-hand" ''
+        https://ftp.nluug.nl/pub/gnu/hello/hello-${hello.version}.tar.gz
+        https://mirrors.kernel.org/gnu/hello/hello-${hello.version}.tar.gz
+      ''} <(printf '%s\n' "''${resolvedUrls[@]}"); then
+        echo "ERROR: fetchurl: build-time-resolved URLs \`urls' differ from the manually resolved URLs." >&2
+        exit 1
+      fi
+    '';
+  });
 
 }

@@ -151,18 +151,21 @@ _resolveUrls() {
         local site="${BASH_REMATCH[1]}"
         local filePath="${BASH_REMATCH[2]}"
 
-        # The name of the array containing mirrors for site, or the
-        # environment variable that can override it.
-        local envVarName="NIX_MIRRORS_${site}"
+        # The name of the array containing mirrors for site
         local varName="_mirror_${site}"
         # Needed to iterate over the array using an indirect reference
         local arrName="${varName}[@]"
+        # The environment variable that can potentially override the mirrors
+        local envVarName="NIX_MIRRORS_${site}"
 
         local mirrorUrls
-        if test -n "${!envVarName}"; then
-            IFS=' ' read -r -a mirrorUrls <<< "${!envVarName}"
-        elif test -v "${arrName}"; then
-            mirrorUrls=("${!arrName}")
+        if test -v "${arrName}"; then
+            if test -n "${!envVarName}"; then
+                echo "resolving url via NIX_MIRRORS_${site}"
+                IFS=' ' read -r -a mirrorUrls <<< "${!envVarName}"
+            else
+                mirrorUrls=("${!arrName}")
+            fi
         else
             echo "warning: unknown mirror:// site \`${site}'"
             continue
