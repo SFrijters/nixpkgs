@@ -74,7 +74,6 @@ rec {
       derivationArgs ? { },
       # name of the resulting derivation
       name,
-      # TODO(@Artturin): enable strictDeps always
     }:
     buildCommand:
     stdenv.mkDerivation (
@@ -84,6 +83,10 @@ rec {
       in
       {
         enableParallelBuilding = true;
+        strictDeps = true;
+        # Keep compatibility for out-of-tree consumers
+        # Set it to true by default, unless otherwise specified or if passAsFile is present
+        __structuredAttrs = derivationArgs.__structuredAttrs or (! derivationArgs ? passAsFile);
         inherit name;
         buildCommand = lib.toFunction buildCommand finalAttrs;
         passAsFile = defaultPassAsFile ++ (userAttrs.passAsFile or [ ]);
