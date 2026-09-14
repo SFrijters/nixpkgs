@@ -20,16 +20,17 @@ let
           (pkgs.python3.withPackages (ps: [ ps.jsonschema ]))
           pkgs.remarshal
         ];
+        strictDeps = true;
         preferLocalBuild = true;
 
         config = builtins.toJSON cfg.settings;
-        passAsFile = [ "config" ];
+        __structuredAttrs = true;
       }
       ''
         # The schema is given as yaml, we need to convert it to json
         remarshal --if yaml --of json -i ${pkg}/config.schema.yml -o config.schema.json
-        python -m jsonschema config.schema.json -i $configPath
-        cp "$configPath" "$out"
+        printf "%s" "$config" | python -m jsonschema config.schema.json
+        printf "%s" "$config" > "$out"
       '';
   registrationFile = "/var/lib/matrix-appservice-irc/registration.yml";
 in
