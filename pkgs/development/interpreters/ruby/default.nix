@@ -326,6 +326,10 @@ let
               -t ${baseRuby} \
               $rbConfig $out/lib/libruby*
           '';
+          preFixup = ''
+            chmod a-x $out/lib/ruby/gems/3.4.0/gems/erb-4.0.4/libexec/erb
+            find $out/lib/ruby/gems/3.4.0/gems -type f -executable -exec chmod a-x {} \;
+          '';
 
           # TODO: this check got relaxed on darwin;
           # see https://github.com/NixOS/nixpkgs/pull/499156#issuecomment-4221517043
