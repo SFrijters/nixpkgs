@@ -173,7 +173,8 @@ lib.extendMkDerivation {
 
       doCheck = args.doCheck or true;
 
-      strictDeps = true;
+      strictDeps = lib.warnIf (args.strictDeps or false
+        ) "Explicitly setting `strictDeps = true;' for Rust package ${args.pname} is redundant" true;
 
       meta = meta // {
         badPlatforms = meta.badPlatforms or [ ] ++ rustc.badTargetPlatforms;
