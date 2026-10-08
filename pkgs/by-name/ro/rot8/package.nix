@@ -25,6 +25,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
     ln -s ${./Cargo.lock} Cargo.lock
   '';
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Screen rotation daemon for X11 and wlroots";
     homepage = "https://github.com/efernau/rot8";
