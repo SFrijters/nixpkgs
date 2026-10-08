@@ -173,6 +173,7 @@ lib.extendMkDerivation {
 
       doCheck = args.doCheck or true;
 
+      __structuredAttrs = true;
       strictDeps = true;
 
       meta = meta // {
