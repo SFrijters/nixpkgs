@@ -34,7 +34,6 @@
 buildPythonPackage {
   pname = "rerun-sdk";
   pyproject = true;
-  __structuredAttrs = true;
 
   inherit (rerun)
     src
