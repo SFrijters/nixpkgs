@@ -55,9 +55,8 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [ unittestCheckHook ];
 
-  unittestFlagsArray = [
-    "-s"
-    "tests"
+  unittestFlags = [
+    "--start-directory='tests'"
     "-v"
   ];
 
