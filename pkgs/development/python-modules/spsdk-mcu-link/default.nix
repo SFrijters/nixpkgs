@@ -24,7 +24,6 @@ buildPythonPackage (finalAttrs: {
   pname = "spsdk-mcu-link";
   version = "0.6.14";
   pyproject = true;
-  __structuredAttrs = true;
 
   # Latest tag missing on GitHub
   src = fetchPypi {
