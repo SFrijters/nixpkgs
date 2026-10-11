@@ -35,7 +35,6 @@ buildPythonPackage (finalAttrs: {
   pname = "skrl";
   version = "2.1.0";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "Toni-SM";
