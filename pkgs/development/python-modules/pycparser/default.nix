@@ -30,9 +30,8 @@ buildPythonPackage rec {
     substituteInPlace examples/using_gcc_E_libc.py \
       --replace-fail "'gcc'" "'${stdenv.cc.targetPrefix}cc'"
   '';
-  unittestFlagsArray = [
-    "-s"
-    "tests"
+  unittestFlags = [
+    "--start-directory='tests'"
   ];
 
   passthru.updateScript = gitUpdater {
