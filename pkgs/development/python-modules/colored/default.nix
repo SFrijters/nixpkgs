@@ -22,7 +22,7 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [ unittestCheckHook ];
 
-  unittestFlagsArray = [ "unittests" ];
+  unittestFlags = [ "--start-directory='unittests'" ];
 
   pythonImportsCheck = [ "colored" ];
 
