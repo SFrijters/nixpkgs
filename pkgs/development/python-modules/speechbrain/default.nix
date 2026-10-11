@@ -25,7 +25,6 @@ buildPythonPackage (finalAttrs: {
   pname = "speechbrain";
   version = "1.1.1";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "speechbrain";
