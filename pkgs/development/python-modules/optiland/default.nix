@@ -35,7 +35,6 @@ buildPythonPackage (finalAttrs: {
   pname = "optiland";
   version = "0.6.2";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "HarrisonKramer";
