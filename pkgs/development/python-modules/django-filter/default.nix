@@ -14,7 +14,6 @@ buildPythonPackage (finalAttrs: {
   pname = "django-filter";
   version = "26.1";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "carltongibson";
