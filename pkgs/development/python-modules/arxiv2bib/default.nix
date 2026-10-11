@@ -28,9 +28,8 @@ buildPythonPackage (finalAttrs: {
     unittestCheckHook
     mock
   ];
-  unittestFlagsArray = [
-    "-s"
-    "tests"
+  unittestFlags = [
+    "--start-directory='tests'"
   ];
 
   pythonImportsCheck = [ "arxiv2bib" ];
