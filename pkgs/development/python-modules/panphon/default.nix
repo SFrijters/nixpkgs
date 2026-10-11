@@ -42,9 +42,8 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [ unittestCheckHook ];
 
-  unittestFlagsArray = [
-    "-s"
-    "test"
+  unittestFlags = [
+    "--start-directory='test'"
   ];
 
   pythonImportsCheck = [
