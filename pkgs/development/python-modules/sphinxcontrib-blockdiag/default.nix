@@ -9,13 +9,13 @@
   blockdiag,
 }:
 
-buildPythonPackage rec {
+buildPythonPackage (finalAttrs: {
   pname = "sphinxcontrib-blockdiag";
   version = "3.0.0";
   format = "setuptools";
 
   src = fetchPypi {
-    inherit pname version;
+    inherit (finalAttrs) pname version;
     sha256 = "aa49bf924516f5de8a479994c7be81e077df5599c9da2a082003d5b388e1d450";
   };
 
@@ -33,9 +33,8 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [ unittestCheckHook ];
 
-  unittestFlagsArray = [
-    "-s"
-    "tests"
+  unittestFlags = [
+    "--start-directory=tests"
   ];
 
   pythonNamespaces = [ "sphinxcontrib" ];
@@ -46,4 +45,4 @@ buildPythonPackage rec {
     maintainers = [ ];
     license = lib.licenses.bsd2;
   };
-}
+})
