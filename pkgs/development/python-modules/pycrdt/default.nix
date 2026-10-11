@@ -22,7 +22,6 @@ buildPythonPackage (finalAttrs: {
   pname = "pycrdt";
   version = "0.14.6";
   pyproject = true;
-  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "y-crdt";
