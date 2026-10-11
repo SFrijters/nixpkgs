@@ -12,8 +12,6 @@ buildPythonPackage (finalAttrs: {
   version = "10.1.1";
   pyproject = true;
 
-  __structuredAttrs = true;
-
   src = fetchFromGitHub {
     owner = "akx";
     repo = "py-cpuinfo2";
