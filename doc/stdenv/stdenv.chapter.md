@@ -859,6 +859,8 @@ The check phase checks whether the package was built correctly by running its te
 
 It is highly recommended, for packages' sources that are not distributed with any tests, to at least use [`versionCheckHook`](#versioncheckhook) to test that the resulting executable is basically functional.
 
+Note that this check runs in the [`installCheckPhase`](#ssec-installCheck-phase), and the hook should therefore be added to the `nativeInstallCheckInputs`, not the `nativeCheckInputs`.
+
 #### Variables controlling the check phase {#variables-controlling-the-check-phase}
 
 ##### `doCheck` {#var-stdenv-doCheck}
