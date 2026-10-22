@@ -173,6 +173,8 @@ stdenv.mkDerivation (finalAttrs: {
     );
   };
 
+  __structuredAttrs = true;
+
   meta = {
     description = "Remote desktop application, server component";
     homepage = "http://x2go.org/";
