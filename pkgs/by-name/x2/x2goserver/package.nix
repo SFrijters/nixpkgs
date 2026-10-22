@@ -32,6 +32,7 @@
   openssh,
   sshfs,
   bashNonInteractive,
+  versionCheckHook,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -128,6 +129,11 @@ stdenv.mkDerivation (finalAttrs: {
     sed -i -e "s,.\+bin/perl,#!${perl}/bin/perl -I ${finalAttrs.passthru.perlEnv}/lib/perl5/site_perl," \
       $out/lib/x2go/libx2go-server-db-sqlite3-wrapper.pl
   '';
+
+  doInstallCheck = true;
+  nativeInstallCheckInputs = [ versionCheckHook ];
+  versionCheckProgram = "${placeholder "out"}/bin/x2goversion";
+  versionCheckProgramArg = "x2goserver";
 
   enableParallelBuilding = true;
 
