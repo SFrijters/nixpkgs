@@ -122,7 +122,7 @@ stdenv.mkDerivation (finalAttrs: {
           xkbcomp
           setxkbmap
         ]
-      }:$out
+      }:$out/bin
     done
     # We're patching @INC of the setgid wrapper, because we can't mix
     # the perl wrapper (for PERL5LIB) with security.wrappers (for setgid)
