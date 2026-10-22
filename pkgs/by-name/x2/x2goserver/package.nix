@@ -161,6 +161,9 @@ stdenv.mkDerivation (finalAttrs: {
         "Makefile.perl"
       ];
 
+      strictDeps = true;
+      __structuredAttrs = true;
+
       inherit (finalAttrs) meta;
     };
 
