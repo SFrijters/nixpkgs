@@ -31,7 +31,7 @@
   pwgen,
   openssh,
   sshfs,
-  bash,
+  bashNonInteractive,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -45,10 +45,16 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildInputs = [
     finalAttrs.passthru.perlEnv
-    bash
+    bashNonInteractive
   ];
 
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [
+    makeWrapper
+    which
+    finalAttrs.passthru.perlEnv
+  ];
+
+  strictDeps = true;
 
   prePatch = ''
     patchShebangs .
@@ -67,7 +73,7 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace x2goserver/sbin/x2godbadmin \
       --replace-fail 'user="x2gouser"' 'user="x2go"'
     substituteInPlace x2goserver-xsession/etc/Xsession \
-      --replace-fail 'SSH_AGENT /bin/bash -c' 'SSH_AGENT ${bash}/bin/bash -c' \
+      --replace-fail 'SSH_AGENT /bin/bash -c' 'SSH_AGENT ${bashNonInteractive}/bin/bash -c' \
       --replace-fail '[ -f /etc/redhat-release ]' '[ -d /etc/nix ] || [ -f /etc/redhat-release ]'
   '';
 
