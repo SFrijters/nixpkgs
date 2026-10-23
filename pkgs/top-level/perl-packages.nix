@@ -599,8 +599,12 @@ with self;
     };
     postPatch = ''
       substituteInPlace Build.PL \
-        --replace "gtk+-2.0" "gtk+-3.0"
+        --replace-fail "gtk+-2.0" "gtk+-3.0"
     '';
+    nativeBuildInputs = [
+      pkgs.pkg-config
+      pkgs.wxwidgets_3_2
+    ];
     propagatedBuildInputs = [
       pkgs.pkg-config
       pkgs.gtk3
@@ -624,6 +628,9 @@ with self;
       url = "mirror://cpan/authors/id/P/PL/PLICEASE/Alien-m4-0.21.tar.gz";
       hash = "sha256-qypAXIA5RP0BxR+h6fK+/VhxqwPxdE3sKlZonyFI02E=";
     };
+    nativeBuildInputs = [
+      pkgs.gnum4
+    ];
     propagatedBuildInputs = [ AlienBuild ];
     buildInputs = [
       pkgs.gnum4
@@ -1952,12 +1959,15 @@ with self;
       url = "mirror://cpan/authors/id/O/OD/ODENBACH/Authen-Krb5-1.906.tar.gz";
       hash = "sha256-LcCSjvsTtfMF3zRSCI5j+StnrOqH+9RwMI9GD3kSboQ=";
     };
-    propagatedBuildInputs = [ pkgs.libkrb5 ];
+    nativeBuildInputs = [
+      PkgConfig
+      pkgs.libkrb5
+    ];
     buildInputs = [
       DevelChecklib
       FileWhich
-      PkgConfig
     ];
+    propagatedBuildInputs = [ pkgs.libkrb5 ];
     meta = {
       description = "XS bindings for Kerberos 5";
       license = with lib.licenses; [
@@ -7755,11 +7765,17 @@ with self;
       FileWhich
       pkgs.openssl
     ];
-    env.NIX_CFLAGS_COMPILE = "-I${pkgs.openssl.dev}/include";
-    env.NIX_CFLAGS_LINK = "-L${lib.getLib pkgs.openssl}/lib -lcrypto";
-    # Needed on Darwin so Crypt::OpenSSL::Guess does not pick /usr/bin/openssl and mix
-    # system libcrypto with the Nix one (perl aborts: "loading libcrypto in an unsafe way").
-    env.OPENSSL_PREFIX = pkgs.openssl;
+    nativeCheckInputs = [
+      pkgs.openssl # runs openssl executable to get version
+    ];
+
+    env = {
+      NIX_CFLAGS_COMPILE = "-I${pkgs.openssl.dev}/include";
+      NIX_CFLAGS_LINK = "-L${lib.getLib pkgs.openssl}/lib -lcrypto";
+      # Needed on Darwin so Crypt::OpenSSL::Guess does not pick /usr/bin/openssl and mix
+      # system libcrypto with the Nix one (perl aborts: "loading libcrypto in an unsafe way").
+      OPENSSL_PREFIX = pkgs.openssl;
+    };
     meta = {
       description = "Perl wrapper around OpenSSL's AES library";
       license = with lib.licenses; [
@@ -12924,6 +12940,7 @@ with self;
       hash = "sha256-q90dPuxMpPyuXxUrQLyqhi48gG4H5KqRI3V/aqSLndY=";
     };
     buildInputs = [ pkgs.gfortran ];
+    nativeCheckInputs = [ pkgs.gfortran ];
     propagatedBuildInputs = [ FileWhich ];
     meta = {
       description = "Simple interface to F77 libs";
@@ -15315,7 +15332,7 @@ with self;
       url = "mirror://cpan/authors/id/B/BP/BPS/GnuPG-Interface-1.03.tar.gz";
       hash = "sha256-WvVmMPD6wpDXJCGD9kSaoOAoKfRhHcYrxunps4CPGHo=";
     };
-    buildInputs = [
+    nativeBuildInputs = [
       pkgs.which
       pkgs.gnupg
     ];
@@ -15367,6 +15384,7 @@ with self;
       pkgs.goocanvas_2
       Gtk3
     ];
+    nativeCheckInputs = [ Gtk3 ];
     meta = {
       description = "Perl binding for GooCanvas2 widget using Glib::Object::Introspection";
       license = with lib.licenses; [
@@ -15539,8 +15557,10 @@ with self;
     };
 
     # XXX: It'd be nicer it `GraphViz.pm' could record the path to graphviz.
-    buildInputs = [
+    nativeBuildInputs = [
       pkgs.graphviz
+    ];
+    buildInputs = [
       TestPod
     ];
     propagatedBuildInputs = [
@@ -15566,8 +15586,10 @@ with self;
     };
 
     # XXX: It'd be nicer if `GraphViz.pm' could record the path to graphviz.
-    buildInputs = [
+    nativeBuildInputs = [
       pkgs.graphviz
+    ];
+    buildInputs = [
       TestPod
       Moo
       IPCRun3
@@ -15707,12 +15729,15 @@ with self;
       Gtk3
     ];
     nativeCheckInputs = [
+      Gtk3
       TestDifferences
       TestDeep
       ImageMagick
       TryTiny
       TestMockObject
       CarpAlways
+    ];
+    checkInputs = [
       pkgs.librsvg
     ];
     checkPhase = ''
@@ -15737,6 +15762,7 @@ with self;
       hash = "sha256-HURlEAvzvAR0opRppAb9AzVituNzYYgSEAA3KrKtqIQ=";
     };
     propagatedBuildInputs = [ Gtk3 ];
+    nativeCheckInputs = [ Gtk3 ];
     meta = {
       description = "Simple interface to Gtk3's complex MVC list widget";
       homepage = "https://github.com/soig/Gtk3-SimpleList";
@@ -17380,9 +17406,14 @@ with self;
       pkgs.libjpeg
       pkgs.libpng
     ];
+    nativeCheckInputs = [
+      pkgs.fontconfig
+    ];
     makeMakerFlags = [
-      "--incpath ${pkgs.libjpeg.dev}/include"
-      "--libpath ${pkgs.libjpeg.out}/lib"
+      "--incpath"
+      "${pkgs.libjpeg.dev}/include"
+      "--libpath"
+      "${pkgs.libjpeg.out}/lib"
       "--incpath"
       "${pkgs.libpng.dev}/include"
       "--libpath"
@@ -18874,8 +18905,10 @@ with self;
     outputs = [ "out" ];
     # Keep generated XS code stable across rebuilds.
     env.PERL_HASH_SEED = "0";
-    buildInputs = [
+    nativeBuildInputs = [
       pkgs.apacheHttpd
+    ];
+    buildInputs = [
       pkgs.apr
       pkgs.aprutil
       ApacheTest
@@ -22822,7 +22855,7 @@ with self;
       url = "mirror://cpan/authors/id/T/TH/THW/Module-Versions-0.02.zip";
       hash = "sha256-DTimWxenrFGI1zh8/+f6oSY4Rw3JNxYevz2kh7fR+Dw=";
     };
-    buildInputs = [ pkgs.unzip ];
+    nativeBuildInputs = [ pkgs.unzip ];
     meta = {
       description = "Handle versions of loaded modules with flexible result interface";
       license = with lib.licenses; [
@@ -22871,7 +22904,7 @@ with self;
     };
 
     makeMakerFlags = [ "MP_AP_DESTDIR=$out" ];
-    buildInputs = [ pkgs.apacheHttpd ];
+    nativeBuildInputs = [ pkgs.apacheHttpd ];
     doCheck = false; # would try to start Apache HTTP server
     passthru.tests = nixosTests.mod_perl;
     __darwinAllowLocalNetworking = true;
@@ -24960,10 +24993,10 @@ with self;
       url = "mirror://cpan/authors/id/I/IL/ILYAZ/modules/MP3-Tag-1.16.zip";
       hash = "sha256-UDhQk6owAFa8Jiu2pACpbiGVl3wcXh6/FaXgdak3e4Y=";
     };
-    buildInputs = [ pkgs.unzip ];
+    nativeBuildInputs = [ pkgs.unzip ];
 
     postPatch = ''
-      substituteInPlace Makefile.PL --replace "'PL_FILES'" "#'PL_FILES'"
+      substituteInPlace Makefile.PL --replace-fail "'PL_FILES'" "#'PL_FILES'"
     '';
     postFixup = ''
       perl data_pod.PL PERL5LIB:$PERL5LIB
@@ -25661,6 +25694,9 @@ with self;
     buildInputs = [
       pkgs.cups
       pkgs.libcupsfilters
+    ];
+    nativeCheckInputs = [
+      pkgs.cups
     ];
     env.NIX_CFLAGS_LINK = "-L${lib.getLib pkgs.cups}/lib -lcups";
     meta = {
@@ -38338,7 +38374,7 @@ with self;
         })
       ];
     env.NIX_CFLAGS_COMPILE = lib.optionalString stdenv.cc.isClang "-Wno-return-type";
-    buildInputs = [ pkgs.curl ];
+    nativeBuildInputs = [ pkgs.curl ];
     doCheck = false; # performs network access
     meta = {
       description = "Perl extension interface for libcurl";
@@ -38581,6 +38617,9 @@ with self;
       url = "mirror://cpan/authors/id/M/MB/MBARBON/Wx-GLCanvas-0.09.tar.gz";
       hash = "sha256-atLCn/Bv+Apci0udHWvwrtV0iegxvlnJRJT09ojcj+A=";
     };
+    nativeBuildInputs = [
+      Wx
+    ];
     propagatedBuildInputs = [
       pkgs.libGLU
       Wx
@@ -38735,7 +38774,7 @@ with self;
       url = "mirror://cpan/authors/id/S/SJ/SJZASADA/XML-CanonicalizeXML-0.10.tar.gz";
       hash = "sha256-5yhGSIDLtMHz/XceCQOoUmzWV7OUuzchYDUkXPHihu4=";
     };
-    buildInputs = [ pkgs.libxml2 ];
+    nativeBuildInputs = [ pkgs.libxml2 ];
     meta = {
       description = "Perl extension for inclusive (1.0 and 1.1) and exclusive canonicalization of XML using libxml2";
       license = with lib.licenses; [
@@ -38753,7 +38792,7 @@ with self;
       url = "https://oligarchy.co.uk/xapian/${version}/xapian-bindings-${version}.tar.xz";
       sha256 = "1fhq6rydjymmyn79cdza0j4rmlizrrwmf5mx276rlmwyh085wfxs";
     };
-    buildInputs = [ pkgs.xapian ];
+    nativeBuildInputs = [ pkgs.xapian ];
     preConfigure = ''
       # FIXME: doesn't work for cross
       export PERL_LIB="$out/lib/perl5/site_perl/${perl.version}"
