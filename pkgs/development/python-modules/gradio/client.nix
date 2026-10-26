@@ -87,7 +87,7 @@ buildPythonPackage (finalAttrs: {
     writableTmpDirAsHomeHook
   ];
   # ensuring we don't propagate this intermediate build
-  disallowedReferences = [ gradio.sans-reverse-dependencies ];
+  outputChecks.out.disallowedReferences = [ gradio.sans-reverse-dependencies ];
 
   postInstall = ''
     mkdir -p $out/lib/gradio

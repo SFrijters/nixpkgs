@@ -32,7 +32,7 @@ buildPythonPackage {
   dependencies = [ gradio-client ];
 
   buildInputs = [ gradio.sans-reverse-dependencies ];
-  disallowedReferences = [ gradio.sans-reverse-dependencies ];
+  outputChecks.out.disallowedReferences = [ gradio.sans-reverse-dependencies ];
 
   pythonImportsCheck = [ "gradio_pdf" ];
 

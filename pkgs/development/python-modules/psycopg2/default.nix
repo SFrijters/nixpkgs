@@ -14,7 +14,7 @@
   setuptools,
 }:
 
-buildPythonPackage rec {
+buildPythonPackage (finalAttrs: {
   pname = "psycopg2";
   version = "2.9.12";
   pyproject = true;
@@ -29,7 +29,8 @@ buildPythonPackage rec {
   ];
 
   src = fetchPypi {
-    inherit pname version;
+    pname = "psycopg2";
+    inherit (finalAttrs) version;
     hash = "sha256-He2xx6HYVSxKYETGscQaUuao4tFEr4PsysdYB2sbfBU=";
   };
 
@@ -63,15 +64,14 @@ buildPythonPackage rec {
     postgresqlTestHook
   ];
 
-  env = {
-    PGDATABASE = "psycopg2_test";
-  };
+  env.PGDATABASE = "psycopg2_test";
 
   pythonImportsCheck = [ "psycopg2" ];
 
-  disallowedReferences = lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    buildPackages.libpq
-  ];
+  outputChecks = lib.optionalAttrs (stdenv.buildPlatform != stdenv.hostPlatform) {
+    out.disallowedReferences = [ buildPackages.libpq ];
+    doc.disallowedReferences = [ buildPackages.libpq ];
+  };
 
   meta = {
     description = "PostgreSQL database adapter for the Python programming language";
@@ -82,4 +82,4 @@ buildPythonPackage rec {
     ];
     maintainers = [ ];
   };
-}
+})
