@@ -645,6 +645,9 @@ lib.fix (
     {
       inherit pname version;
 
+      __structuredAttrs = true;
+      strictDeps = true;
+
       outputs = [
         "out"
       ]
