@@ -32,6 +32,8 @@ stdenv.mkDerivation {
     libxcrypt
   ];
 
+  strictDeps = true;
+
   patches = [ ./fix-makefiles.patch ];
 
   postPatch = ''
