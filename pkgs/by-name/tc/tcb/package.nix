@@ -43,8 +43,10 @@ stdenv.mkDerivation {
       --replace "INCLUDEDIR = \$(PREFIX)/include" "INCLUDEDIR = $dev/include"
 
     # Override default 'CC=gcc'
-    makeFlagsArray+=("CC=$CC")
+    makeFlags+=("CC=$CC")
   '';
+
+  __structuredAttrs = true;
 
   meta = {
     description = "Alternative password shadowing scheme";
