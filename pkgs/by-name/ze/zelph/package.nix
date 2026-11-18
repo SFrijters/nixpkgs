@@ -56,7 +56,7 @@ stdenv.mkDerivation (finalAttrs: {
   preConfigure = ''
     cp -R ${janet.src} ./janet-src
     chmod -R u+w ./janet-src
-    cmakeFlagsArray+=("-DJANET_SOURCE_DIR=$(pwd)/janet-src")
+    cmakeFlags+=("-DJANET_SOURCE_DIR=$(pwd)/janet-src")
   '';
 
   checkInputs = [
