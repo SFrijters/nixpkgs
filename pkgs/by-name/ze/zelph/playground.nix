@@ -71,7 +71,7 @@ buildEmscriptenPackage rec {
   preConfigure = ''
     cp -R ${janet.src} ./janet-src
     chmod -R u+w ./janet-src
-    cmakeFlagsArray+=("-DJANET_SOURCE_DIR=$(pwd)/janet-src")
+    cmakeFlags+=("-DJANET_SOURCE_DIR=$(pwd)/janet-src")
   '';
 
   configurePhase = ''
@@ -80,7 +80,7 @@ buildEmscriptenPackage rec {
     mkdir -p .emscriptencache
     export EM_CACHE=$(pwd)/.emscriptencache
 
-    emcmake cmake -S . -B . "''${cmakeFlags[@]}" "''${cmakeFlagsArray[@]}"
+    emcmake cmake -S . -B . "''${cmakeFlags[@]}"
 
     runHook postConfigure
   '';
